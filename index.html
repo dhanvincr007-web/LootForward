@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="LootForward — Gamers Helping Gamers. Verified gaming equipment and monetary donations for communities in need.">
+  <title>LootForward — Gamers Helping Gamers</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <canvas id="matrix-canvas" aria-hidden="true"></canvas>
+
+  <nav class="navbar navbar-expand-lg navbar-dark sticky-top loot-navbar">
+    <div class="container py-2">
+      <a class="navbar-brand brand-mark" href="#about" data-route="about" aria-label="LootForward home">
+        <span class="brand-icon">LF</span>
+        <span>Loot<span>Forward</span></span>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+              aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+          <li class="nav-item">
+            <a class="nav-link active" href="#about" data-route="about">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#donate" data-route="donate">The Drop</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#recipients" data-route="recipients">Who to Donate</a>
+          </li>
+          <li class="nav-item ms-lg-2">
+            <a class="btn btn-neon btn-sm px-4" href="#recipients" data-route="recipients">Start a Drop</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main id="app-shell">
+
+    <!-- PAGE 1 -->
+    <section id="page-about" class="page-view active-page" data-page="about">
+      <div class="container py-5">
+        <div class="hero-panel glass-panel">
+          <div class="row align-items-center g-5">
+            <div class="col-lg-7">
+              <span class="eyebrow">GAMERS HELPING GAMERS</span>
+              <h1 class="display-3 fw-bold hero-title">
+                Your old gear can become someone's
+                <span class="gradient-text">next great game.</span>
+              </h1>
+              <p class="hero-copy">
+                LootForward connects gamers with verified community programs that need consoles,
+                gaming gadgets, and direct financial support. Every donation enters an audit-first
+                workflow designed to reduce fraud and keep the giving loop trustworthy.
+              </p>
+              <div class="d-flex flex-wrap gap-3">
+                <a class="btn btn-neon btn-lg" href="#recipients" data-route="recipients">Find a Recipient</a>
+                <a class="btn btn-outline-neon btn-lg" href="#donate" data-route="donate">Donate Gear</a>
+              </div>
+            </div>
+
+            <div class="col-lg-5">
+              <div class="hero-terminal">
+                <div class="terminal-header">
+                  <span></span><span></span><span></span>
+                  <small>LOOTFORWARD / AUDIT_NODE</small>
+                </div>
+                <div class="terminal-body">
+                  <p><span class="terminal-green">STATUS</span> VERIFIED NETWORK</p>
+                  <p><span class="terminal-cyan">HARDWARE</span> fingerprint queued</p>
+                  <p><span class="terminal-purple">FUNDING</span> source cross-check</p>
+                  <p><span class="terminal-green">RECIPIENT</span> destination validated</p>
+                  <div class="terminal-progress"><span></span></div>
+                  <p class="mb-0 terminal-muted">awaiting next contribution...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-4 mt-4">
+          <div class="col-md-4">
+            <article class="stat-card glass-panel h-100">
+              <span class="stat-label">TOTAL HARDWARE SAVED</span>
+              <strong class="stat-value" id="hardware-stat">2,481</strong>
+              <span class="stat-note">devices redirected from storage to communities</span>
+            </article>
+          </div>
+          <div class="col-md-4">
+            <article class="stat-card glass-panel h-100">
+              <span class="stat-label">MONETARY AUDITS COMPLETED</span>
+              <strong class="stat-value" id="audit-stat">8,942</strong>
+              <span class="stat-note">funding records reviewed by the network</span>
+            </article>
+          </div>
+          <div class="col-md-4">
+            <article class="stat-card glass-panel h-100">
+              <span class="stat-label">COMMUNITIES SUPPORTED</span>
+              <strong class="stat-value" id="community-stat">126</strong>
+              <span class="stat-note">verified programs receiving gaming resources</span>
+            </article>
+          </div>
+        </div>
+
+        <div class="section-heading mt-5">
+          <span class="eyebrow">ANTI-FRAUD WORKFLOW</span>
+          <h2>From your inventory to a verified community.</h2>
+          <p>The workflow is intentionally transparent: collect evidence, validate the source, match the need, then release the contribution.</p>
+        </div>
+
+        <div class="row g-4 workflow-row">
+          <div class="col-md-6 col-lg-3">
+            <article class="workflow-card glass-panel h-100">
+              <div class="step-number">01</div>
+              <h3>Declare</h3>
+              <p>Provide the exact hardware or monetary contribution details before anything enters the queue.</p>
+            </article>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <article class="workflow-card glass-panel h-100">
+              <div class="step-number">02</div>
+              <h3>Evidence</h3>
+              <p>Attach a proof snapshot or funding statement so the audit layer has supporting evidence.</p>
+            </article>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <article class="workflow-card glass-panel h-100">
+              <div class="step-number">03</div>
+              <h3>Match</h3>
+              <p>Your contribution is connected to a selected verified recipient and its published needs.</p>
+            </article>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <article class="workflow-card glass-panel h-100">
+              <div class="step-number">04</div>
+              <h3>Audit</h3>
+              <p>A temporary ticket identifies the pending audit while the contribution waits for review.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 2 -->
+    <section id="page-donate" class="page-view" data-page="donate">
+      <div class="container py-5">
+        <div class="section-heading">
+          <span class="eyebrow">THE DROP</span>
+          <h2>Submit a contribution for verification.</h2>
+          <p id="recipient-context" class="context-note">Choose a verified recipient first, or select one below.</p>
+        </div>
+
+        <div class="drop-shell glass-panel">
+          <div class="category-switcher" role="tablist" aria-label="Donation type">
+            <button type="button" class="category-btn active" data-donation-type="console">Console</button>
+            <button type="button" class="category-btn" data-donation-type="gadget">Gadget</button>
+            <button type="button" class="category-btn" data-donation-type="money">Money</button>
+          </div>
+
+          <form id="donation-form" novalidate>
+            <input type="hidden" id="donation-type" name="donationType" value="console">
+
+            <div id="physical-fields" class="form-panel active-form-panel">
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <label class="form-label" for="item-name">Item Name / Brand</label>
+                  <input class="form-control" id="item-name" name="itemName" type="text"
+                         placeholder="e.g. Sony PlayStation 5" required>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="model-number">Model Number</label>
+                  <input class="form-control" id="model-number" name="modelNumber" type="text"
+                         placeholder="e.g. CFI-1200A" required>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="condition">Condition</label>
+                  <select class="form-select" id="condition" name="condition" required>
+                    <option value="">Choose condition</option>
+                    <option value="New / Sealed">New / Sealed</option>
+                    <option value="Like New">Like New</option>
+                    <option value="Good">Good</option>
+                    <option value="Used">Used</option>
+                    <option value="Needs Repair">Needs Repair</option>
+                  </select>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="faults">Hardware Faults / Damages</label>
+                  <input class="form-control" id="faults" name="faults" type="text"
+                         placeholder="e.g. HDMI port slightly loose">
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label" for="proof-snapshot">Proof Snapshot</label>
+                  <input class="form-control" id="proof-snapshot" name="proofSnapshot"
+                         type="file" accept="image/*" required>
+                  <div class="form-text">Attach a clear photo showing the device and relevant identifying details.</div>
+                </div>
+              </div>
+            </div>
+
+            <div id="money-fields" class="form-panel">
+              <div class="row g-4">
+                <div class="col-12">
+                  <label class="form-label">Quick Amount</label>
+                  <div class="quick-tiers">
+                    <button type="button" class="tier-btn" data-amount="10">$10</button>
+                    <button type="button" class="tier-btn" data-amount="25">$25</button>
+                    <button type="button" class="tier-btn" data-amount="50">$50</button>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="amount">Custom Amount (USD)</label>
+                  <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input class="form-control" id="amount" name="amount" type="number"
+                           min="1" step="0.01" placeholder="25.00" required>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="statement-upload">Credit / Bank Statement Upload</label>
+                  <input class="form-control" id="statement-upload" name="statementUpload"
+                         type="file" accept=".pdf,image/*" required>
+                  <div class="form-text">Upload only the supporting document required for funding verification.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="recipient-lock glass-panel">
+              <div>
+                <span class="stat-label">LOCKED RECIPIENT</span>
+                <strong id="locked-recipient">No recipient selected</strong>
+              </div>
+              <button type="button" class="btn btn-outline-neon btn-sm" data-route="recipients">
+                Change
+              </button>
+            </div>
+
+            <div id="form-alert" class="form-alert d-none" role="alert"></div>
+
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-4">
+              <small class="privacy-note">Client-side demo validation. Connect the form to your secured backend before accepting real donations.</small>
+              <button type="submit" class="btn btn-neon btn-lg px-5">Submit for Audit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 3 -->
+    <section id="page-recipients" class="page-view" data-page="recipients">
+      <div class="container py-5">
+        <div class="section-heading">
+          <span class="eyebrow">VERIFIED DESTINATIONS</span>
+          <h2>Choose who receives your contribution.</h2>
+          <p>These demo organizations represent the approved charity data map used by the recipient matching interface.</p>
+        </div>
+
+        <div id="recipient-grid" class="row g-4"></div>
+      </div>
+    </section>
+
+    <!-- PAGE 4 -->
+    <section id="page-confirmation" class="page-view" data-page="confirmation">
+      <div class="container py-5">
+        <div class="confirmation-shell glass-panel">
+          <div class="confirmation-icon">✓</div>
+          <span class="eyebrow">DROP RECEIVED</span>
+          <h2>Contribution queued for verification.</h2>
+          <p class="confirmation-copy">
+            Your contribution has been captured locally and assigned a temporary audit ticket.
+            The ticket is not proof of payment or final charity acceptance.
+          </p>
+
+          <div class="receipt-block">
+            <div class="receipt-header">
+              <span>LOOTFORWARD</span>
+              <span>SECURE RECEIPT</span>
+            </div>
+            <div class="receipt-divider"></div>
+
+            <div class="receipt-row">
+              <span>ITEM / AMOUNT</span>
+              <strong id="receipt-item">—</strong>
+            </div>
+            <div class="receipt-row">
+              <span>VERIFICATION TYPE</span>
+              <strong id="receipt-type">—</strong>
+            </div>
+            <div class="receipt-row">
+              <span>RECIPIENT</span>
+              <strong id="receipt-recipient">—</strong>
+            </div>
+            <div class="receipt-row">
+              <span>PROOF FILE</span>
+              <strong id="receipt-proof">—</strong>
+            </div>
+
+            <div class="receipt-divider"></div>
+
+            <div class="ticket-label">TEMPORARY VERIFICATION TICKET</div>
+            <div id="receipt-ticket" class="ticket-code">PENDING_AUDIT_--------</div>
+
+            <div class="receipt-hash">
+              SHA-STYLE CHECK: <span id="receipt-hash">WAITING_FOR_AUDIT</span>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
+            <button type="button" class="btn btn-neon btn-lg" data-route="about">Track Verification Queue</button>
+            <button type="button" class="btn btn-outline-neon btn-lg" data-route="recipients">New Drop</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="loot-footer">
+    <div class="container d-flex flex-wrap justify-content-between gap-3">
+      <span>© 2026 LootForward — Gamers Helping Gamers</span>
+      <span>Verified-first donation prototype</span>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
