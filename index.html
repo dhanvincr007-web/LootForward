@@ -395,4 +395,185 @@
               <div class="step-line" id="step-line-2"></div>
               <div class="step-item" id="step-node-3">
                 <div class="step-circle">3</div>
-                <div class
+                <div class="step-title">Verified</div>
+              </div>
+              <div class="step-line" id="step-line-3"></div>
+              <div class="step-item" id="step-node-4">
+                <div class="step-circle">4</div>
+                <div class="step-title">Delivered</div>
+              </div>
+            </div>
+
+            <div id="tracking-status-msg" class="tracking-status-msg mt-4" aria-live="polite"></div>
+          </div>
+
+          <!-- Empty State -->
+          <div id="tracking-empty" class="tracking-empty-state">
+            <div class="tracking-empty-icon">🎮</div>
+            <p>Enter a <code>PENDING_AUDIT_</code> ticket code above to begin tracking.</p>
+            <p class="tracking-empty-hint">Your ticket ID was shown on the confirmation screen immediately after
+              submission.</p>
+          </div>
+
+          <!-- Not Found -->
+          <div id="tracking-not-found" class="tracking-not-found d-none" aria-live="polite">
+            <div class="tracking-empty-icon">❌</div>
+            <p>No audit record found for that ticket ID.</p>
+            <p class="tracking-empty-hint">
+              Check the code and try again, or
+              <a href="#donate" data-route="donate">submit a new drop</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 5: CONFIRMATION -->
+    <section id="page-confirmation" class="page-view" data-page="confirmation">
+      <div class="container py-5">
+        <div class="confirmation-shell glass-panel">
+          <div class="confirmation-icon">✓</div>
+          <span class="eyebrow">DROP RECEIVED</span>
+          <h2>Contribution queued for verification.</h2>
+          <p class="confirmation-copy">
+            Your contribution has been captured and assigned a temporary audit ticket.
+            This is not proof of payment or final charity acceptance — it enters the audit pipeline.
+          </p>
+
+          <!-- Gamer Impact Score -->
+          <div id="badge-award-section" class="badge-award-section d-none">
+            <div class="badge-award-header">
+              <span class="eyebrow">GAMER IMPACT SCORE</span>
+              <div class="xp-bar-wrap">
+                <div class="xp-bar" role="progressbar" aria-label="XP earned">
+                  <div id="xp-bar-fill" class="xp-bar-fill"></div>
+                </div>
+                <span id="xp-label" class="xp-label">+0 XP</span>
+              </div>
+            </div>
+            <div id="badge-list" class="badge-list"></div>
+          </div>
+
+          <!-- Cryptographic Receipt -->
+          <div class="receipt-block">
+            <div class="receipt-header">
+              <span>LOOTFORWARD</span>
+              <span>SECURE RECEIPT</span>
+            </div>
+            <div class="receipt-divider"></div>
+            <div class="receipt-row">
+              <span>ITEM / AMOUNT</span>
+              <strong id="receipt-item">—</strong>
+            </div>
+            <div class="receipt-row">
+              <span>VERIFICATION TYPE</span>
+              <strong id="receipt-type">—</strong>
+            </div>
+            <div class="receipt-row">
+              <span>RECIPIENT</span>
+              <strong id="receipt-recipient">—</strong>
+            </div>
+            <div class="receipt-row">
+              <span>PROOF FILE</span>
+              <strong id="receipt-proof">—</strong>
+            </div>
+            <div class="receipt-row" id="receipt-serial-row">
+              <span>SERIAL #</span>
+              <strong id="receipt-serial">—</strong>
+            </div>
+            <div class="receipt-row">
+              <span>TIMESTAMP</span>
+              <strong id="receipt-timestamp">—</strong>
+            </div>
+            <div class="receipt-divider"></div>
+            <div class="ticket-label">TEMPORARY VERIFICATION TICKET</div>
+            <div id="receipt-ticket" class="ticket-code">PENDING_AUDIT_--------</div>
+            <div class="receipt-hash">FNV-1a FINGERPRINT: <span id="receipt-hash">WAITING_FOR_AUDIT</span></div>
+            <div class="receipt-hash mt-1">SHA-256 IMAGE HASH: <span id="receipt-image-hash">NONE</span></div>
+          </div>
+
+          <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
+            <button type="button" class="btn btn-neon btn-lg" id="download-certificate-btn">
+              📄 Download Tax Certificate
+            </button>
+            <button type="button" class="btn btn-outline-neon btn-lg" data-route="tracking">
+              🔍 Track Verification
+            </button>
+            <button type="button" class="btn btn-outline-neon btn-lg" data-route="recipients">
+              + New Drop
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 6: ADMIN -->
+    <section id="page-admin" class="page-view" data-page="admin">
+      <div class="container py-5">
+        <div class="section-heading">
+          <span class="eyebrow">PROTECTED — VERIFIER DASHBOARD</span>
+          <h2>Moderation &amp; Audit Control Panel.</h2>
+          <p>Review pending hardware drops. Approve to generate a pre-paid shipping label or reject to flag the
+            submission for fraud review.</p>
+        </div>
+
+        <!-- Auth Gate -->
+        <div id="admin-auth-gate" class="glass-panel admin-auth-gate">
+          <div class="admin-lock-icon">🔐</div>
+          <h3>Verifier Access Required</h3>
+          <p class="text-muted mb-0">This panel is restricted to verified admin accounts.</p>
+          <div class="input-group mt-4" style="max-width:460px; margin:auto">
+            <input type="password" class="form-control" id="admin-passphrase" placeholder="Admin passphrase"
+              autocomplete="current-password">
+            <button class="btn btn-neon" type="button" id="admin-unlock-btn">Unlock</button>
+          </div>
+          <div id="admin-auth-error" class="form-alert d-none mt-3" role="alert">
+            Incorrect passphrase. Access denied.
+          </div>
+          <p class="admin-hint mt-3">Demo passphrase: <code>LOOTFORWARD2026</code></p>
+        </div>
+
+        <!-- Admin Panel -->
+        <div id="admin-panel" class="d-none">
+          <div class="admin-toolbar glass-panel mb-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+              <div class="d-flex align-items-center gap-2">
+                <span class="admin-status-dot"></span>
+                <span id="admin-user-label" class="admin-user-label">Verifier Mode Active</span>
+              </div>
+              <div class="d-flex gap-3 align-items-center flex-wrap">
+                <div>
+                  <span class="stat-label me-2">PENDING REVIEWS</span>
+                  <span id="pending-count" class="pending-count-badge">0</span>
+                </div>
+                <button class="btn btn-outline-neon btn-sm" id="admin-logout-btn">🔒 Lock Panel</button>
+              </div>
+            </div>
+          </div>
+          <div id="admin-queue" class="admin-queue">
+            <div class="text-center py-5 text-muted" id="admin-empty">
+              <div style="font-size:2.5rem;margin-bottom:12px">📭</div>
+              No pending submissions in the local queue.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="loot-footer">
+    <div class="container d-flex flex-wrap justify-content-between gap-3">
+      <span>© 2026 LootForward — Gamers Helping Gamers</span>
+      <span>Audit-first verified donation platform &nbsp;·&nbsp; Anti-fraud pipeline active</span>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="app.js?v=2.2"></script>
+</body>
+
+</html>
