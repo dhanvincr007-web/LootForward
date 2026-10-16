@@ -1,5 +1,5 @@
 // ============================================================
-// LootForward — app.js (Production Bugfix Release)
+// LootForward — app.js (Production Fixed & Synchronized)
 // ============================================================
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
@@ -44,6 +44,7 @@ if (firebaseConfigured) {
 
 // ─────────────────────────────────────────────────────────────
 // STRIPE CONFIGURATION
+// Replace pk_test_... with your actual Publishable key from dashboard.stripe.com
 // ─────────────────────────────────────────────────────────────
 const STRIPE_PUBLISHABLE_KEY = "pk_test_51Pxxxxxx_YOUR_KEY_HERE";
 let stripe = null;
@@ -141,6 +142,7 @@ const state = {
 
 const PAGE_IDS = ["about", "donate", "recipients", "tracking", "confirmation", "admin"];
 
+// DOM Selector map - Safely query HTML elements
 const el = {
   pages: document.querySelectorAll(".page-view"),
   navLinks: document.querySelectorAll("[data-route]"),
@@ -785,12 +787,20 @@ function escapeHtml(value) {
 }
 
 function bindEvents() {
+  // Global routing delegate for buttons with [data-route]
   document.addEventListener("click", (event) => {
     const recipientBtn = event.target.closest("[data-select-recipient]");
-    if (recipientBtn) { selectRecipient(recipientBtn.dataset.selectRecipient); return; }
+    if (recipientBtn) {
+      selectRecipient(recipientBtn.dataset.selectRecipient);
+      return;
+    }
 
     const routeEl = event.target.closest("[data-route]");
-    if (routeEl) { event.preventDefault(); navigate(routeEl.dataset.route); return; }
+    if (routeEl) {
+      event.preventDefault();
+      navigate(routeEl.dataset.route);
+      return;
+    }
   });
 
   el.categoryButtons.forEach((btn) => {
