@@ -4,40 +4,55 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="LootForward — Gamers Helping Gamers. Verified gaming equipment and monetary donations for communities in need.">
+  <meta name="theme-color" content="#0f0c1b">
+  <meta name="robots" content="index, follow">
   <title>LootForward — Gamers Helping Gamers</title>
 
+  <!-- Open Graph -->
+  <meta property="og:title" content="LootForward — Gamers Helping Gamers">
+  <meta property="og:description" content="Verified gaming hardware and monetary donations for communities in need.">
+  <meta property="og:type" content="website">
+
+  <!-- Bootstrap 5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Leaflet Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Custom Styles -->
   <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
+
+  <!-- Three.js WebGL Canvas (background) -->
   <canvas id="matrix-canvas" aria-hidden="true"></canvas>
 
-  <nav class="navbar navbar-expand-lg navbar-dark sticky-top loot-navbar">
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark sticky-top loot-navbar" role="navigation" aria-label="Main navigation">
     <div class="container py-2">
       <a class="navbar-brand brand-mark" href="#about" data-route="about" aria-label="LootForward home">
-        <span class="brand-icon">LF</span>
+        <span class="brand-icon" aria-hidden="true">LF</span>
         <span>Loot<span>Forward</span></span>
       </a>
-
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
               aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-
       <div class="collapse navbar-collapse" id="mainNav">
-        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-          <li class="nav-item">
-            <a class="nav-link active" href="#about" data-route="about">About</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#donate" data-route="donate">The Drop</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#recipients" data-route="recipients">Who to Donate</a>
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+          <li class="nav-item"><a class="nav-link active" href="#about" data-route="about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#donate" data-route="donate">The Drop</a></li>
+          <li class="nav-item"><a class="nav-link" href="#recipients" data-route="recipients">Recipients</a></li>
+          <li class="nav-item"><a class="nav-link" href="#tracking" data-route="tracking">Track</a></li>
+          <li class="nav-item" id="nav-admin-item" style="display:none">
+            <a class="nav-link nav-admin-link" href="#admin" data-route="admin">
+              <span class="admin-nav-dot" aria-hidden="true"></span> Admin
+            </a>
           </li>
           <li class="nav-item ms-lg-2">
             <a class="btn btn-neon btn-sm px-4" href="#recipients" data-route="recipients">Start a Drop</a>
@@ -49,7 +64,7 @@
 
   <main id="app-shell">
 
-    <!-- PAGE 1 -->
+    <!-- PAGE 1: ABOUT -->
     <section id="page-about" class="page-view active-page" data-page="about">
       <div class="container py-5">
         <div class="hero-panel glass-panel">
@@ -70,56 +85,56 @@
                 <a class="btn btn-outline-neon btn-lg" href="#donate" data-route="donate">Donate Gear</a>
               </div>
             </div>
-
             <div class="col-lg-5">
-              <div class="hero-terminal">
+              <div class="hero-terminal" role="status" aria-label="Audit system status">
                 <div class="terminal-header">
                   <span></span><span></span><span></span>
                   <small>LOOTFORWARD / AUDIT_NODE</small>
                 </div>
                 <div class="terminal-body">
-                  <p><span class="terminal-green">STATUS</span> VERIFIED NETWORK</p>
-                  <p><span class="terminal-cyan">HARDWARE</span> fingerprint queued</p>
-                  <p><span class="terminal-purple">FUNDING</span> source cross-check</p>
-                  <p><span class="terminal-green">RECIPIENT</span> destination validated</p>
-                  <div class="terminal-progress"><span></span></div>
-                  <p class="mb-0 terminal-muted">awaiting next contribution...</p>
+                  <p><span class="terminal-green">STATUS</span>&nbsp; VERIFIED NETWORK ONLINE</p>
+                  <p><span class="terminal-cyan">HARDWARE</span>&nbsp; fingerprint queued</p>
+                  <p><span class="terminal-purple">FUNDING</span>&nbsp; source cross-check active</p>
+                  <p><span class="terminal-green">RECIPIENT</span>&nbsp; destination validated</p>
+                  <div class="terminal-progress" role="progressbar"><span></span></div>
+                  <p class="mb-0 terminal-muted" id="terminal-live" aria-live="polite">awaiting next contribution...</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
+        <!-- Live Metrics -->
         <div class="row g-4 mt-4">
           <div class="col-md-4">
             <article class="stat-card glass-panel h-100">
               <span class="stat-label">TOTAL HARDWARE SAVED</span>
-              <strong class="stat-value" id="hardware-stat">2,481</strong>
+              <strong class="stat-value" id="hardware-stat">0</strong>
               <span class="stat-note">devices redirected from storage to communities</span>
             </article>
           </div>
           <div class="col-md-4">
             <article class="stat-card glass-panel h-100">
               <span class="stat-label">MONETARY AUDITS COMPLETED</span>
-              <strong class="stat-value" id="audit-stat">8,942</strong>
+              <strong class="stat-value" id="audit-stat">0</strong>
               <span class="stat-note">funding records reviewed by the network</span>
             </article>
           </div>
           <div class="col-md-4">
             <article class="stat-card glass-panel h-100">
               <span class="stat-label">COMMUNITIES SUPPORTED</span>
-              <strong class="stat-value" id="community-stat">126</strong>
+              <strong class="stat-value" id="community-stat">0</strong>
               <span class="stat-note">verified programs receiving gaming resources</span>
             </article>
           </div>
         </div>
 
+        <!-- Anti-Fraud Workflow -->
         <div class="section-heading mt-5">
           <span class="eyebrow">ANTI-FRAUD WORKFLOW</span>
           <h2>From your inventory to a verified community.</h2>
           <p>The workflow is intentionally transparent: collect evidence, validate the source, match the need, then release the contribution.</p>
         </div>
-
         <div class="row g-4 workflow-row">
           <div class="col-md-6 col-lg-3">
             <article class="workflow-card glass-panel h-100">
@@ -146,14 +161,28 @@
             <article class="workflow-card glass-panel h-100">
               <div class="step-number">04</div>
               <h3>Audit</h3>
-              <p>A temporary ticket identifies the pending audit while the contribution waits for review.</p>
+              <p>A temporary ticket identifies the pending audit while the contribution awaits human review.</p>
             </article>
+          </div>
+        </div>
+
+        <!-- Drop-Off Partner Map -->
+        <div class="section-heading mt-5">
+          <span class="eyebrow">LOCAL DROP-OFF NETWORK</span>
+          <h2>Find a verified drop-off partner near you.</h2>
+          <p>Partner game stores and community hubs accepting hardware on behalf of LootForward. Walk in and hand it over — no shipping required.</p>
+        </div>
+        <div class="map-shell glass-panel">
+          <div id="drop-map" aria-label="Interactive drop-off location map" role="application"></div>
+          <div class="map-legend">
+            <span class="legend-dot dot-cyan"></span> Verified Game Store
+            <span class="legend-dot dot-purple ms-3"></span> Community Hub
           </div>
         </div>
       </div>
     </section>
 
-    <!-- PAGE 2 -->
+    <!-- PAGE 2: THE DROP -->
     <section id="page-donate" class="page-view" data-page="donate">
       <div class="container py-5">
         <div class="section-heading">
@@ -161,33 +190,41 @@
           <h2>Submit a contribution for verification.</h2>
           <p id="recipient-context" class="context-note">Choose a verified recipient first, or select one below.</p>
         </div>
-
         <div class="drop-shell glass-panel">
           <div class="category-switcher" role="tablist" aria-label="Donation type">
-            <button type="button" class="category-btn active" data-donation-type="console">Console</button>
-            <button type="button" class="category-btn" data-donation-type="gadget">Gadget</button>
-            <button type="button" class="category-btn" data-donation-type="money">Money</button>
+            <button type="button" class="category-btn active" data-donation-type="console"
+                    role="tab" aria-selected="true">🎮 Console</button>
+            <button type="button" class="category-btn" data-donation-type="gadget"
+                    role="tab" aria-selected="false">🕹️ Gadget</button>
+            <button type="button" class="category-btn" data-donation-type="money"
+                    role="tab" aria-selected="false">💳 Money</button>
           </div>
 
           <form id="donation-form" novalidate>
             <input type="hidden" id="donation-type" name="donationType" value="console">
 
+            <!-- Hardware Fields -->
             <div id="physical-fields" class="form-panel active-form-panel">
               <div class="row g-4">
                 <div class="col-md-6">
-                  <label class="form-label" for="item-name">Item Name / Brand</label>
+                  <label class="form-label" for="item-name">Item Name / Brand <span class="req-star">*</span></label>
                   <input class="form-control" id="item-name" name="itemName" type="text"
-                         placeholder="e.g. Sony PlayStation 5" required>
+                         placeholder="e.g. Sony PlayStation 5" required autocomplete="off">
                 </div>
-
                 <div class="col-md-6">
-                  <label class="form-label" for="model-number">Model Number</label>
+                  <label class="form-label" for="model-number">Model Number <span class="req-star">*</span></label>
                   <input class="form-control" id="model-number" name="modelNumber" type="text"
-                         placeholder="e.g. CFI-1200A" required>
+                         placeholder="e.g. CFI-1200A" required autocomplete="off">
                 </div>
-
                 <div class="col-md-6">
-                  <label class="form-label" for="condition">Condition</label>
+                  <label class="form-label" for="serial-number">Serial Number <span class="req-star">*</span></label>
+                  <input class="form-control" id="serial-number" name="serialNumber" type="text"
+                         placeholder="e.g. CF2481739" required autocomplete="off" spellcheck="false">
+                  <div class="form-text">PS5 (CF/SB prefix), Xbox (XXXX-XXXX), Switch (XKW/XAW/XKJ prefix)</div>
+                  <div class="serial-validation-badge d-none" id="serial-badge" aria-live="polite"></div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="condition">Condition <span class="req-star">*</span></label>
                   <select class="form-select" id="condition" name="condition" required>
                     <option value="">Choose condition</option>
                     <option value="New / Sealed">New / Sealed</option>
@@ -197,22 +234,22 @@
                     <option value="Needs Repair">Needs Repair</option>
                   </select>
                 </div>
-
-                <div class="col-md-6">
+                <div class="col-12">
                   <label class="form-label" for="faults">Hardware Faults / Damages</label>
                   <input class="form-control" id="faults" name="faults" type="text"
-                         placeholder="e.g. HDMI port slightly loose">
+                         placeholder="e.g. HDMI port slightly loose, no power issues">
                 </div>
-
                 <div class="col-12">
-                  <label class="form-label" for="proof-snapshot">Proof Snapshot</label>
+                  <label class="form-label" for="proof-snapshot">Proof Snapshot <span class="req-star">*</span></label>
                   <input class="form-control" id="proof-snapshot" name="proofSnapshot"
                          type="file" accept="image/*" required>
-                  <div class="form-text">Attach a clear photo showing the device and relevant identifying details.</div>
+                  <div class="form-text">Clear photo showing the device and its identifying label. SHA-256 hashed client-side to detect stock photos.</div>
+                  <div id="image-hash-display" class="image-hash-badge d-none" aria-live="polite"></div>
                 </div>
               </div>
             </div>
 
+            <!-- Money Fields -->
             <div id="money-fields" class="form-panel">
               <div class="row g-4">
                 <div class="col-12">
@@ -221,62 +258,169 @@
                     <button type="button" class="tier-btn" data-amount="10">$10</button>
                     <button type="button" class="tier-btn" data-amount="25">$25</button>
                     <button type="button" class="tier-btn" data-amount="50">$50</button>
+                    <button type="button" class="tier-btn" data-amount="100">$100</button>
                   </div>
                 </div>
-
                 <div class="col-md-6">
-                  <label class="form-label" for="amount">Custom Amount (USD)</label>
+                  <label class="form-label" for="amount">Custom Amount (USD) <span class="req-star">*</span></label>
                   <div class="input-group">
                     <span class="input-group-text">$</span>
                     <input class="form-control" id="amount" name="amount" type="number"
-                           min="1" step="0.01" placeholder="25.00" required>
+                           min="1" step="0.01" placeholder="25.00">
                   </div>
                 </div>
-
                 <div class="col-md-6">
-                  <label class="form-label" for="statement-upload">Credit / Bank Statement Upload</label>
+                  <label class="form-label" for="statement-upload">Funding Statement Upload <span class="req-star">*</span></label>
                   <input class="form-control" id="statement-upload" name="statementUpload"
-                         type="file" accept=".pdf,image/*" required>
-                  <div class="form-text">Upload only the supporting document required for funding verification.</div>
+                         type="file" accept=".pdf,image/*">
+                  <div class="form-text">Supporting document for funding verification.</div>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Card Details (Stripe)</label>
+                  <div id="stripe-card-element" class="stripe-card-element">
+                    <div class="stripe-demo-notice">
+                      <span class="terminal-cyan">⚡</span>
+                      Stripe card element mounts here in production. Set your publishable key in <code>app.js</code>.
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
+            <!-- Recipient Lock -->
             <div class="recipient-lock glass-panel">
               <div>
                 <span class="stat-label">LOCKED RECIPIENT</span>
                 <strong id="locked-recipient">No recipient selected</strong>
               </div>
-              <button type="button" class="btn btn-outline-neon btn-sm" data-route="recipients">
-                Change
-              </button>
+              <button type="button" class="btn btn-outline-neon btn-sm" data-route="recipients">Change</button>
             </div>
 
-            <div id="form-alert" class="form-alert d-none" role="alert"></div>
+            <div id="form-alert" class="form-alert d-none" role="alert" aria-live="assertive"></div>
 
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-4">
-              <small class="privacy-note">Client-side demo validation. Connect the form to your secured backend before accepting real donations.</small>
-              <button type="submit" class="btn btn-neon btn-lg px-5">Submit for Audit</button>
+              <small class="privacy-note">
+                🔒 SHA-256 image hashing active · Serial validation enforced · Connect secured backend before accepting real donations.
+              </small>
+              <button type="submit" class="btn btn-neon btn-lg px-5" id="submit-btn">
+                <span id="submit-label">Submit for Audit</span>
+                <span id="submit-spinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+              </button>
             </div>
           </form>
         </div>
       </div>
     </section>
 
-    <!-- PAGE 3 -->
+    <!-- PAGE 3: RECIPIENTS -->
     <section id="page-recipients" class="page-view" data-page="recipients">
       <div class="container py-5">
         <div class="section-heading">
           <span class="eyebrow">VERIFIED DESTINATIONS</span>
           <h2>Choose who receives your contribution.</h2>
-          <p>These demo organizations represent the approved charity data map used by the recipient matching interface.</p>
+          <p>These approved community programs are matched against real need assessments. Select a recipient to lock them as your drop target.</p>
         </div>
-
         <div id="recipient-grid" class="row g-4"></div>
       </div>
     </section>
 
-    <!-- PAGE 4 -->
+    <!-- PAGE 4: TRACKING -->
+    <section id="page-tracking" class="page-view" data-page="tracking">
+      <div class="container py-5">
+        <div class="section-heading">
+          <span class="eyebrow">LIVE VERIFICATION QUEUE</span>
+          <h2>Track your audit status in real time.</h2>
+          <p>Enter your temporary audit ticket ID to view its current position in the verification pipeline.</p>
+        </div>
+        <div class="tracking-shell glass-panel">
+          <div class="input-group tracking-search-group mb-4">
+            <span class="input-group-text tracking-search-icon">🔍</span>
+            <input type="text" class="form-control" id="tracking-input"
+                   placeholder="PENDING_AUDIT_XXXXXXXX"
+                   autocomplete="off" spellcheck="false" aria-label="Audit ticket ID">
+            <button class="btn btn-neon" type="button" id="tracking-search-btn">Lookup</button>
+          </div>
+
+          <!-- Result Panel -->
+          <div id="tracking-result" class="d-none">
+            <div class="tracking-meta glass-panel mb-4">
+              <div class="row g-3">
+                <div class="col-sm-6 col-lg-3">
+                  <span class="stat-label">TICKET ID</span>
+                  <strong id="track-ticket" class="track-value">—</strong>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                  <span class="stat-label">ITEM</span>
+                  <strong id="track-item" class="track-value">—</strong>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                  <span class="stat-label">RECIPIENT</span>
+                  <strong id="track-recipient" class="track-value">—</strong>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                  <span class="stat-label">SUBMITTED</span>
+                  <strong id="track-date" class="track-value">—</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Progress Stepper -->
+            <div class="audit-stepper" role="list" aria-label="Audit progress">
+              <div class="stepper-step step-pending" data-step="0" role="listitem">
+                <div class="step-icon">📥</div>
+                <div class="step-label">Submitted</div>
+              </div>
+              <div class="stepper-connector"></div>
+              <div class="stepper-step step-pending" data-step="1" role="listitem">
+                <div class="step-icon">🤖</div>
+                <div class="step-label">AI Serial Check</div>
+              </div>
+              <div class="stepper-connector"></div>
+              <div class="stepper-step step-pending" data-step="2" role="listitem">
+                <div class="step-icon">🔎</div>
+                <div class="step-label">Admin Audit</div>
+              </div>
+              <div class="stepper-connector"></div>
+              <div class="stepper-step step-pending" data-step="3" role="listitem">
+                <div class="step-icon">🏷️</div>
+                <div class="step-label">Label Generated</div>
+              </div>
+              <div class="stepper-connector"></div>
+              <div class="stepper-step step-pending" data-step="4" role="listitem">
+                <div class="step-icon">🚚</div>
+                <div class="step-label">In Transit</div>
+              </div>
+              <div class="stepper-connector"></div>
+              <div class="stepper-step step-pending" data-step="5" role="listitem">
+                <div class="step-icon">✅</div>
+                <div class="step-label">Delivered</div>
+              </div>
+            </div>
+
+            <div id="tracking-status-msg" class="tracking-status-msg mt-4" aria-live="polite"></div>
+          </div>
+
+          <!-- Empty State -->
+          <div id="tracking-empty" class="tracking-empty-state">
+            <div class="tracking-empty-icon">🎮</div>
+            <p>Enter a <code>PENDING_AUDIT_</code> ticket code above to begin tracking.</p>
+            <p class="tracking-empty-hint">Your ticket ID was shown on the confirmation screen immediately after submission.</p>
+          </div>
+
+          <!-- Not Found -->
+          <div id="tracking-not-found" class="tracking-not-found d-none" aria-live="polite">
+            <div class="tracking-empty-icon">❌</div>
+            <p>No audit record found for that ticket ID.</p>
+            <p class="tracking-empty-hint">
+              Check the code and try again, or
+              <a href="#donate" data-route="donate">submit a new drop</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 5: CONFIRMATION -->
     <section id="page-confirmation" class="page-view" data-page="confirmation">
       <div class="container py-5">
         <div class="confirmation-shell glass-panel">
@@ -284,17 +428,31 @@
           <span class="eyebrow">DROP RECEIVED</span>
           <h2>Contribution queued for verification.</h2>
           <p class="confirmation-copy">
-            Your contribution has been captured locally and assigned a temporary audit ticket.
-            The ticket is not proof of payment or final charity acceptance.
+            Your contribution has been captured and assigned a temporary audit ticket.
+            This is not proof of payment or final charity acceptance — it enters the audit pipeline.
           </p>
 
+          <!-- Gamer Impact Score -->
+          <div id="badge-award-section" class="badge-award-section d-none">
+            <div class="badge-award-header">
+              <span class="eyebrow">GAMER IMPACT SCORE</span>
+              <div class="xp-bar-wrap">
+                <div class="xp-bar" role="progressbar" aria-label="XP earned">
+                  <div id="xp-bar-fill" class="xp-bar-fill"></div>
+                </div>
+                <span id="xp-label" class="xp-label">+0 XP</span>
+              </div>
+            </div>
+            <div id="badge-list" class="badge-list"></div>
+          </div>
+
+          <!-- Cryptographic Receipt -->
           <div class="receipt-block">
             <div class="receipt-header">
               <span>LOOTFORWARD</span>
               <span>SECURE RECEIPT</span>
             </div>
             <div class="receipt-divider"></div>
-
             <div class="receipt-row">
               <span>ITEM / AMOUNT</span>
               <strong id="receipt-item">—</strong>
@@ -311,20 +469,83 @@
               <span>PROOF FILE</span>
               <strong id="receipt-proof">—</strong>
             </div>
-
+            <div class="receipt-row" id="receipt-serial-row">
+              <span>SERIAL #</span>
+              <strong id="receipt-serial">—</strong>
+            </div>
+            <div class="receipt-row">
+              <span>TIMESTAMP</span>
+              <strong id="receipt-timestamp">—</strong>
+            </div>
             <div class="receipt-divider"></div>
-
             <div class="ticket-label">TEMPORARY VERIFICATION TICKET</div>
             <div id="receipt-ticket" class="ticket-code">PENDING_AUDIT_--------</div>
-
-            <div class="receipt-hash">
-              SHA-STYLE CHECK: <span id="receipt-hash">WAITING_FOR_AUDIT</span>
-            </div>
+            <div class="receipt-hash">FNV-1a FINGERPRINT: <span id="receipt-hash">WAITING_FOR_AUDIT</span></div>
+            <div class="receipt-hash mt-1">SHA-256 IMAGE HASH: <span id="receipt-image-hash">NONE</span></div>
           </div>
 
           <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
-            <button type="button" class="btn btn-neon btn-lg" data-route="about">Track Verification Queue</button>
-            <button type="button" class="btn btn-outline-neon btn-lg" data-route="recipients">New Drop</button>
+            <button type="button" class="btn btn-neon btn-lg" id="download-certificate-btn">
+              📄 Download Tax Certificate
+            </button>
+            <button type="button" class="btn btn-outline-neon btn-lg" data-route="tracking">
+              🔍 Track Verification
+            </button>
+            <button type="button" class="btn btn-outline-neon btn-lg" data-route="recipients">
+              + New Drop
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 6: ADMIN -->
+    <section id="page-admin" class="page-view" data-page="admin">
+      <div class="container py-5">
+        <div class="section-heading">
+          <span class="eyebrow">PROTECTED — VERIFIER DASHBOARD</span>
+          <h2>Moderation &amp; Audit Control Panel.</h2>
+          <p>Review pending hardware drops. Approve to generate a pre-paid shipping label or reject to flag the submission for fraud review.</p>
+        </div>
+
+        <!-- Auth Gate -->
+        <div id="admin-auth-gate" class="glass-panel admin-auth-gate">
+          <div class="admin-lock-icon">🔐</div>
+          <h3>Verifier Access Required</h3>
+          <p class="text-muted mb-0">This panel is restricted to verified admin accounts.</p>
+          <div class="input-group mt-4" style="max-width:460px; margin:auto">
+            <input type="password" class="form-control" id="admin-passphrase"
+                   placeholder="Admin passphrase" autocomplete="current-password">
+            <button class="btn btn-neon" type="button" id="admin-unlock-btn">Unlock</button>
+          </div>
+          <div id="admin-auth-error" class="form-alert d-none mt-3" role="alert">
+            Incorrect passphrase. Access denied.
+          </div>
+          <p class="admin-hint mt-3">Demo passphrase: <code>LOOTFORWARD2026</code></p>
+        </div>
+
+        <!-- Admin Panel -->
+        <div id="admin-panel" class="d-none">
+          <div class="admin-toolbar glass-panel mb-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+              <div class="d-flex align-items-center gap-2">
+                <span class="admin-status-dot"></span>
+                <span id="admin-user-label" class="admin-user-label">Verifier Mode Active</span>
+              </div>
+              <div class="d-flex gap-3 align-items-center flex-wrap">
+                <div>
+                  <span class="stat-label me-2">PENDING REVIEWS</span>
+                  <span id="pending-count" class="pending-count-badge">0</span>
+                </div>
+                <button class="btn btn-outline-neon btn-sm" id="admin-logout-btn">🔒 Lock Panel</button>
+              </div>
+            </div>
+          </div>
+          <div id="admin-queue" class="admin-queue">
+            <div class="text-center py-5 text-muted" id="admin-empty">
+              <div style="font-size:2.5rem;margin-bottom:12px">📭</div>
+              No pending submissions in the local queue.
+            </div>
           </div>
         </div>
       </div>
@@ -332,14 +553,56 @@
 
   </main>
 
+  <!-- Image Proof Modal -->
+  <div class="modal fade" id="proofModal" tabindex="-1" aria-labelledby="proofModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content modal-glass">
+        <div class="modal-header modal-header-glass">
+          <h5 class="modal-title" id="proofModalLabel">Proof Evidence Review</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center p-4">
+          <img id="proof-modal-img" src="" alt="Proof snapshot" style="max-width:100%;border-radius:12px">
+          <p id="proof-modal-caption" class="mt-3 text-muted small"></p>
+        </div>
+        <div class="modal-footer modal-footer-glass">
+          <button class="btn btn-approve-modal" id="modal-approve-btn" data-ticket="">✓ Approve &amp; Generate Label</button>
+          <button class="btn btn-reject-modal" id="modal-reject-btn" data-ticket="">✗ Reject &amp; Flag Fraud</button>
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shipping Label Modal -->
+  <div class="modal fade" id="labelModal" tabindex="-1" aria-labelledby="labelModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content modal-glass">
+        <div class="modal-header modal-header-glass">
+          <h5 class="modal-title" id="labelModalLabel">📦 Pre-Paid Shipping Label</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div id="shipping-label-content" class="shipping-label-box"></div>
+        </div>
+        <div class="modal-footer modal-footer-glass">
+          <button class="btn btn-neon" id="label-download-btn">📦 Download Label</button>
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <footer class="loot-footer">
     <div class="container d-flex flex-wrap justify-content-between gap-3">
       <span>© 2026 LootForward — Gamers Helping Gamers</span>
-      <span>Verified-first donation prototype</span>
+      <span>Audit-first verified donation platform &nbsp;·&nbsp; Anti-fraud pipeline active</span>
     </div>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script type="module" src="app.js"></script>
 </body>
 </html>
