@@ -1,5 +1,5 @@
 // ============================================================
-// LootForward — app.js (Fixed for Firefox Tracking Protection)
+// LootForward — app.js (Bulletproof Routing & Error Safety)
 // ============================================================
 
 const DEMO_ADMIN_PASS = "LOOTFORWARD2026";
@@ -45,8 +45,6 @@ const state = {
   donationType: "console",
   selectedRecipient: null,
   latestSubmission: null,
-  imageHash: null,
-  adminUnlocked: false,
   localSubmissions: []
 };
 
@@ -65,11 +63,13 @@ function navigate(page, updateHash = true) {
   if (!PAGE_IDS.includes(page)) page = "about";
   state.currentPage = page;
 
+  // Show target page, hide others
   const pages = document.querySelectorAll(".page-view");
   pages.forEach((view) => {
     view.classList.toggle("active-page", view.dataset.page === page);
   });
 
+  // Highlight navbar active link
   const navLinks = document.querySelectorAll("[data-route]");
   navLinks.forEach((link) => {
     const isActive =
@@ -168,28 +168,8 @@ function showToast(message, type = "info") {
   setTimeout(() => toast.remove(), 4000);
 }
 
-// Safely initialize Stripe without blocking execution
-function initStripeSafely() {
-  try {
-    if (window.Stripe) {
-      const stripe = window.Stripe('pk_test_51Pxxxxxx_YOUR_KEY_HERE');
-      const mountNode = document.querySelector("#stripe-card-element");
-      if (mountNode && stripe) {
-        const card = stripe.elements().create("card", { style: { base: { color: "#ffffff" } } });
-        card.mount("#stripe-card-element");
-      }
-    }
-  } catch (err) {
-    console.warn("Stripe blocked by browser protection, skipping card mount:", err.message);
-  }
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  renderRecipients();
-  navigate(resolveInitialPage(), false);
-  initStripeSafely();
-
-  // Global click router
+// Global delegated event binding for ALL button clicks
+function attachClickHandlers() {
   document.addEventListener("click", (event) => {
     const recipientBtn = event.target.closest("[data-select-recipient]");
     if (recipientBtn) {
@@ -205,6 +185,32 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
   });
+}
+
+// Safely attempt Stripe mounting
+function initStripeSafely() {
+  try {
+    if (window.Stripe) {
+      const stripe = window.Stripe('pk_test_51Pxxxxxx_YOUR_KEY_HERE');
+      const mountNode = document.querySelector("#stripe-card-element");
+      if (mountNode && stripe) {
+        const card = stripe.elements().create("card", { style: { base: { color: "#ffffff" } } });
+        card.mount("#stripe-card-element");
+      }
+    }
+  } catch (err) {
+    console.warn("Stripe initialization bypassed:", err.message);
+  }
+}
+
+// Main execution on DOM ready
+function initApp() {
+  attachClickHandlers();
+  renderRecipients();
+  navigate(resolveInitialPage(), false);
+
+  // Isolated initializations
+  setTimeout(initStripeSafely, 300);
 
   // Category switcher
   const categoryBtns = document.querySelectorAll("[data-donation-type]");
@@ -258,4 +264,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.addEventListener("popstate", () => navigate(resolveInitialPage(), false));
   window.addEventListener("hashchange", () => navigate(resolveInitialPage(), false));
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initApp);
+} else {
+  initApp();
+}
