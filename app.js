@@ -29,13 +29,13 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.m
 // Replace with your own project credentials before deploying.
 // ─────────────────────────────────────────────────────────────
 const firebaseConfig = {
-  apiKey:            "AIzaSyADLF3-RuOUP8L8nUXnNBQHHiZFWpQIHe4",
-  authDomain:        "lootforward.firebaseapp.com",
-  projectId:         "lootforward",
-  storageBucket:     "lootforward.firebasestorage.app",
+  apiKey: "AIzaSyADLF3-RuOUP8L8nUXnNBQHHiZFWpQIHe4",
+  authDomain: "lootforward.firebaseapp.com",
+  projectId: "lootforward",
+  storageBucket: "lootforward.firebasestorage.app",
   messagingSenderId: "290775361907",
-  appId:             "1:290775361907:web:bcff5b0c3326ab93eefd06",
-  measurementId:     "G-NHMD0BQNYL"
+  appId: "1:290775361907:web:bcff5b0c3326ab93eefd06",
+  measurementId: "G-NHMD0BQNYL"
 };
 
 const firebaseConfigured = !Object.values(firebaseConfig).some(
@@ -43,14 +43,14 @@ const firebaseConfigured = !Object.values(firebaseConfig).some(
 );
 
 let firestore = null;
-let storage   = null;
-let auth      = null;
+let storage = null;
+let auth = null;
 
 if (firebaseConfigured) {
   const app = initializeApp(firebaseConfig);
-  firestore  = getFirestore(app);
-  storage    = getStorage(app);
-  auth       = getAuth(app);
+  firestore = getFirestore(app);
+  storage = getStorage(app);
+  auth = getAuth(app);
   signInAnonymously(auth).catch((e) => console.warn("Anon auth failed:", e.message));
 }
 
@@ -66,37 +66,37 @@ const DEMO_ADMIN_PASS = "LOOTFORWARD2026";
 // ─────────────────────────────────────────────────────────────
 const recipients = [
   {
-    id:          "st-jude-gaming-hub",
-    name:        "St. Jude Children's Hospital Gaming Hub",
-    mission:     "Create accessible gaming spaces that support hospital-based recreation, connection, and positive downtime for patients.",
-    needs:       ["Current-generation consoles", "Comfortable controllers", "Headsets", "Gaming monitors"],
-    region:      "Verified Community Program",
-    category:    "Pediatric",
-    target:      5,
-    received:    3,
-    targetItem:  "PS5 Consoles"
+    id: "st-jude-gaming-hub",
+    name: "St. Jude Children's Hospital Gaming Hub",
+    mission: "Create accessible gaming spaces that support hospital-based recreation, connection, and positive downtime for patients.",
+    needs: ["Current-generation consoles", "Comfortable controllers", "Headsets", "Gaming monitors"],
+    region: "Verified Community Program",
+    category: "Pediatric",
+    target: 5,
+    received: 3,
+    targetItem: "PS5 Consoles"
   },
   {
-    id:          "low-income-esport-lab",
-    name:        "Low-Income Community Esport Center Lab",
-    mission:     "Build an affordable esports and digital skills lab for young people who lack reliable access to gaming hardware.",
-    needs:       ["Gaming PCs", "Mechanical keyboards", "Gaming mice", "Entry-level GPUs"],
-    region:      "Verified Community Program",
-    category:    "Youth Education",
-    target:      8,
-    received:    2,
-    targetItem:  "Gaming PCs"
+    id: "low-income-esport-lab",
+    name: "Low-Income Community Esport Center Lab",
+    mission: "Build an affordable esports and digital skills lab for young people who lack reliable access to gaming hardware.",
+    needs: ["Gaming PCs", "Mechanical keyboards", "Gaming mice", "Entry-level GPUs"],
+    region: "Verified Community Program",
+    category: "Youth Education",
+    target: 8,
+    received: 2,
+    targetItem: "Gaming PCs"
   },
   {
-    id:          "youth-recreation-network",
-    name:        "Youth Recreation Network Game Room",
-    mission:     "Equip community recreation centers with shared gaming stations for supervised social play and digital learning.",
-    needs:       ["PlayStation / Xbox consoles", "TV displays", "Controllers", "Charging docks"],
-    region:      "Verified Community Program",
-    category:    "Recreation",
-    target:      10,
-    received:    7,
-    targetItem:  "Consoles & Displays"
+    id: "youth-recreation-network",
+    name: "Youth Recreation Network Game Room",
+    mission: "Equip community recreation centers with shared gaming stations for supervised social play and digital learning.",
+    needs: ["PlayStation / Xbox consoles", "TV displays", "Controllers", "Charging docks"],
+    region: "Verified Community Program",
+    category: "Recreation",
+    target: 10,
+    received: 7,
+    targetItem: "Consoles & Displays"
   }
 ];
 
@@ -104,51 +104,51 @@ const recipients = [
 // DROP-OFF PARTNER LOCATIONS  (Leaflet map markers)
 // ─────────────────────────────────────────────────────────────
 const dropOffLocations = [
-  { name: "GameStop Memphis — Harbor Town",   type: "store", lat: 35.158, lng: -90.042, hours: "Mon–Sat 10am–9pm"  },
-  { name: "LootForward Chicago Hub",          type: "hub",   lat: 41.892, lng: -87.631, hours: "Mon–Fri 9am–6pm"   },
-  { name: "GameStop LA — Koreatown",          type: "store", lat: 34.060, lng: -118.300,hours: "Daily 10am–10pm"   },
-  { name: "Play Again NYC — Brooklyn",        type: "hub",   lat: 40.678, lng: -73.944, hours: "Tue–Sun 11am–8pm"  },
-  { name: "GameStop Houston — Midtown",       type: "store", lat: 29.748, lng: -95.369, hours: "Mon–Sat 10am–9pm"  },
-  { name: "LootForward Phoenix Hub",          type: "hub",   lat: 33.448, lng: -112.074,hours: "Mon–Fri 8am–5pm"   },
-  { name: "Disc Replay Seattle",              type: "store", lat: 47.606, lng: -122.332,hours: "Daily 10am–8pm"    },
-  { name: "GameStop Boston — Fenway",         type: "store", lat: 42.346, lng: -71.100, hours: "Mon–Sat 10am–9pm"  }
+  { name: "GameStop Memphis — Harbor Town", type: "store", lat: 35.158, lng: -90.042, hours: "Mon–Sat 10am–9pm" },
+  { name: "LootForward Chicago Hub", type: "hub", lat: 41.892, lng: -87.631, hours: "Mon–Fri 9am–6pm" },
+  { name: "GameStop LA — Koreatown", type: "store", lat: 34.060, lng: -118.300, hours: "Daily 10am–10pm" },
+  { name: "Play Again NYC — Brooklyn", type: "hub", lat: 40.678, lng: -73.944, hours: "Tue–Sun 11am–8pm" },
+  { name: "GameStop Houston — Midtown", type: "store", lat: 29.748, lng: -95.369, hours: "Mon–Sat 10am–9pm" },
+  { name: "LootForward Phoenix Hub", type: "hub", lat: 33.448, lng: -112.074, hours: "Mon–Fri 8am–5pm" },
+  { name: "Disc Replay Seattle", type: "store", lat: 47.606, lng: -122.332, hours: "Daily 10am–8pm" },
+  { name: "GameStop Boston — Fenway", type: "store", lat: 42.346, lng: -71.100, hours: "Mon–Sat 10am–9pm" }
 ];
 
 // ─────────────────────────────────────────────────────────────
 // GAMIFICATION — BADGE & XP CONFIG
 // ─────────────────────────────────────────────────────────────
 const BADGE_CONFIG = {
-  console:   { badge: "Console Rescuing Hero",   icon: "🎮", description: "Donated a physical gaming console to a verified community.",         xp: 150 },
-  gadget:    { badge: "Gear Guardian",            icon: "🕹️", description: "Donated a gaming gadget or peripheral to a verified community.",      xp: 80  },
-  money:     { badge: "Guild Backer",             icon: "💎", description: "Provided direct monetary support to a gaming charity program.",        xp: 100 },
-  pediatric: { badge: "Hospital Gear Sponsor",    icon: "🏥", description: "Donated specifically to a pediatric gaming program. Champion!",       xp: 200 },
-  pristine:  { badge: "Pristine Donor",           icon: "⭐", description: "Donated a brand-new or like-new item in perfect condition.",           xp: 50  }
+  console: { badge: "Console Rescuing Hero", icon: "🎮", description: "Donated a physical gaming console to a verified community.", xp: 150 },
+  gadget: { badge: "Gear Guardian", icon: "🕹️", description: "Donated a gaming gadget or peripheral to a verified community.", xp: 80 },
+  money: { badge: "Guild Backer", icon: "💎", description: "Provided direct monetary support to a gaming charity program.", xp: 100 },
+  pediatric: { badge: "Hospital Gear Sponsor", icon: "🏥", description: "Donated specifically to a pediatric gaming program. Champion!", xp: 200 },
+  pristine: { badge: "Pristine Donor", icon: "⭐", description: "Donated a brand-new or like-new item in perfect condition.", xp: 50 }
 };
 
 // ─────────────────────────────────────────────────────────────
 // SERIAL NUMBER VALIDATION PATTERNS
 // ─────────────────────────────────────────────────────────────
 const SERIAL_PATTERNS = [
-  { label: "PS5",              pattern: /^(CF|SB)[0-9A-Z]{7,9}$/i      },
-  { label: "Xbox Series",      pattern: /^[0-9A-Z]{4}-[0-9A-Z]{4}$/i   },
-  { label: "Nintendo Switch",  pattern: /^(XKW|XAW|XKJ|XAJ)[0-9]{9,11}$/i },
-  { label: "PC Component",     pattern: /^[A-Z0-9]{10,20}$/i            },
-  { label: "Hardware",         pattern: /^[A-Z0-9\-]{8,22}$/i           }
+  { label: "PS5", pattern: /^(CF|SB)[0-9A-Z]{7,9}$/i },
+  { label: "Xbox Series", pattern: /^[0-9A-Z]{4}-[0-9A-Z]{4}$/i },
+  { label: "Nintendo Switch", pattern: /^(XKW|XAW|XKJ|XAJ)[0-9]{9,11}$/i },
+  { label: "PC Component", pattern: /^[A-Z0-9]{10,20}$/i },
+  { label: "Hardware", pattern: /^[A-Z0-9\-]{8,22}$/i }
 ];
 
 // ─────────────────────────────────────────────────────────────
 // APPLICATION STATE
 // ─────────────────────────────────────────────────────────────
 const state = {
-  currentPage:      "about",
-  donationType:     "console",
+  currentPage: "about",
+  donationType: "console",
   selectedRecipient: null,
-  latestSubmission:  null,
-  imageHash:         null,
-  adminUnlocked:     false,
-  localSubmissions:  [],     // In-memory queue (persisted to Firestore when configured)
-  xpTotal:           0,
-  earnedBadges:      []
+  latestSubmission: null,
+  imageHash: null,
+  adminUnlocked: false,
+  localSubmissions: [],     // In-memory queue (persisted to Firestore when configured)
+  xpTotal: 0,
+  earnedBadges: []
 };
 
 const PAGE_IDS = ["about", "donate", "recipients", "tracking", "confirmation", "admin"];
@@ -157,73 +157,73 @@ const PAGE_IDS = ["about", "donate", "recipients", "tracking", "confirmation", "
 // DOM ELEMENT CACHE
 // ─────────────────────────────────────────────────────────────
 const el = {
-  pages:             document.querySelectorAll(".page-view"),
-  navLinks:          document.querySelectorAll("[data-route]"),
-  categoryButtons:   document.querySelectorAll("[data-donation-type]"),
-  tierButtons:       document.querySelectorAll("[data-amount]"),
-  donationForm:      document.querySelector("#donation-form"),
-  donationType:      document.querySelector("#donation-type"),
-  physicalFields:    document.querySelector("#physical-fields"),
-  moneyFields:       document.querySelector("#money-fields"),
-  itemName:          document.querySelector("#item-name"),
-  modelNumber:       document.querySelector("#model-number"),
-  serialNumber:      document.querySelector("#serial-number"),
-  serialBadge:       document.querySelector("#serial-badge"),
-  imageHashDisplay:  document.querySelector("#image-hash-display"),
-  condition:         document.querySelector("#condition"),
-  faults:            document.querySelector("#faults"),
-  proofSnapshot:     document.querySelector("#proof-snapshot"),
-  amount:            document.querySelector("#amount"),
-  statementUpload:   document.querySelector("#statement-upload"),
-  lockedRecipient:   document.querySelector("#locked-recipient"),
-  recipientContext:  document.querySelector("#recipient-context"),
-  formAlert:         document.querySelector("#form-alert"),
-  recipientGrid:     document.querySelector("#recipient-grid"),
-  receiptItem:       document.querySelector("#receipt-item"),
-  receiptType:       document.querySelector("#receipt-type"),
-  receiptRecipient:  document.querySelector("#receipt-recipient"),
-  receiptProof:      document.querySelector("#receipt-proof"),
-  receiptSerial:     document.querySelector("#receipt-serial"),
-  receiptSerialRow:  document.querySelector("#receipt-serial-row"),
-  receiptTimestamp:  document.querySelector("#receipt-timestamp"),
-  receiptTicket:     document.querySelector("#receipt-ticket"),
-  receiptHash:       document.querySelector("#receipt-hash"),
-  receiptImageHash:  document.querySelector("#receipt-image-hash"),
-  navbarCollapse:    document.querySelector("#mainNav"),
-  hardwareStat:      document.querySelector("#hardware-stat"),
-  auditStat:         document.querySelector("#audit-stat"),
-  communityStat:     document.querySelector("#community-stat"),
-  trackingInput:     document.querySelector("#tracking-input"),
+  pages: document.querySelectorAll(".page-view"),
+  navLinks: document.querySelectorAll("[data-route]"),
+  categoryButtons: document.querySelectorAll("[data-donation-type]"),
+  tierButtons: document.querySelectorAll("[data-amount]"),
+  donationForm: document.querySelector("#donation-form"),
+  donationType: document.querySelector("#donation-type"),
+  physicalFields: document.querySelector("#physical-fields"),
+  moneyFields: document.querySelector("#money-fields"),
+  itemName: document.querySelector("#item-name"),
+  modelNumber: document.querySelector("#model-number"),
+  serialNumber: document.querySelector("#serial-number"),
+  serialBadge: document.querySelector("#serial-badge"),
+  imageHashDisplay: document.querySelector("#image-hash-display"),
+  condition: document.querySelector("#condition"),
+  faults: document.querySelector("#faults"),
+  proofSnapshot: document.querySelector("#proof-snapshot"),
+  amount: document.querySelector("#amount"),
+  statementUpload: document.querySelector("#statement-upload"),
+  lockedRecipient: document.querySelector("#locked-recipient"),
+  recipientContext: document.querySelector("#recipient-context"),
+  formAlert: document.querySelector("#form-alert"),
+  recipientGrid: document.querySelector("#recipient-grid"),
+  receiptItem: document.querySelector("#receipt-item"),
+  receiptType: document.querySelector("#receipt-type"),
+  receiptRecipient: document.querySelector("#receipt-recipient"),
+  receiptProof: document.querySelector("#receipt-proof"),
+  receiptSerial: document.querySelector("#receipt-serial"),
+  receiptSerialRow: document.querySelector("#receipt-serial-row"),
+  receiptTimestamp: document.querySelector("#receipt-timestamp"),
+  receiptTicket: document.querySelector("#receipt-ticket"),
+  receiptHash: document.querySelector("#receipt-hash"),
+  receiptImageHash: document.querySelector("#receipt-image-hash"),
+  navbarCollapse: document.querySelector("#mainNav"),
+  hardwareStat: document.querySelector("#hardware-stat"),
+  auditStat: document.querySelector("#audit-stat"),
+  communityStat: document.querySelector("#community-stat"),
+  trackingInput: document.querySelector("#tracking-input"),
   trackingSearchBtn: document.querySelector("#tracking-search-btn"),
-  trackingResult:    document.querySelector("#tracking-result"),
-  trackingEmpty:     document.querySelector("#tracking-empty"),
-  trackingNotFound:  document.querySelector("#tracking-not-found"),
-  trackTicket:       document.querySelector("#track-ticket"),
-  trackItem:         document.querySelector("#track-item"),
-  trackRecipient:    document.querySelector("#track-recipient"),
-  trackDate:         document.querySelector("#track-date"),
+  trackingResult: document.querySelector("#tracking-result"),
+  trackingEmpty: document.querySelector("#tracking-empty"),
+  trackingNotFound: document.querySelector("#tracking-not-found"),
+  trackTicket: document.querySelector("#track-ticket"),
+  trackItem: document.querySelector("#track-item"),
+  trackRecipient: document.querySelector("#track-recipient"),
+  trackDate: document.querySelector("#track-date"),
   trackingStatusMsg: document.querySelector("#tracking-status-msg"),
-  stepperSteps:      document.querySelectorAll(".stepper-step"),
-  adminAuthGate:     document.querySelector("#admin-auth-gate"),
-  adminPanel:        document.querySelector("#admin-panel"),
-  adminPassphrase:   document.querySelector("#admin-passphrase"),
-  adminUnlockBtn:    document.querySelector("#admin-unlock-btn"),
-  adminAuthError:    document.querySelector("#admin-auth-error"),
-  adminLogoutBtn:    document.querySelector("#admin-logout-btn"),
-  adminQueue:        document.querySelector("#admin-queue"),
-  pendingCount:      document.querySelector("#pending-count"),
-  navAdminItem:      document.querySelector("#nav-admin-item"),
+  stepperSteps: document.querySelectorAll(".stepper-step"),
+  adminAuthGate: document.querySelector("#admin-auth-gate"),
+  adminPanel: document.querySelector("#admin-panel"),
+  adminPassphrase: document.querySelector("#admin-passphrase"),
+  adminUnlockBtn: document.querySelector("#admin-unlock-btn"),
+  adminAuthError: document.querySelector("#admin-auth-error"),
+  adminLogoutBtn: document.querySelector("#admin-logout-btn"),
+  adminQueue: document.querySelector("#admin-queue"),
+  pendingCount: document.querySelector("#pending-count"),
+  navAdminItem: document.querySelector("#nav-admin-item"),
   badgeAwardSection: document.querySelector("#badge-award-section"),
-  xpBarFill:         document.querySelector("#xp-bar-fill"),
-  xpLabel:           document.querySelector("#xp-label"),
-  badgeList:         document.querySelector("#badge-list"),
-  submitBtn:         document.querySelector("#submit-btn"),
-  submitLabel:       document.querySelector("#submit-label"),
-  submitSpinner:     document.querySelector("#submit-spinner"),
-  downloadCertBtn:   document.querySelector("#download-certificate-btn"),
-  terminalLive:      document.querySelector("#terminal-live"),
-  toastContainer:    document.querySelector("#toast-container"),
-  labelDownloadBtn:  document.querySelector("#label-download-btn")
+  xpBarFill: document.querySelector("#xp-bar-fill"),
+  xpLabel: document.querySelector("#xp-label"),
+  badgeList: document.querySelector("#badge-list"),
+  submitBtn: document.querySelector("#submit-btn"),
+  submitLabel: document.querySelector("#submit-label"),
+  submitSpinner: document.querySelector("#submit-spinner"),
+  downloadCertBtn: document.querySelector("#download-certificate-btn"),
+  terminalLive: document.querySelector("#terminal-live"),
+  toastContainer: document.querySelector("#toast-container"),
+  labelDownloadBtn: document.querySelector("#label-download-btn")
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -252,7 +252,7 @@ function navigate(page, updateHash = true) {
   closeMobileNav();
   updateDonationContext();
 
-  if (page === "admin")    onAdminPageLoad();
+  if (page === "admin") onAdminPageLoad();
   if (page === "tracking") resetTrackingUI();
 }
 
@@ -341,7 +341,7 @@ function renderRecipients() {
 // ─────────────────────────────────────────────────────────────
 function setDonationType(type) {
   if (!["console", "gadget", "money"].includes(type)) return;
-  state.donationType   = type;
+  state.donationType = type;
   el.donationType.value = type;
 
   el.categoryButtons.forEach((btn) => {
@@ -354,12 +354,12 @@ function setDonationType(type) {
   el.physicalFields.classList.toggle("active-form-panel", isPhysical);
   el.moneyFields.classList.toggle("active-form-panel", !isPhysical);
 
-  setRequired(el.itemName,      isPhysical);
-  setRequired(el.modelNumber,   isPhysical);
-  setRequired(el.serialNumber,  isPhysical);
-  setRequired(el.condition,     isPhysical);
+  setRequired(el.itemName, isPhysical);
+  setRequired(el.modelNumber, isPhysical);
+  setRequired(el.serialNumber, isPhysical);
+  setRequired(el.condition, isPhysical);
   setRequired(el.proofSnapshot, isPhysical);
-  setRequired(el.amount,        !isPhysical);
+  setRequired(el.amount, !isPhysical);
   setRequired(el.statementUpload, !isPhysical);
 
   clearFormAlert();
@@ -406,9 +406,9 @@ function updateSerialBadge(serial) {
 // ─────────────────────────────────────────────────────────────
 async function hashFile(file) {
   try {
-    const buffer      = await file.arrayBuffer();
-    const hashBuffer  = await crypto.subtle.digest("SHA-256", buffer);
-    const hashArray   = Array.from(new Uint8Array(hashBuffer));
+    const buffer = await file.arrayBuffer();
+    const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
     return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
   } catch {
     return null;
@@ -529,7 +529,7 @@ function getFileName(fileInput) {
 }
 
 function randomId(length) {
-  const alpha  = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const alpha = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   const values = new Uint32Array(length);
   crypto.getRandomValues(values);
   return Array.from(values, (v) => alpha[v % alpha.length]).join("");
@@ -537,35 +537,35 @@ function randomId(length) {
 
 function buildSubmission() {
   const isPhysical = state.donationType !== "money";
-  const ticket     = `PENDING_AUDIT_${randomId(8)}`;
+  const ticket = `PENDING_AUDIT_${randomId(8)}`;
 
   return {
-    donationType:      state.donationType,
-    recipientId:       state.selectedRecipient.id,
-    recipientName:     state.selectedRecipient.name,
+    donationType: state.donationType,
+    recipientId: state.selectedRecipient.id,
+    recipientName: state.selectedRecipient.name,
     recipientCategory: state.selectedRecipient.category || "",
-    itemName:          isPhysical
-                         ? el.itemName.value.trim()
-                         : `$${Number(el.amount.value).toFixed(2)} USD`,
-    modelNumber:       isPhysical ? el.modelNumber.value.trim() : null,
-    serialNumber:      isPhysical ? el.serialNumber.value.trim().toUpperCase() : null,
-    condition:         isPhysical ? el.condition.value : null,
-    faults:            isPhysical ? (el.faults.value.trim() || null) : null,
-    proofFile:         isPhysical ? getFileName(el.proofSnapshot) : getFileName(el.statementUpload),
-    imageHash:         state.imageHash || null,
+    itemName: isPhysical
+      ? el.itemName.value.trim()
+      : `$${Number(el.amount.value).toFixed(2)} USD`,
+    modelNumber: isPhysical ? el.modelNumber.value.trim() : null,
+    serialNumber: isPhysical ? el.serialNumber.value.trim().toUpperCase() : null,
+    condition: isPhysical ? el.condition.value : null,
+    faults: isPhysical ? (el.faults.value.trim() || null) : null,
+    proofFile: isPhysical ? getFileName(el.proofSnapshot) : getFileName(el.statementUpload),
+    imageHash: state.imageHash || null,
     ticket,
-    createdAt:         new Date().toISOString(),
-    auditStatus:       "PENDING_AUDIT",
-    auditStep:         0
+    createdAt: new Date().toISOString(),
+    auditStatus: "PENDING_AUDIT",
+    auditStep: 0
   };
 }
 
 function createReceiptHash(sub) {
   const input = [sub.ticket, sub.recipientName, sub.itemName, sub.proofFile].join("|");
-  let   h     = 2166136261;
+  let h = 2166136261;
   for (let i = 0; i < input.length; i++) {
     h ^= input.charCodeAt(i);
-    h  = Math.imul(h, 16777619);
+    h = Math.imul(h, 16777619);
   }
   return (h >>> 0).toString(16).toUpperCase().padStart(8, "0");
 }
@@ -589,7 +589,7 @@ async function persistSubmission(sub) {
 // ─────────────────────────────────────────────────────────────
 function calculateRewards(sub) {
   const badges = [];
-  let   xp     = 0;
+  let xp = 0;
 
   const typeReward = BADGE_CONFIG[sub.donationType];
   if (typeReward) { badges.push(typeReward); xp += typeReward.xp; }
@@ -643,13 +643,13 @@ function renderConfirmation(sub) {
   const typeLabel = { money: "MONETARY FUNDING", console: "CONSOLE HARDWARE", gadget: "GAMING GADGET" }[sub.donationType] || "HARDWARE";
   const isPhysical = sub.donationType !== "money";
 
-  el.receiptItem.textContent      = sub.itemName;
-  el.receiptType.textContent      = typeLabel;
+  el.receiptItem.textContent = sub.itemName;
+  el.receiptType.textContent = typeLabel;
   el.receiptRecipient.textContent = sub.recipientName;
-  el.receiptProof.textContent     = sub.proofFile;
+  el.receiptProof.textContent = sub.proofFile;
   el.receiptTimestamp.textContent = new Date(sub.createdAt).toLocaleString();
-  el.receiptTicket.textContent    = sub.ticket;
-  el.receiptHash.textContent      = `LF-${createReceiptHash(sub)}`;
+  el.receiptTicket.textContent = sub.ticket;
+  el.receiptHash.textContent = `LF-${createReceiptHash(sub)}`;
   el.receiptImageHash.textContent = sub.imageHash
     ? `${sub.imageHash.substring(0, 40)}...`
     : "N/A (monetary drop)";
@@ -678,7 +678,7 @@ function downloadCertificate(sub) {
   }
 
   const { jsPDF } = window.jspdf;
-  const pdf       = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
 
   // Dark background
   pdf.setFillColor(15, 12, 27);
@@ -721,16 +721,16 @@ function downloadCertificate(sub) {
 
   // Data rows
   const rows = [
-    ["Ticket ID",       sub.ticket],
-    ["Donation Type",   sub.donationType.toUpperCase()],
-    ["Item / Amount",   sub.itemName],
-    ["Model Number",    sub.modelNumber || "N/A"],
-    ["Serial Number",   sub.serialNumber || "N/A"],
-    ["Condition",       sub.condition || "N/A"],
-    ["Proof File",      sub.proofFile],
-    ["Submitted",       new Date(sub.createdAt).toLocaleString()],
-    ["Audit Status",    sub.auditStatus],
-    ["Receipt Hash",    `LF-${createReceiptHash(sub)}`]
+    ["Ticket ID", sub.ticket],
+    ["Donation Type", sub.donationType.toUpperCase()],
+    ["Item / Amount", sub.itemName],
+    ["Model Number", sub.modelNumber || "N/A"],
+    ["Serial Number", sub.serialNumber || "N/A"],
+    ["Condition", sub.condition || "N/A"],
+    ["Proof File", sub.proofFile],
+    ["Submitted", new Date(sub.createdAt).toLocaleString()],
+    ["Audit Status", sub.auditStatus],
+    ["Receipt Hash", `LF-${createReceiptHash(sub)}`]
   ];
 
   pdf.setFontSize(9);
@@ -840,17 +840,17 @@ function lookupTracking(ticketId) {
   el.trackingNotFound.classList.add("d-none");
   el.trackingResult.classList.remove("d-none");
 
-  el.trackTicket.textContent    = found.ticket;
-  el.trackItem.textContent      = found.itemName;
+  el.trackTicket.textContent = found.ticket;
+  el.trackItem.textContent = found.itemName;
   el.trackRecipient.textContent = found.recipientName;
-  el.trackDate.textContent      = new Date(found.createdAt).toLocaleDateString();
+  el.trackDate.textContent = new Date(found.createdAt).toLocaleDateString();
 
   const step = found.auditStep || 0;
   el.stepperSteps.forEach((stepEl, i) => {
     stepEl.classList.remove("step-active", "step-complete", "step-pending");
-    if (i < step)      stepEl.classList.add("step-complete");
+    if (i < step) stepEl.classList.add("step-complete");
     else if (i === step) stepEl.classList.add("step-active");
-    else               stepEl.classList.add("step-pending");
+    else stepEl.classList.add("step-pending");
   });
 
   el.trackingStatusMsg.innerHTML = `
@@ -956,7 +956,7 @@ function approveSubmission(ticket) {
   if (!sub) return;
 
   sub.auditStatus = "APPROVED";
-  sub.auditStep   = 3;
+  sub.auditStep = 3;
 
   renderAdminQueue();
   showShippingLabelModal(sub);
@@ -968,7 +968,7 @@ function rejectSubmission(ticket) {
   if (!sub) return;
 
   sub.auditStatus = "REJECTED_FRAUD";
-  sub.auditStep   = 0;
+  sub.auditStep = 0;
 
   renderAdminQueue();
   showToast(`🚫 Rejected & fraud-flagged: ${ticket}.`, "error");
@@ -979,16 +979,16 @@ function rejectSubmission(ticket) {
 // ─────────────────────────────────────────────────────────────
 function generateLabel(sub) {
   const trackingNum = `LF${randomId(12)}`;
-  const dest        = recipients.find((r) => r.id === sub.recipientId);
+  const dest = recipients.find((r) => r.id === sub.recipientId);
   return {
-    carrier:        "LootForward Logistics (EasyPost Demo)",
-    tracking:       trackingNum,
-    service:        "USPS Priority Mail — Pre-Paid",
-    from:           "DONOR — VIA LOOTFORWARD NETWORK",
-    to:             dest ? `${dest.name}, c/o LootForward Network, USA` : "LootForward Verified Hub, USA",
-    item:           sub.itemName,
-    weight:         "Est. up to 10 lbs",
-    generated:      new Date().toLocaleString()
+    carrier: "LootForward Logistics (EasyPost Demo)",
+    tracking: trackingNum,
+    service: "USPS Priority Mail — Pre-Paid",
+    from: "DONOR — VIA LOOTFORWARD NETWORK",
+    to: dest ? `${dest.name}, c/o LootForward Network, USA` : "LootForward Verified Hub, USA",
+    item: sub.itemName,
+    weight: "Est. up to 10 lbs",
+    generated: new Date().toLocaleString()
   };
 }
 
@@ -1038,27 +1038,26 @@ function initDropOffMap() {
   if (!mapEl) return;
 
   const map = L.map("drop-map", {
-    center:          [39.5, -98.35],
-    zoom:            4,
-    zoomControl:     true,
+    center: [39.5, -98.35],
+    zoom: 4,
+    zoomControl: true,
     scrollWheelZoom: false
   });
 
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    subdomains:  "abcd",
-    maxZoom:     19
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19
   }).addTo(map);
 
   const makeIcon = (color) => L.divIcon({
     className: "",
-    html:      `<div style="width:14px;height:14px;border-radius:50%;background:${color};box-shadow:0 0 10px ${color};border:2px solid rgba(255,255,255,0.3)"></div>`,
-    iconSize:  [14, 14],
-    iconAnchor:[7,   7]
+    html: `<div style="width:14px;height:14px;border-radius:50%;background:${color};box-shadow:0 0 10px ${color};border:2px solid rgba(255,255,255,0.3)"></div>`,
+    iconSize: [14, 14],
+    iconAnchor: [7, 7]
   });
 
   const storeIcon = makeIcon("#00f2fe");
-  const hubIcon   = makeIcon("#9b51e0");
+  const hubIcon = makeIcon("#9b51e0");
 
   dropOffLocations.forEach((loc) => {
     L.marker([loc.lat, loc.lng], { icon: loc.type === "store" ? storeIcon : hubIcon })
@@ -1079,12 +1078,12 @@ function initDropOffMap() {
 // ANIMATED STAT COUNTERS
 // ─────────────────────────────────────────────────────────────
 function animateCounter(el, target, duration = 1800) {
-  const start     = performance.now();
-  const startVal  = 0;
+  const start = performance.now();
+  const startVal = 0;
 
   function frame(now) {
     const progress = Math.min((now - start) / duration, 1);
-    const eased    = 1 - Math.pow(1 - progress, 3);
+    const eased = 1 - Math.pow(1 - progress, 3);
     el.textContent = Math.round(startVal + (target - startVal) * eased).toLocaleString();
     if (progress < 1) requestAnimationFrame(frame);
   }
@@ -1096,9 +1095,9 @@ function initStatCounters() {
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (!entry.isIntersecting) return;
-      animateCounter(el.hardwareStat,  2481);
-      animateCounter(el.auditStat,     8942);
-      animateCounter(el.communityStat,  126);
+      animateCounter(el.hardwareStat, 2481);
+      animateCounter(el.auditStat, 8942);
+      animateCounter(el.communityStat, 126);
       observer.disconnect();
     });
   }, { threshold: 0.3 });
@@ -1138,9 +1137,9 @@ function cycleTerminal() {
 // TOAST NOTIFICATION SYSTEM
 // ─────────────────────────────────────────────────────────────
 const TOAST_COLORS = {
-  success: { bg: "rgba(110,255,178,0.12)", border: "rgba(110,255,178,0.4)"  },
-  error:   { bg: "rgba(255,95,95,0.12)",   border: "rgba(255,95,95,0.4)"    },
-  info:    { bg: "rgba(0,242,254,0.12)",   border: "rgba(0,242,254,0.35)"   }
+  success: { bg: "rgba(110,255,178,0.12)", border: "rgba(110,255,178,0.4)" },
+  error: { bg: "rgba(255,95,95,0.12)", border: "rgba(255,95,95,0.4)" },
+  info: { bg: "rgba(0,242,254,0.12)", border: "rgba(0,242,254,0.35)" }
 };
 
 function showToast(message, type = "info") {
@@ -1148,7 +1147,7 @@ function showToast(message, type = "info") {
   const toast = document.createElement("div");
   toast.className = "lf-toast";
   toast.style.cssText = `background:${c.bg};border:1px solid ${c.border}`;
-  toast.textContent   = message;
+  toast.textContent = message;
 
   el.toastContainer.appendChild(toast);
   requestAnimationFrame(() => toast.classList.add("lf-toast-show"));
@@ -1168,14 +1167,14 @@ async function handleDonationSubmit(event) {
 
   el.submitLabel.textContent = "Validating...";
   el.submitSpinner.classList.remove("d-none");
-  el.submitBtn.disabled      = true;
+  el.submitBtn.disabled = true;
 
   const valid = await validateForm();
 
   if (!valid) {
     el.submitLabel.textContent = "Submit for Audit";
     el.submitSpinner.classList.add("d-none");
-    el.submitBtn.disabled      = false;
+    el.submitBtn.disabled = false;
     return;
   }
 
@@ -1188,7 +1187,7 @@ async function handleDonationSubmit(event) {
 
   el.submitLabel.textContent = "Submit for Audit";
   el.submitSpinner.classList.add("d-none");
-  el.submitBtn.disabled      = false;
+  el.submitBtn.disabled = false;
 
   // Fire-and-forget Firestore persist
   persistSubmission(sub).then(({ persisted, reason }) => {
@@ -1212,58 +1211,58 @@ function resetDonationForm() {
 // THREE.JS NEON PARTICLE MATRIX
 // ─────────────────────────────────────────────────────────────
 function initParticleMatrix() {
-  const canvas    = document.querySelector("#matrix-canvas");
-  const scene     = new THREE.Scene();
-  const camera    = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const canvas = document.querySelector("#matrix-canvas");
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
   camera.position.z = 22;
 
-  const renderer  = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setClearColor(0x0f0c1b, 0);
 
-  const count     = window.innerWidth < 768 ? 650 : 1200;
+  const count = window.innerWidth < 768 ? 650 : 1200;
   const positions = new Float32Array(count * 3);
-  const colors    = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
 
-  const cyan   = new THREE.Color(0x00f2fe);
+  const cyan = new THREE.Color(0x00f2fe);
   const purple = new THREE.Color(0x9b51e0);
-  const white  = new THREE.Color(0xffffff);
+  const white = new THREE.Color(0xffffff);
 
   for (let i = 0; i < count; i++) {
     const o = i * 3;
-    positions[o]     = (Math.random() - 0.5) * 60;
+    positions[o] = (Math.random() - 0.5) * 60;
     positions[o + 1] = (Math.random() - 0.5) * 42;
     positions[o + 2] = (Math.random() - 0.5) * 40;
 
-    const roll  = Math.random();
+    const roll = Math.random();
     const color = roll > 0.66 ? cyan : roll > 0.33 ? purple : white;
-    colors[o]     = color.r;
+    colors[o] = color.r;
     colors[o + 1] = color.g;
     colors[o + 2] = color.b;
   }
 
   const geo = new THREE.BufferGeometry();
   geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-  geo.setAttribute("color",    new THREE.BufferAttribute(colors, 3));
+  geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
 
   const mat = new THREE.PointsMaterial({
-    size:         0.075,
+    size: 0.075,
     vertexColors: true,
-    transparent:  true,
-    opacity:      0.72,
-    depthWrite:   false,
-    blending:     THREE.AdditiveBlending
+    transparent: true,
+    opacity: 0.72,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
   });
 
   const particles = new THREE.Points(geo, mat);
   scene.add(particles);
 
-  const mouse  = { x: 0, y: 0 };
+  const mouse = { x: 0, y: 0 };
   const target = { x: 0, y: 0 };
 
   window.addEventListener("mousemove", (e) => {
-    target.x = (e.clientX / window.innerWidth  - 0.5) * 2;
+    target.x = (e.clientX / window.innerWidth - 0.5) * 2;
     target.y = (e.clientY / window.innerHeight - 0.5) * 2;
   });
 
@@ -1277,7 +1276,7 @@ function initParticleMatrix() {
   const clock = new THREE.Clock();
 
   (function animate() {
-    const t  = clock.getElapsedTime();
+    const t = clock.getElapsedTime();
     mouse.x += (target.x - mouse.x) * 0.025;
     mouse.y += (target.y - mouse.y) * 0.025;
 
@@ -1296,9 +1295,9 @@ function initParticleMatrix() {
 // ─────────────────────────────────────────────────────────────
 function escapeHtml(value) {
   return String(value)
-    .replaceAll("&",  "&amp;")
-    .replaceAll("<",  "&lt;")
-    .replaceAll(">",  "&gt;")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 }
@@ -1319,7 +1318,7 @@ function bindEvents() {
     if (actionBtn && state.adminUnlocked) {
       const { action, ticket } = actionBtn.dataset;
       if (action === "approve") approveSubmission(ticket);
-      if (action === "reject")  rejectSubmission(ticket);
+      if (action === "reject") rejectSubmission(ticket);
     }
   });
 
@@ -1349,7 +1348,7 @@ function bindEvents() {
   });
 
   // Tracking
-  el.trackingSearchBtn.addEventListener("click",  () => lookupTracking(el.trackingInput.value));
+  el.trackingSearchBtn.addEventListener("click", () => lookupTracking(el.trackingInput.value));
   el.trackingInput.addEventListener("keydown", (e) => { if (e.key === "Enter") lookupTracking(el.trackingInput.value); });
 
   // Admin
@@ -1366,7 +1365,7 @@ function bindEvents() {
   });
 
   // Browser navigation
-  window.addEventListener("popstate",   () => navigate(resolveInitialPage(), false));
+  window.addEventListener("popstate", () => navigate(resolveInitialPage(), false));
   window.addEventListener("hashchange", () => navigate(resolveInitialPage(), false));
 }
 
