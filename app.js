@@ -1,5 +1,5 @@
 // ============================================================
-// LootForward — app.js (Firefox & Non-Module Bulletproof Version)
+// LootForward — app.js (Fixed for Firefox Tracking Protection)
 // ============================================================
 
 const DEMO_ADMIN_PASS = "LOOTFORWARD2026";
@@ -52,7 +52,6 @@ const state = {
 
 const PAGE_IDS = ["about", "donate", "recipients", "tracking", "confirmation", "admin"];
 
-// Helper: Escape HTML
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -62,7 +61,6 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-// Router
 function navigate(page, updateHash = true) {
   if (!PAGE_IDS.includes(page)) page = "about";
   state.currentPage = page;
@@ -170,30 +168,28 @@ function showToast(message, type = "info") {
   setTimeout(() => toast.remove(), 4000);
 }
 
-// Leaflet Map Initialization
-let mapInitialized = false;
-function initDropOffMap() {
-  if (mapInitialized || typeof window.L === "undefined") return;
-  const mapEl = document.querySelector("#drop-map");
-  if (!mapEl) return;
-
-  const map = L.map("drop-map", { center: [39.5, -98.35], zoom: 4, scrollWheelZoom: false });
-
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    maxZoom: 19
-  }).addTo(map);
-
-  mapInitialized = true;
+// Safely initialize Stripe without blocking execution
+function initStripeSafely() {
+  try {
+    if (window.Stripe) {
+      const stripe = window.Stripe('pk_test_51Pxxxxxx_YOUR_KEY_HERE');
+      const mountNode = document.querySelector("#stripe-card-element");
+      if (mountNode && stripe) {
+        const card = stripe.elements().create("card", { style: { base: { color: "#ffffff" } } });
+        card.mount("#stripe-card-element");
+      }
+    }
+  } catch (err) {
+    console.warn("Stripe blocked by browser protection, skipping card mount:", err.message);
+  }
 }
 
-// Event Listeners
 document.addEventListener("DOMContentLoaded", () => {
   renderRecipients();
   navigate(resolveInitialPage(), false);
-  setTimeout(initDropOffMap, 500);
+  initStripeSafely();
 
-  // Global click routing
+  // Global click router
   document.addEventListener("click", (event) => {
     const recipientBtn = event.target.closest("[data-select-recipient]");
     if (recipientBtn) {
@@ -226,7 +222,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Form submit handler
+  // Form submit
   const form = document.querySelector("#donation-form");
   if (form) {
     form.addEventListener("submit", (e) => {
@@ -247,7 +243,6 @@ document.addEventListener("DOMContentLoaded", () => {
       state.latestSubmission = sub;
       state.localSubmissions.push(sub);
 
-      // Render Confirmation values
       const itemEl = document.querySelector("#receipt-item");
       const recEl = document.querySelector("#receipt-recipient");
       const tickEl = document.querySelector("#receipt-ticket");
@@ -261,7 +256,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Window back/forward support
   window.addEventListener("popstate", () => navigate(resolveInitialPage(), false));
   window.addEventListener("hashchange", () => navigate(resolveInitialPage(), false));
 });
