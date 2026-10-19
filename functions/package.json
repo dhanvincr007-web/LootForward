@@ -1,0 +1,12 @@
+{
+    "name": "functions",
+    "description": "Cloud Functions for LootForward",
+    "dependencies": {
+        "firebase-functions": "^4.5.0",
+        "stripe": "^14.0.0",
+        "razorpay": "^2.9.2"
+    },
+    "engines": {
+        "node": "18"
+    }
+}
