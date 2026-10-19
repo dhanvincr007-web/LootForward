@@ -30,7 +30,7 @@
   <script src="https://js.stripe.com/v3/"></script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=2.6">
 </head>
 
 <body>
@@ -76,6 +76,35 @@
               </span>
               <div id="google_translate_element"></div>
             </div>
+          </li>
+          <!-- Auth Navigation Controls -->
+          <li class="nav-item ms-lg-2 my-2 my-lg-0" id="nav-auth-logged-out">
+            <button type="button" class="btn btn-outline-neon btn-sm d-inline-flex align-items-center gap-2" id="btn-open-auth-modal">
+              <span>👤</span>
+              <span>Sign In</span>
+            </button>
+          </li>
+          <li class="nav-item dropdown ms-lg-2 my-2 my-lg-0 d-none" id="nav-auth-logged-in">
+            <button type="button" class="btn btn-sm user-nav-profile-btn dropdown-toggle d-inline-flex align-items-center gap-2"
+              id="userProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <div class="user-nav-avatar" id="nav-user-avatar">🎮</div>
+              <span class="user-nav-name" id="nav-user-name">Gamer</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end user-nav-dropdown-menu" aria-labelledby="userProfileDropdown">
+              <li class="dropdown-header">
+                <div class="small text-muted" id="nav-user-email">gamer@lootforward.org</div>
+                <span class="badge bg-success-subtle text-success border border-success-subtle mt-1" style="font-size:0.65rem;">✓ Verified Session</span>
+              </li>
+              <li><hr class="dropdown-divider border-secondary"></li>
+              <li><a class="dropdown-item d-flex align-items-center gap-2" href="#tracking" data-route="tracking"><span>📦</span> My Tracked Drops</a></li>
+              <li><a class="dropdown-item d-flex align-items-center gap-2" href="#donate" data-route="donate"><span>🎮</span> Make a Contribution</a></li>
+              <li><hr class="dropdown-divider border-secondary"></li>
+              <li>
+                <button type="button" class="dropdown-item text-danger d-flex align-items-center gap-2" id="btn-auth-signout">
+                  <span>🚪</span> Sign Out
+                </button>
+              </li>
+            </ul>
           </li>
           <li class="nav-item ms-lg-2">
             <a class="btn btn-neon btn-sm px-4" href="#recipients" data-route="recipients">Start a Drop</a>
@@ -359,46 +388,109 @@
             <!-- Money Fields -->
             <div id="monetary-fields" class="form-panel d-none">
               <div class="row g-4">
+
+                <!-- Gateway selector banner -->
                 <div class="col-12">
-                  <label class="form-label">Quick Amount</label>
-                  <div class="quick-amount-grid">
-                    <button type="button" class="btn btn-outline-neon quick-amount-btn" data-amount="10">$10</button>
-                    <button type="button" class="btn btn-outline-neon quick-amount-btn" data-amount="25">$25</button>
-                    <button type="button" class="btn btn-outline-neon quick-amount-btn" data-amount="50">$50</button>
-                    <button type="button" class="btn btn-outline-neon quick-amount-btn" data-amount="100">$100</button>
+                  <label class="form-label">Select Payment Gateway & Currency</label>
+                  <div class="gw-selector-grid" role="group" aria-label="Payment gateway selector">
+
+                    <button type="button" class="gw-option-btn gw-option-btn--active" id="gw-stripe-btn" data-gateway="stripe">
+                      <span class="gw-option-icon">💳</span>
+                      <span class="gw-option-name">Stripe</span>
+                      <span class="gw-option-sub">USD · Credit / Debit Cards</span>
+                      <span class="gw-option-check" aria-hidden="true">✓</span>
+                    </button>
+
+                    <button type="button" class="gw-option-btn" id="gw-razorpay-btn" data-gateway="razorpay">
+                      <span class="gw-option-icon">🇮🇳</span>
+                      <span class="gw-option-name">Razorpay</span>
+                      <span class="gw-option-sub">INR · UPI · NetBanking · Cards</span>
+                      <span class="gw-option-check" aria-hidden="true">✓</span>
+                    </button>
+
                   </div>
                 </div>
-                <div class="col-md-6">
-                  <label class="form-label" for="custom-amount">Custom Amount (USD) <span
-                      class="req-star">*</span></label>
-                  <div class="input-group">
-                    <span class="input-group-text">$</span>
-                    <input class="form-control" id="custom-amount" name="customAmount" type="number" min="1" step="0.01"
-                      placeholder="25.00">
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label" for="funding-statement">Funding Statement Upload <span
-                      class="req-star">*</span></label>
-                  <input class="form-control" id="funding-statement" name="fundingStatement" type="file"
-                    accept="image/png, image/jpeg, application/pdf">
-                  <div class="form-text">Supporting document for funding verification.</div>
-                </div>
-                <div class="col-12">
-                  <div class="p-3 rounded-3" style="background: rgba(0, 242, 254, 0.05); border: 1px dashed rgba(0, 242, 254, 0.3);">
-                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-                      <div>
-                        <strong class="d-block text-cyan" style="font-family: 'Orbitron', sans-serif; font-size: 0.95rem;">🔒 Stripe Card Processing</strong>
-                        <span class="text-muted small">Card transactions are processed securely via our dedicated Stripe Elements payment gateway modal.</span>
+
+                <!-- Stripe amount block -->
+                <div id="gw-stripe-block" class="col-12">
+                  <div class="row g-3">
+                    <div class="col-12">
+                      <label class="form-label">Quick Amount (USD)</label>
+                      <div class="quick-amount-grid">
+                        <button type="button" class="btn btn-outline-neon quick-amount-btn" data-amount="10">$10</button>
+                        <button type="button" class="btn btn-outline-neon quick-amount-btn" data-amount="25">$25</button>
+                        <button type="button" class="btn btn-outline-neon quick-amount-btn" data-amount="50">$50</button>
+                        <button type="button" class="btn btn-outline-neon quick-amount-btn" data-amount="100">$100</button>
                       </div>
-                      <button type="button" class="btn btn-neon btn-sm" id="btn-open-payment-modal">
-                        💳 Open Payment Gateway
-                      </button>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label" for="custom-amount">Custom Amount (USD) <span class="req-star">*</span></label>
+                      <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input class="form-control" id="custom-amount" name="customAmount" type="number" min="1" step="0.01" placeholder="25.00">
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label" for="funding-statement">Funding Statement <span class="req-star">*</span></label>
+                      <input class="form-control" id="funding-statement" name="fundingStatement" type="file"
+                        accept="image/png, image/jpeg, application/pdf">
+                      <div class="form-text">Supporting document for funding verification.</div>
+                    </div>
+                    <div class="col-12">
+                      <div class="p-3 rounded-3" style="background: rgba(0, 242, 254, 0.05); border: 1px dashed rgba(0, 242, 254, 0.3);">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                          <div>
+                            <strong class="d-block text-cyan" style="font-family: 'Orbitron', sans-serif; font-size: 0.95rem;">🔒 Stripe Card Processing</strong>
+                            <span class="text-muted small">Card transactions are processed securely via Stripe Elements — PCI-DSS Level 1.</span>
+                          </div>
+                          <button type="button" class="btn btn-neon btn-sm" id="btn-open-payment-modal">
+                            💳 Open Stripe Gateway
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
+
+                <!-- Razorpay amount block (INR) -->
+                <div id="gw-razorpay-block" class="col-12 d-none">
+                  <div class="row g-3">
+                    <div class="col-12">
+                      <label class="form-label">Quick Amount (INR ₹)</label>
+                      <div class="quick-amount-grid">
+                        <button type="button" class="btn btn-outline-neon quick-amount-btn-inr" data-amount-inr="100">₹100</button>
+                        <button type="button" class="btn btn-outline-neon quick-amount-btn-inr" data-amount-inr="250">₹250</button>
+                        <button type="button" class="btn btn-outline-neon quick-amount-btn-inr" data-amount-inr="500">₹500</button>
+                        <button type="button" class="btn btn-outline-neon quick-amount-btn-inr" data-amount-inr="1000">₹1000</button>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label" for="custom-amount-inr">Custom Amount (INR) <span class="req-star">*</span></label>
+                      <div class="input-group">
+                        <span class="input-group-text">₹</span>
+                        <input class="form-control" id="custom-amount-inr" name="customAmountInr" type="number" min="1" step="1" placeholder="500">
+                      </div>
+                    </div>
+                    <div class="col-12">
+                      <div class="p-3 rounded-3" style="background: rgba(155, 81, 224, 0.08); border: 1px dashed rgba(155, 81, 224, 0.4);">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                          <div>
+                            <strong class="d-block" style="color:#b57bee; font-family: 'Orbitron', sans-serif; font-size: 0.95rem;">🇮🇳 Razorpay — Multi-Method</strong>
+                            <span class="text-muted small">Pay via UPI (GPay, PhonePe, Paytm), NetBanking, or Credit/Debit card — INR only.</span>
+                          </div>
+                          <button type="button" class="btn btn-sm" id="btn-open-razorpay-modal"
+                            style="background: linear-gradient(135deg,#9b51e0,#f72585); color:#fff; font-weight:600; border:none; padding: 8px 18px; border-radius: 10px;">
+                            🚀 Open Razorpay
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
+
 
             <!-- Locked Recipient Card -->
             <div class="locked-recipient-card mt-4">
@@ -866,9 +958,390 @@
     </div><!-- /.modal-dialog -->
   </div><!-- /#paymentModal -->
 
+  <!-- ═══════════════════════════════════════════════════════════
+       RAZORPAY MULTI-METHOD MODAL  ·  UPI · NetBanking · Cards
+       createRazorpayOrder() in app.js triggers this modal.
+  ════════════════════════════════════════════════════════════ -->
+  <div class="modal fade" id="razorpayModal" tabindex="-1"
+       aria-labelledby="razorpayModalLabel" aria-modal="true" role="dialog"
+       data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered rp-dialog">
+      <div class="modal-content rp-content">
+
+        <!-- Processing overlay -->
+        <div id="rp-processing" class="pm-processing d-none" aria-live="polite">
+          <div class="pm-processing-inner">
+            <div class="pm-orbital">
+              <div class="pm-orbital__ring"></div>
+              <div class="pm-orbital__ring pm-orbital__ring--2"></div>
+              <span class="pm-orbital__icon">🇮🇳</span>
+            </div>
+            <p class="pm-processing-label">Initializing Razorpay…</p>
+            <p class="pm-processing-sub">Creating secure payment order</p>
+          </div>
+        </div>
+
+        <!-- Header -->
+        <div class="rp-header">
+          <div class="rp-header-left">
+            <div class="rp-logo-badge" aria-hidden="true">₹</div>
+            <div>
+              <h5 class="rp-title" id="razorpayModalLabel">Razorpay Checkout</h5>
+              <p class="rp-subtitle">PCI-DSS · Bank-grade encryption · INR</p>
+            </div>
+          </div>
+          <div class="rp-header-right">
+            <div class="rp-method-badges" aria-label="Accepted payment methods">
+              <span class="rp-badge rp-badge--upi">UPI</span>
+              <span class="rp-badge rp-badge--nb">NetBanking</span>
+              <span class="rp-badge rp-badge--card">Cards</span>
+            </div>
+            <button type="button" class="pm-close-btn" data-bs-dismiss="modal" aria-label="Close">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Body -->
+        <div id="rp-body">
+
+          <!-- Recipient bar -->
+          <div class="pm-recipient-bar">
+            <span class="pm-recipient-label">🎯 Donating to</span>
+            <span class="pm-recipient-name" id="rp-summary-recipient">—</span>
+          </div>
+
+          <!-- Amount display -->
+          <div class="rp-amount-strip">
+            <span class="rp-amount-label">Total Contribution</span>
+            <strong class="rp-amount-value" id="rp-summary-amount">₹0.00</strong>
+          </div>
+
+          <!-- Payment method tabs -->
+          <div class="rp-method-tabs" role="tablist" aria-label="Payment method">
+            <button class="rp-tab rp-tab--active" id="rp-tab-upi" data-rp-tab="upi" role="tab" aria-selected="true">
+              <span>📱</span> UPI
+            </button>
+            <button class="rp-tab" id="rp-tab-netbanking" data-rp-tab="netbanking" role="tab" aria-selected="false">
+              <span>🏦</span> NetBanking
+            </button>
+            <button class="rp-tab" id="rp-tab-card" data-rp-tab="card" role="tab" aria-selected="false">
+              <span>💳</span> Card
+            </button>
+          </div>
+
+          <!-- ── UPI Panel ── -->
+          <div id="rp-panel-upi" class="rp-panel" role="tabpanel" aria-labelledby="rp-tab-upi">
+            <p class="rp-panel-hint">Choose a UPI app or enter your VPA ID</p>
+
+            <div class="rp-upi-apps" role="group" aria-label="Select UPI app">
+              <button type="button" class="rp-upi-app-btn rp-upi-app-btn--active" data-upi-app="gpay" id="rp-app-gpay">
+                <span class="rp-upi-icon">G</span>
+                <span>Google Pay</span>
+              </button>
+              <button type="button" class="rp-upi-app-btn" data-upi-app="phonepe" id="rp-app-phonepe">
+                <span class="rp-upi-icon rp-upi-icon--pe">P</span>
+                <span>PhonePe</span>
+              </button>
+              <button type="button" class="rp-upi-app-btn" data-upi-app="paytm" id="rp-app-paytm">
+                <span class="rp-upi-icon rp-upi-icon--pt">₿</span>
+                <span>Paytm</span>
+              </button>
+              <button type="button" class="rp-upi-app-btn" data-upi-app="bhim" id="rp-app-bhim">
+                <span class="rp-upi-icon rp-upi-icon--bhim">B</span>
+                <span>BHIM</span>
+              </button>
+            </div>
+
+            <div class="rp-divider"><span>or pay with UPI ID</span></div>
+
+            <div class="rp-upi-id-row">
+              <div class="input-group">
+                <span class="input-group-text rp-input-prefix">📧</span>
+                <input type="text" id="rp-upi-id" class="form-control rp-input"
+                  placeholder="yourname@upi · e.g. user@okaxis" autocomplete="off" spellcheck="false">
+              </div>
+              <div class="rp-upi-hint">Enter a valid VPA (Virtual Payment Address)</div>
+            </div>
+          </div>
+
+          <!-- ── NetBanking Panel ── -->
+          <div id="rp-panel-netbanking" class="rp-panel d-none" role="tabpanel" aria-labelledby="rp-tab-netbanking">
+            <p class="rp-panel-hint">Select your bank to proceed via NetBanking</p>
+
+            <div class="rp-bank-grid" role="group" aria-label="Select bank">
+              <button type="button" class="rp-bank-btn rp-bank-btn--active" data-bank-code="HDFC" id="rp-bank-hdfc">
+                <span class="rp-bank-abbr" style="color:#004c8f;">HDFC</span>
+                <span>HDFC Bank</span>
+              </button>
+              <button type="button" class="rp-bank-btn" data-bank-code="ICIC" id="rp-bank-icici">
+                <span class="rp-bank-abbr" style="color:#f26522;">ICICI</span>
+                <span>ICICI Bank</span>
+              </button>
+              <button type="button" class="rp-bank-btn" data-bank-code="SBIN" id="rp-bank-sbi">
+                <span class="rp-bank-abbr" style="color:#22a0d6;">SBI</span>
+                <span>State Bank of India</span>
+              </button>
+              <button type="button" class="rp-bank-btn" data-bank-code="AXIB" id="rp-bank-axis">
+                <span class="rp-bank-abbr" style="color:#97144d;">AXIS</span>
+                <span>Axis Bank</span>
+              </button>
+              <button type="button" class="rp-bank-btn" data-bank-code="KKBK" id="rp-bank-kotak">
+                <span class="rp-bank-abbr" style="color:#e91e63;">KTK</span>
+                <span>Kotak Mahindra</span>
+              </button>
+              <button type="button" class="rp-bank-btn" data-bank-code="PUNB" id="rp-bank-pnb">
+                <span class="rp-bank-abbr" style="color:#f5a623;">PNB</span>
+                <span>Punjab National</span>
+              </button>
+              <button type="button" class="rp-bank-btn" data-bank-code="YESB" id="rp-bank-yes">
+                <span class="rp-bank-abbr" style="color:#00bcd4;">YES</span>
+                <span>Yes Bank</span>
+              </button>
+              <button type="button" class="rp-bank-btn" data-bank-code="IDFB" id="rp-bank-idfc">
+                <span class="rp-bank-abbr" style="color:#6effb2;">IDFC</span>
+                <span>IDFC First Bank</span>
+              </button>
+            </div>
+
+            <div class="rp-bank-note mt-3">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" class="me-1"><circle cx="12" cy="12" r="10" stroke="#9b51e0" stroke-width="2"/><path d="M12 8v4M12 16h.01" stroke="#9b51e0" stroke-width="2.2" stroke-linecap="round"/></svg>
+              You'll be redirected to your bank's secure login portal to authorize the transfer.
+            </div>
+          </div>
+
+          <!-- ── Card Panel ── -->
+          <div id="rp-panel-card" class="rp-panel d-none" role="tabpanel" aria-labelledby="rp-tab-card">
+            <p class="rp-panel-hint">Enter card details below — processed securely via Razorpay Vault</p>
+
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="rp-input-label" for="rp-card-number">Card Number</label>
+                <div class="input-group">
+                  <span class="input-group-text rp-input-prefix">💳</span>
+                  <input type="text" id="rp-card-number" class="form-control rp-input"
+                    placeholder="1234  5678  9012  3456" maxlength="19" autocomplete="cc-number"
+                    inputmode="numeric" pattern="[\d ]{13,19}">
+                </div>
+              </div>
+              <div class="col-8">
+                <label class="rp-input-label" for="rp-card-expiry">Expiry</label>
+                <input type="text" id="rp-card-expiry" class="form-control rp-input"
+                  placeholder="MM / YY" maxlength="7" autocomplete="cc-exp" inputmode="numeric">
+              </div>
+              <div class="col-4">
+                <label class="rp-input-label" for="rp-card-cvv">CVV</label>
+                <input type="password" id="rp-card-cvv" class="form-control rp-input"
+                  placeholder="•••" maxlength="4" autocomplete="cc-csc" inputmode="numeric">
+              </div>
+              <div class="col-12">
+                <label class="rp-input-label" for="rp-card-name">Cardholder Name</label>
+                <input type="text" id="rp-card-name" class="form-control rp-input"
+                  placeholder="Name as on card" autocomplete="cc-name">
+              </div>
+            </div>
+
+            <div class="rp-card-brands mt-3" aria-label="Accepted card networks">
+              <span class="pm-brand pm-brand--visa">VISA</span>
+              <span class="pm-brand pm-brand--mc"><span class="pm-mc-left"></span><span class="pm-mc-right"></span></span>
+              <span class="pm-brand pm-brand--amex">AMEX</span>
+              <span class="pm-brand pm-brand--rupay" style="background:#006b45; color:#fff;">RuPay</span>
+            </div>
+          </div>
+
+          <!-- Global error -->
+          <div id="rp-global-error" class="pm-global-error d-none mt-3" role="alert" aria-live="assertive">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="flex-shrink-0"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="#ff6b6b" stroke-width="2"/><path d="M12 9v4M12 17h.01" stroke="#ff6b6b" stroke-width="2.2" stroke-linecap="round"/></svg>
+            <div class="pm-global-error-content flex-grow-1">
+              <strong class="d-block mb-1 pm-error-heading">Payment Issue</strong>
+              <span id="rp-global-error-text"></span>
+            </div>
+          </div>
+
+          <!-- Trust bar -->
+          <div class="pm-trust mt-3">
+            <span class="pm-trust-badge">🔒 256-bit SSL</span>
+            <span class="pm-trust-badge">🛡️ PCI DSS</span>
+            <span class="pm-trust-badge">🇮🇳 RBI Compliant</span>
+            <span class="pm-trust-badge">✅ Audit Pipeline</span>
+          </div>
+
+          <!-- Pay button -->
+          <button type="button" class="pm-pay-btn mt-3" id="rp-pay-btn" aria-live="polite"
+            style="background: linear-gradient(135deg,#9b51e0 0%,#f72585 100%);">
+            <span class="pm-pay-btn__spinner d-none" id="rp-pay-btn-spinner" aria-hidden="true">
+              <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+            </span>
+            <span class="pm-pay-btn__icon" id="rp-pay-btn-icon" aria-hidden="true">🚀</span>
+            <span class="pm-pay-btn__label" id="rp-pay-btn-label">Pay ₹0.00</span>
+          </button>
+
+          <div class="pm-footer-row">
+            <button type="button" class="pm-cancel-btn" data-bs-dismiss="modal">Cancel</button>
+            <p class="pm-disclaimer">Razorpay Trusted Business · Payment secured by industry standard encryption</p>
+          </div>
+
+        </div><!-- /#rp-body -->
+
+        <!-- Success screen -->
+        <div id="rp-success" class="pm-success d-none" aria-live="polite">
+          <div class="pm-confetti" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <div class="pm-success-icon">
+            <svg viewBox="0 0 64 64" fill="none">
+              <circle class="pm-check-circle" cx="32" cy="32" r="30" stroke="#b57bee" stroke-width="2.5"/>
+              <path class="pm-check-mark" d="M18 32 L27 41 L46 22" stroke="#b57bee" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h4 class="pm-success-title" style="color:#b57bee;">Payment Verified!</h4>
+          <div class="pm-success-amount-pill" style="background: rgba(155,81,224,0.15); border-color: rgba(155,81,224,0.4);">
+            <span id="rp-success-amount">₹0.00 INR</span>
+          </div>
+          <p class="pm-success-recipient">sent to <strong id="rp-success-recipient-name">—</strong></p>
+          <div class="pm-success-steps">
+            <div class="pm-success-step pm-success-step--done">✓ Razorpay verified</div>
+            <div class="pm-success-step pm-success-step--done">✓ HMAC SHA-256 signature confirmed</div>
+            <div class="pm-success-step pm-success-step--pending">
+              <span class="lf-spinner" aria-hidden="true"></span> Redirecting to receipt…
+            </div>
+          </div>
+        </div><!-- /#rp-success -->
+
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /#razorpayModal -->
+
+  <!-- ═══════════════════════════════════════════════════════════
+       FIREBASE AUTHENTICATION MODAL  ·  Google OAuth + Email/PW
+  ════════════════════════════════════════════════════════════ -->
+  <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered auth-dialog">
+      <div class="modal-content auth-content">
+
+        <!-- Header -->
+        <div class="auth-header">
+          <div class="d-flex align-items-center gap-2">
+            <div class="auth-logo-badge" aria-hidden="true">🎮</div>
+            <div>
+              <h5 class="auth-title mb-0" id="authModalLabel">LootForward Access</h5>
+              <p class="auth-subtitle mb-0">Verified Gamer & Donor Portal</p>
+            </div>
+          </div>
+          <button type="button" class="pm-close-btn" data-bs-dismiss="modal" aria-label="Close">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="auth-body">
+
+          <!-- Alert Container -->
+          <div id="auth-error-alert" class="alert alert-danger d-none py-2 px-3 small d-flex align-items-start gap-2 mb-3" role="alert">
+            <span class="flex-shrink-0">⚠️</span>
+            <span id="auth-error-text"></span>
+          </div>
+          <div id="auth-success-alert" class="alert alert-success d-none py-2 px-3 small d-flex align-items-start gap-2 mb-3" role="alert">
+            <span class="flex-shrink-0">✓</span>
+            <span id="auth-success-text"></span>
+          </div>
+
+          <!-- Google OAuth 2.0 Button -->
+          <button type="button" class="btn auth-google-btn w-100 mb-3 d-flex align-items-center justify-content-center gap-3" id="btn-auth-google">
+            <svg width="18" height="18" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            <span>Continue with Google</span>
+          </button>
+
+          <div class="auth-divider"><span>or with email & password</span></div>
+
+          <!-- Auth Mode Tabs -->
+          <div class="auth-tabs mb-3" role="tablist">
+            <button type="button" class="auth-tab active" id="auth-tab-signin" data-auth-mode="signin">Sign In</button>
+            <button type="button" class="auth-tab" id="auth-tab-signup" data-auth-mode="signup">Create Account</button>
+          </div>
+
+          <!-- Main Auth Form (Sign In / Sign Up) -->
+          <form id="auth-main-form" novalidate>
+            <div class="mb-3 d-none" id="auth-group-name">
+              <label class="form-label small" for="auth-input-name">Gamer Tag / Display Name</label>
+              <div class="input-group">
+                <span class="input-group-text bg-surface-2 text-cyan border-secondary">🎮</span>
+                <input type="text" class="form-control" id="auth-input-name" placeholder="e.g. CyberValkyrie" autocomplete="name">
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small" for="auth-input-email">Email Address <span class="req-star">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text bg-surface-2 text-cyan border-secondary">📧</span>
+                <input type="email" class="form-control" id="auth-input-email" placeholder="gamer@example.com" required autocomplete="email">
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label small mb-0" for="auth-input-password">Password <span class="req-star">*</span></label>
+                <button type="button" class="btn btn-link p-0 text-cyan text-decoration-none small" id="auth-btn-forgot">Forgot?</button>
+              </div>
+              <div class="input-group">
+                <span class="input-group-text bg-surface-2 text-cyan border-secondary">🔒</span>
+                <input type="password" class="form-control" id="auth-input-password" placeholder="••••••••" required autocomplete="current-password">
+                <button class="btn btn-outline-secondary" type="button" id="auth-btn-toggle-password" title="Show/Hide password">👁️</button>
+              </div>
+              <div class="form-text small text-muted d-none" id="auth-password-hint">At least 6 characters.</div>
+            </div>
+
+            <button type="submit" class="btn btn-neon w-100 py-2 d-flex align-items-center justify-content-center gap-2" id="auth-submit-btn">
+              <span class="spinner-border spinner-border-sm d-none" id="auth-spinner" role="status"></span>
+              <span id="auth-submit-text">Sign In</span>
+            </button>
+          </form>
+
+          <!-- Password Reset Sub-Form (Hidden by default) -->
+          <div id="auth-reset-container" class="d-none">
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <button type="button" class="btn btn-sm btn-outline-secondary" id="auth-btn-back-to-login">← Back</button>
+              <h6 class="mb-0 text-cyan">Reset Your Password</h6>
+            </div>
+            <p class="small text-muted mb-3">Enter your verified email and we'll send you a password recovery link.</p>
+            <form id="auth-reset-form">
+              <div class="mb-3">
+                <label class="form-label small" for="auth-reset-email">Email Address</label>
+                <input type="email" class="form-control" id="auth-reset-email" placeholder="gamer@example.com" required>
+              </div>
+              <button type="submit" class="btn btn-neon w-100 py-2" id="auth-reset-submit-btn">Send Recovery Link</button>
+            </form>
+          </div>
+
+        </div><!-- /.auth-body -->
+
+        <!-- Footer -->
+        <div class="auth-footer text-center p-3 border-top border-secondary">
+          <small class="text-muted">
+            🔒 Protected by Firebase Auth v10 · 256-bit SSL ·
+            <a href="#about" class="text-cyan text-decoration-none" data-bs-dismiss="modal">Terms & Privacy</a>
+          </small>
+        </div>
+
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /#authModal -->
+
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Razorpay Checkout SDK -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
   <!-- Google Translate Integration (120+ Global Languages) -->
   <script type="text/javascript">
     function googleTranslateElementInit() {
@@ -879,7 +1352,9 @@
     }
   </script>
   <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-  <script src="app.js?v=2.3"></script>
+  <!-- Firebase Auth Module -->
+  <script type="module" src="auth.js?v=1.0"></script>
+  <script src="app.js?v=2.7"></script>
 </body>
 
 </html>

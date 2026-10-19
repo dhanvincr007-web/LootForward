@@ -5,7 +5,12 @@
   "private": true,
   "scripts": {
     "start": "npx serve . --listen 5500",
-    "dev": "npx serve . --listen 5500"
+    "dev": "npx serve . --listen 5500",
+    "lint": "node -c app.js && node -c functions/index.js",
+    "deploy": "bash scripts/deploy.sh",
+    "deploy:win": "powershell -ExecutionPolicy Bypass -File scripts/deploy.ps1",
+    "env:sync": "bash scripts/sync-env.sh",
+    "env:sync:win": "powershell -ExecutionPolicy Bypass -File scripts/sync-env.ps1"
   },
   "keywords": [
     "gaming",
