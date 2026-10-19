@@ -258,6 +258,124 @@ let recipientApplications = [
   }
 ];
 
+// ── Phase 2: Live Gear Lifecycle Inventory & QR Claim System ──
+let liveGearInventory = [
+  {
+    gearId: "gear_ps5_001",
+    title: "Sony PlayStation 5 Disc Edition + DualSense Controller",
+    category: "Consoles",
+    donorUid: "usr_donor_alex",
+    donorName: "Alex Gamer",
+    dropoffHubId: "hub-sf",
+    hubName: "LootHub & Game Vault SF",
+    address: "830 Market St, San Francisco, CA 94102",
+    lat: 37.7858,
+    lng: -122.4065,
+    estValueUsd: 499,
+    estValueInr: 41500,
+    status: "available",
+    claimCode: "LF-7X9K2P",
+    qrCodeUrl: "https://quickchart.io/qr?text=LF-7X9K2P&size=200",
+    claimedByRecipientId: null,
+    claimedByRecipientName: null,
+    claimedAt: null,
+    createdAt: "2026-10-18T14:30:00Z"
+  },
+  {
+    gearId: "gear_rtx_002",
+    title: "MSI GeForce RTX 3070 8GB Gaming GPU",
+    category: "PCs & Laptops",
+    donorUid: "usr_donor_priya",
+    donorName: "Priya Sharma",
+    dropoffHubId: "hub-chicago",
+    hubName: "Midwest Gamer Cooperative",
+    address: "108 N State St, Chicago, IL 60602",
+    lat: 41.8837,
+    lng: -87.6278,
+    estValueUsd: 450,
+    estValueInr: 37500,
+    status: "available",
+    claimCode: "LF-4M8T1Q",
+    qrCodeUrl: "https://quickchart.io/qr?text=LF-4M8T1Q&size=200",
+    claimedByRecipientId: null,
+    claimedByRecipientName: null,
+    claimedAt: null,
+    createdAt: "2026-10-18T16:15:00Z"
+  },
+  {
+    gearId: "gear_kb_003",
+    title: "Corsair K70 RGB Mechanical Keyboard + SteelSeries Rival Mouse",
+    category: "Peripherals",
+    donorUid: "usr_donor_marcus",
+    donorName: "Marcus Vance",
+    dropoffHubId: "hub-austin",
+    hubName: "SpawnPoint Esports Center",
+    address: "508 E 6th St, Austin, TX 78701",
+    lat: 30.2672,
+    lng: -97.7371,
+    estValueUsd: 180,
+    estValueInr: 15000,
+    status: "available",
+    claimCode: "LF-9R2W5Z",
+    qrCodeUrl: "https://quickchart.io/qr?text=LF-9R2W5Z&size=200",
+    claimedByRecipientId: null,
+    claimedByRecipientName: null,
+    claimedAt: null,
+    createdAt: "2026-10-19T09:45:00Z"
+  },
+  {
+    gearId: "gear_vr_004",
+    title: "Meta Quest 2 128GB All-In-One VR Headset",
+    category: "Audio/VR",
+    donorUid: "usr_donor_elena",
+    donorName: "Elena Rostova",
+    dropoffHubId: "hub-brooklyn",
+    hubName: "ArcadeLegacy Tech Lounge",
+    address: "175 Bedford Ave, Brooklyn, NY 11211",
+    lat: 40.7185,
+    lng: -73.9575,
+    estValueUsd: 299,
+    estValueInr: 25000,
+    status: "claimed",
+    claimCode: "LF-3K6J8X",
+    qrCodeUrl: "https://quickchart.io/qr?text=LF-3K6J8X&size=200",
+    claimedByRecipientId: "youth-recreation-network",
+    claimedByRecipientName: "Youth Recreation Network Game Room",
+    claimedAt: "2026-10-19T11:20:00Z",
+    createdAt: "2026-10-17T11:00:00Z"
+  },
+  {
+    gearId: "gear_laptop_005",
+    title: "ASUS ROG Zephyrus G14 Gaming Laptop (Ryzen 9 / RTX 3060)",
+    category: "PCs & Laptops",
+    donorUid: "usr_donor_rohan",
+    donorName: "Rohan Patel",
+    dropoffHubId: "hub-seattle",
+    hubName: "ByteCraft Youth Tech Lab",
+    address: "400 Pine St, Seattle, WA 98101",
+    lat: 47.6115,
+    lng: -122.3365,
+    estValueUsd: 850,
+    estValueInr: 71000,
+    status: "available",
+    claimCode: "LF-8V1C4H",
+    qrCodeUrl: "https://quickchart.io/qr?text=LF-8V1C4H&size=200",
+    claimedByRecipientId: null,
+    claimedByRecipientName: null,
+    claimedAt: null,
+    createdAt: "2026-10-19T17:00:00Z"
+  }
+];
+
+function generateClaimCode() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let code = "LF-";
+  for (let i = 0; i < 6; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+}
+
 const state = {
   currentPage: "about",
   donationType: "console",
@@ -283,6 +401,13 @@ const state = {
   userAccuracyCircles: { dropMap: null, donationMap: null },
   partnerMarkers: { dropMap: [], donationMap: [] },
   recipientMarkers: { dropMap: [], donationMap: [] },
+  allMapNodes: [],
+  mapFilters: {
+    search: "",
+    layers: { hubs: true, recipients: true, gearAvail: true, gearClaimed: true },
+    category: "all"
+  },
+  impactCurrency: "USD",
   recipientMiniMap: null,
   recipientMiniMarker: null,
   activeRecipientCategoryFilter: "all",
@@ -1925,43 +2050,526 @@ function createRecipientIcon() {
   });
 }
 
-function rebuildRecipientMapMarkers() {
-  if (!window.L) return;
-  if (!state.recipientMarkers) state.recipientMarkers = { dropMap: [], donationMap: [] };
+// ── Phase 2: Leaflet Gear Icons ──────────────────────────────
+function createGearIcon(status, category) {
+  const isAvail = status === "available";
+  let iconEmoji = "⚡";
+  if (category === "Consoles") iconEmoji = "🎮";
+  else if (category === "PCs & Laptops") iconEmoji = "💻";
+  else if (category === "Peripherals") iconEmoji = "⌨️";
+  else if (category === "Audio/VR") iconEmoji = "🎧";
+  if (!isAvail) iconEmoji = "📦";
 
-  if (state.recipientMarkers.dropMap) {
-    state.recipientMarkers.dropMap.forEach(m => m.remove());
-    state.recipientMarkers.dropMap = [];
-  }
-  if (state.recipientMarkers.donationMap) {
-    state.recipientMarkers.donationMap.forEach(m => m.remove());
-    state.recipientMarkers.donationMap = [];
-  }
+  return L.divIcon({
+    className: "leaflet-gear-icon",
+    html: `
+      <div class="gear-marker ${isAvail ? 'gear-marker--avail' : 'gear-marker--claimed'}" title="${isAvail ? 'Available Gear' : 'Claimed Gear'}: ${escapeHtml(category || '')}">
+        <span>${iconEmoji}</span>
+      </div>
+    `,
+    iconSize: [34, 34],
+    iconAnchor: [17, 17]
+  });
+}
 
-  const renderOnMap = (mapInstance, targetList) => {
-    if (!mapInstance) return;
-    recipients.filter(r => r.status === "approved" || !r.status).forEach(r => {
-      if (r.lat && r.lng) {
-        const marker = L.marker([r.lat, r.lng], { icon: createRecipientIcon() }).addTo(mapInstance);
-        marker.bindPopup(`
-          <div style="min-width: 220px;">
-            <div class="d-flex align-items-center gap-1 mb-1">
-              <span class="badge bg-primary" style="font-size:0.65rem;">${escapeHtml(r.category || 'Recipient')}</span>
-              <span class="badge bg-secondary" style="font-size:0.65rem;">Goal: ${r.target || 1}</span>
-            </div>
-            <h6 class="mb-1 text-white">${escapeHtml(r.name)}</h6>
-            <p class="mb-1 text-muted small">${escapeHtml(r.address || r.region)}</p>
-            <p class="mb-2 text-white-50 small" style="font-size:0.75rem;">${escapeHtml((r.mission || '').substring(0, 85))}...</p>
-            <button type="button" class="btn btn-neon btn-sm w-100" onclick="selectRecipient('${escapeHtml(r.id)}')">🎯 Select as Target</button>
-          </div>
-        `);
-        targetList.push(marker);
-      }
+// ── Multi-Layer GIS Map Engine: Build and Cache All Nodes ────
+function rebuildAllMapNodes() {
+  if (!window.L || !state.maps?.dropMap) return;
+
+  if (state.allMapNodes) {
+    state.allMapNodes.forEach(node => {
+      if (node.marker) node.marker.remove();
     });
+  }
+  state.allMapNodes = [];
+
+  // 1. Drop-off Hubs
+  dropOffPartners.forEach(p => {
+    const marker = L.marker([p.lat, p.lng], { icon: createPartnerIcon(p.type) });
+    marker.bindPopup(`
+      <div style="min-width: 220px;">
+        <span class="badge ${p.type === 'store' ? 'bg-info' : 'bg-primary'} mb-1">${p.type === 'store' ? 'Game Store' : 'Community Hub'}</span>
+        <h6 class="mb-1 text-white">${escapeHtml(p.name)}</h6>
+        <p class="mb-1 text-muted small">${escapeHtml(p.address)}</p>
+        <p class="small text-white-50 mb-2">Hours: ${escapeHtml(p.hours)}</p>
+        <button type="button" class="btn btn-neon btn-sm w-100" onclick="selectDropoffPartner('${p.id}')">Drop Gear Here</button>
+      </div>
+    `);
+    marker.on("click", () => updateSidebarQuickInfo("hub", p));
+
+    state.allMapNodes.push({
+      id: p.id,
+      type: "hub",
+      category: "Hub",
+      title: p.name,
+      address: p.address,
+      lat: p.lat,
+      lng: p.lng,
+      marker,
+      raw: p
+    });
+  });
+
+  // 2. Approved Recipients
+  const approvedRecipients = recipients.filter(r => r.status === "approved" || !r.status);
+  approvedRecipients.forEach(r => {
+    if (r.lat && r.lng) {
+      const marker = L.marker([r.lat, r.lng], { icon: createRecipientIcon() });
+      marker.bindPopup(`
+        <div style="min-width: 220px;">
+          <div class="d-flex align-items-center gap-1 mb-1">
+            <span class="badge bg-primary" style="font-size:0.65rem;">${escapeHtml(r.category || 'Recipient')}</span>
+            <span class="badge bg-secondary" style="font-size:0.65rem;">Goal: ${r.target || 1}</span>
+          </div>
+          <h6 class="mb-1 text-white">${escapeHtml(r.name)}</h6>
+          <p class="mb-1 text-muted small">${escapeHtml(r.address || r.region)}</p>
+          <p class="mb-2 text-white-50 small" style="font-size:0.75rem;">${escapeHtml((r.mission || '').substring(0, 85))}...</p>
+          <button type="button" class="btn btn-neon btn-sm w-100" onclick="selectRecipient('${escapeHtml(r.id)}')">🎯 Select as Target</button>
+        </div>
+      `);
+      marker.on("click", () => updateSidebarQuickInfo("recipient", r));
+
+      state.allMapNodes.push({
+        id: r.id,
+        type: "recipient",
+        category: r.category,
+        title: r.name,
+        address: r.address || r.region,
+        lat: r.lat,
+        lng: r.lng,
+        marker,
+        raw: r
+      });
+    }
+  });
+
+  // 3. Live Gear Inventory (Available & Claimed)
+  liveGearInventory.forEach(gear => {
+    if (gear.lat && gear.lng) {
+      const isAvail = gear.status === "available";
+      const marker = L.marker([gear.lat, gear.lng], { icon: createGearIcon(gear.status, gear.category) });
+
+      const popupHtml = isAvail ? `
+        <div style="min-width: 240px;">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="badge bg-success">⚡ Available Gear</span>
+            <span class="badge bg-dark font-mono text-cyan" style="font-size:0.65rem;">$${gear.estValueUsd} USD</span>
+          </div>
+          <h6 class="mb-1 text-white">${escapeHtml(gear.title)}</h6>
+          <p class="mb-1 text-muted small font-mono">📍 ${escapeHtml(gear.hubName || gear.address)}</p>
+          
+          <div class="p-2 my-2 rounded bg-black border border-secondary text-center">
+            <div class="small text-muted font-mono" style="font-size:0.7rem;">CLAIM CODE / QR PASS</div>
+            <div class="fw-bold text-cyan font-mono fs-6 my-1">${escapeHtml(gear.claimCode)}</div>
+            <img src="${escapeHtml(gear.qrCodeUrl)}" alt="Claim QR Code" width="85" height="85" class="rounded border border-secondary">
+          </div>
+
+          <button type="button" class="btn btn-neon btn-sm w-100" onclick="openClaimModalWithCode('${escapeHtml(gear.claimCode)}')">
+            🔑 Claim This Item
+          </button>
+        </div>
+      ` : `
+        <div style="min-width: 220px;">
+          <span class="badge bg-secondary mb-1">📦 Claimed Gear</span>
+          <h6 class="mb-1 text-white">${escapeHtml(gear.title)}</h6>
+          <p class="mb-1 text-muted small font-mono">📍 ${escapeHtml(gear.hubName || gear.address)}</p>
+          <div class="p-2 rounded bg-black border border-secondary small text-white-50 mt-2">
+            <div>✓ Claimed by: <strong class="text-white">${escapeHtml(gear.claimedByRecipientName || 'Community Program')}</strong></div>
+            <div class="font-mono text-muted" style="font-size:0.7rem;">Date: ${escapeHtml((gear.claimedAt || '').substring(0, 10) || 'Recent')}</div>
+          </div>
+        </div>
+      `;
+
+      marker.bindPopup(popupHtml);
+      marker.on("click", () => updateSidebarQuickInfo("gear", gear));
+
+      state.allMapNodes.push({
+        id: gear.gearId,
+        type: isAvail ? "gear_avail" : "gear_claimed",
+        category: gear.category,
+        title: gear.title,
+        address: gear.hubName || gear.address,
+        lat: gear.lat,
+        lng: gear.lng,
+        claimCode: gear.claimCode,
+        marker,
+        raw: gear
+      });
+    }
+  });
+
+  applyMapFilters();
+}
+
+// ── Multi-Category & Layer Spatial Filtering Engine ──────────
+function applyMapFilters() {
+  if (!state.maps?.dropMap || !state.allMapNodes) return;
+
+  const map = state.maps.dropMap;
+  const search = (state.mapFilters.search || "").toLowerCase().trim();
+  const layers = state.mapFilters.layers;
+  const category = state.mapFilters.category;
+
+  let visibleCount = 0;
+  let countHubs = 0;
+  let countRecipients = 0;
+  let countGearAvail = 0;
+  let countGearClaimed = 0;
+
+  state.allMapNodes.forEach(node => {
+    let layerEnabled = false;
+    if (node.type === "hub" && layers.hubs) layerEnabled = true;
+    else if (node.type === "recipient" && layers.recipients) layerEnabled = true;
+    else if (node.type === "gear_avail" && layers.gearAvail) layerEnabled = true;
+    else if (node.type === "gear_claimed" && layers.gearClaimed) layerEnabled = true;
+
+    let categoryMatches = true;
+    if (category !== "all") {
+      if (node.type.startsWith("gear")) {
+        categoryMatches = (node.category === category);
+      } else {
+        categoryMatches = false;
+      }
+    }
+
+    let searchMatches = true;
+    if (search) {
+      const hay = `${node.title} ${node.address} ${node.category} ${node.claimCode || ''}`.toLowerCase();
+      searchMatches = hay.includes(search);
+    }
+
+    const shouldShow = layerEnabled && categoryMatches && searchMatches;
+
+    if (shouldShow) {
+      if (!map.hasLayer(node.marker)) {
+        node.marker.addTo(map);
+      }
+      visibleCount++;
+
+      if (node.type === "hub") countHubs++;
+      else if (node.type === "recipient") countRecipients++;
+      else if (node.type === "gear_avail") countGearAvail++;
+      else if (node.type === "gear_claimed") countGearClaimed++;
+    } else {
+      if (map.hasLayer(node.marker)) {
+        node.marker.remove();
+      }
+    }
+  });
+
+  const badgeVisible = document.querySelector("#map-visible-count-badge");
+  if (badgeVisible) badgeVisible.textContent = `${visibleCount} Nodes Active`;
+
+  const bHubs = document.querySelector("#badge-count-hubs");
+  const bRec = document.querySelector("#badge-count-recipients");
+  const bGAvail = document.querySelector("#badge-count-gear-avail");
+  const bGClaimed = document.querySelector("#badge-count-gear-claimed");
+
+  if (bHubs) bHubs.textContent = countHubs;
+  if (bRec) bRec.textContent = countRecipients;
+  if (bGAvail) bGAvail.textContent = countGearAvail;
+  if (bGClaimed) bGClaimed.textContent = countGearClaimed;
+}
+
+// ── Update Sidebar Quick Info Card on Marker Click ───────────
+function updateSidebarQuickInfo(type, item) {
+  const card = document.querySelector("#map-sidebar-info");
+  const badge = document.querySelector("#info-node-badge");
+  const title = document.querySelector("#info-node-title");
+  const subtitle = document.querySelector("#info-node-subtitle");
+  const action = document.querySelector("#info-node-action");
+
+  if (!card || !badge || !title || !subtitle || !action) return;
+
+  if (type === "gear") {
+    const isAvail = item.status === "available";
+    badge.className = `badge ${isAvail ? 'bg-success' : 'bg-secondary'} small`;
+    badge.textContent = isAvail ? '⚡ Available Hardware' : '📦 Claimed Gear';
+    title.textContent = item.title;
+    subtitle.innerHTML = `Category: <strong>${escapeHtml(item.category)}</strong> · Hub: ${escapeHtml(item.hubName || item.address)}`;
+    action.innerHTML = isAvail
+      ? `<button type="button" class="btn btn-neon btn-sm w-100" onclick="openClaimModalWithCode('${escapeHtml(item.claimCode)}')">🔑 Claim Code: ${escapeHtml(item.claimCode)}</button>`
+      : `<span class="small text-muted font-mono">Claimed by ${escapeHtml(item.claimedByRecipientName || 'Recipient')}</span>`;
+  } else if (type === "recipient") {
+    badge.className = "badge bg-primary small";
+    badge.textContent = "🎯 Approved Recipient";
+    title.textContent = item.name;
+    subtitle.textContent = item.address || item.region;
+    action.innerHTML = `<button type="button" class="btn btn-outline-neon btn-sm w-100" onclick="selectRecipient('${escapeHtml(item.id)}')">Select Recipient</button>`;
+  } else {
+    badge.className = "badge bg-info small";
+    badge.textContent = "🏪 Drop-off Hub";
+    title.textContent = item.name;
+    subtitle.textContent = item.address;
+    action.innerHTML = `<button type="button" class="btn btn-outline-neon btn-sm w-100" onclick="selectDropoffPartner('${escapeHtml(item.id)}')">Drop Gear Here</button>`;
+  }
+
+  card.style.display = "block";
+}
+
+// ── Rolling Counter Animation Function ───────────────────────
+function animateRollingCounter(el, start, end, prefix = "", suffix = "", duration = 1200) {
+  if (!el) return;
+  const startTime = performance.now();
+  const step = (currentTime) => {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    const currentVal = Math.floor(start + (end - start) * ease);
+    el.textContent = `${prefix}${currentVal.toLocaleString()}${suffix}`;
+    if (progress < 1) {
+      requestAnimationFrame(step);
+    } else {
+      el.textContent = `${prefix}${end.toLocaleString()}${suffix}`;
+    }
+  };
+  requestAnimationFrame(step);
+}
+
+// ── Live Impact & Analytics Aggregator ────────────────────────
+function updateLiveImpactCounters() {
+  const gearEl = document.querySelector("#stat-total-gear");
+  const valueEl = document.querySelector("#stat-total-value");
+  const recipientsEl = document.querySelector("#stat-total-recipients");
+  const currencyLabel = document.querySelector("#stat-value-currency-label");
+
+  const totalGearCount = liveGearInventory.length + adminHardwareQueue.length + 12;
+  const totalValueUsd = liveGearInventory.reduce((sum, g) => sum + (g.estValueUsd || 350), 0) + 14250;
+  const totalValueInr = liveGearInventory.reduce((sum, g) => sum + (g.estValueInr || 29000), 0) + 1180000;
+  const approvedRecipientsCount = recipients.filter(r => r.status === "approved" || !r.status).length;
+
+  const currentGear = parseInt(gearEl?.textContent.replace(/[^0-9]/g, "") || "0", 10);
+  animateRollingCounter(gearEl, currentGear, totalGearCount, "", "");
+
+  const currentRecipients = parseInt(recipientsEl?.textContent.replace(/[^0-9]/g, "") || "0", 10);
+  animateRollingCounter(recipientsEl, currentRecipients, approvedRecipientsCount, "", "");
+
+  const isUsd = (state.impactCurrency || "USD") === "USD";
+  const targetVal = isUsd ? totalValueUsd : totalValueInr;
+  const prefix = isUsd ? "$" : "₹";
+  const suffix = isUsd ? " USD" : " INR";
+
+  const currentVal = parseInt(valueEl?.textContent.replace(/[^0-9]/g, "") || "0", 10);
+  animateRollingCounter(valueEl, currentVal, targetVal, prefix, suffix);
+
+  if (currencyLabel) {
+    currencyLabel.textContent = isUsd ? "USD value circulated" : "INR value circulated";
+  }
+}
+
+// ── Phase 2: Map Sidebar & Filter Handlers ───────────────────
+function initMapFilterSidebarHandlers() {
+  const searchInput = document.querySelector("#map-search-input");
+  if (searchInput) {
+    searchInput.addEventListener("input", (e) => {
+      state.mapFilters.search = e.target.value;
+      applyMapFilters();
+    });
+  }
+
+  const clearSearchBtn = document.querySelector("#btn-map-search-clear");
+  if (clearSearchBtn) {
+    clearSearchBtn.addEventListener("click", () => {
+      if (searchInput) searchInput.value = "";
+      state.mapFilters.search = "";
+      applyMapFilters();
+    });
+  }
+
+  const layerMap = {
+    "#layer-toggle-hubs": "hubs",
+    "#layer-toggle-recipients": "recipients",
+    "#layer-toggle-gear-avail": "gearAvail",
+    "#layer-toggle-gear-claimed": "gearClaimed"
   };
 
-  renderOnMap(state.maps.dropMap, state.recipientMarkers.dropMap);
-  renderOnMap(state.maps.donationMap, state.recipientMarkers.donationMap);
+  Object.entries(layerMap).forEach(([selector, key]) => {
+    const sw = document.querySelector(selector);
+    if (sw) {
+      sw.addEventListener("change", (e) => {
+        state.mapFilters.layers[key] = e.target.checked;
+        applyMapFilters();
+      });
+    }
+  });
+
+  const catPills = document.querySelectorAll(".map-cat-pill");
+  catPills.forEach(pill => {
+    pill.addEventListener("click", () => {
+      catPills.forEach(p => p.classList.remove("active"));
+      pill.classList.add("active");
+      state.mapFilters.category = pill.dataset.category || "all";
+      applyMapFilters();
+    });
+  });
+
+  const closeInfoBtn = document.querySelector("#btn-close-sidebar-info");
+  if (closeInfoBtn) {
+    closeInfoBtn.addEventListener("click", () => {
+      const card = document.querySelector("#map-sidebar-info");
+      if (card) card.style.display = "none";
+    });
+  }
+
+  const btnUsd = document.querySelector("#btn-currency-usd");
+  const btnInr = document.querySelector("#btn-currency-inr");
+
+  if (btnUsd && btnInr) {
+    btnUsd.addEventListener("click", () => {
+      state.impactCurrency = "USD";
+      btnUsd.classList.add("active");
+      btnInr.classList.remove("active");
+      updateLiveImpactCounters();
+    });
+
+    btnInr.addEventListener("click", () => {
+      state.impactCurrency = "INR";
+      btnInr.classList.add("active");
+      btnUsd.classList.remove("active");
+      updateLiveImpactCounters();
+    });
+  }
+}
+
+// ── Phase 2: Gear Claiming & QR Verification Handlers ────────
+window.openClaimModalWithCode = function(code) {
+  const modalEl = document.querySelector("#claimGearModal");
+  if (!modalEl) return;
+
+  const codeInput = document.querySelector("#claim-code-input");
+  if (codeInput) codeInput.value = code;
+
+  populateClaimRecipientSelect();
+
+  const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+  bsModal.show();
+
+  setTimeout(() => {
+    document.querySelector("#btn-verify-claim-code")?.click();
+  }, 300);
+};
+
+function populateClaimRecipientSelect() {
+  const sel = document.querySelector("#claim-recipient-select");
+  if (!sel) return;
+
+  const approved = recipients.filter(r => r.status === "approved" || !r.status);
+  const currentVal = sel.value;
+
+  sel.innerHTML = `<option value="">Select claiming organization...</option>` +
+    approved.map(r => `<option value="${escapeHtml(r.id)}">${escapeHtml(r.name)} (${escapeHtml(r.region || 'Active')})</option>`).join("");
+
+  if (currentVal) sel.value = currentVal;
+}
+
+function initGearClaimHandlers() {
+  const codeInput = document.querySelector("#claim-code-input");
+  const verifyBtn = document.querySelector("#btn-verify-claim-code");
+  const previewCard = document.querySelector("#claim-item-preview");
+  const submitBtn = document.querySelector("#btn-submit-gear-claim");
+  const claimAlert = document.querySelector("#claim-form-alert");
+  const claimAlertText = document.querySelector("#claim-form-alert-text");
+  const claimForm = document.querySelector("#form-claim-gear");
+
+  const showClaimAlert = (msg) => {
+    if (claimAlert && claimAlertText) {
+      claimAlertText.textContent = msg;
+      claimAlert.classList.remove("d-none");
+    }
+  };
+
+  const clearClaimAlert = () => {
+    if (claimAlert) claimAlert.classList.add("d-none");
+  };
+
+  if (verifyBtn) {
+    verifyBtn.addEventListener("click", () => {
+      clearClaimAlert();
+      const code = (codeInput?.value || "").toUpperCase().trim();
+
+      if (!code || code.length < 5) {
+        showClaimAlert("Please enter a valid 8-character claim code (e.g. LF-7X9K2P).");
+        return;
+      }
+
+      const item = liveGearInventory.find(g => g.claimCode.toUpperCase() === code);
+
+      if (!item) {
+        showClaimAlert("No hardware matching this claim code was found in the inventory.");
+        if (previewCard) previewCard.classList.add("d-none");
+        if (submitBtn) submitBtn.disabled = true;
+        return;
+      }
+
+      if (item.status === "claimed") {
+        showClaimAlert(`⚠️ This item was already claimed by ${item.claimedByRecipientName || 'another recipient'} on ${(item.claimedAt || '').substring(0, 10)}.`);
+        if (previewCard) previewCard.classList.add("d-none");
+        if (submitBtn) submitBtn.disabled = true;
+        return;
+      }
+
+      if (previewCard) {
+        previewCard.classList.remove("d-none");
+        document.querySelector("#claim-preview-id").textContent = `#${item.gearId}`;
+        document.querySelector("#claim-preview-title").textContent = item.title;
+        document.querySelector("#claim-preview-details").textContent = `Category: ${item.category} · Est Value: $${item.estValueUsd} USD`;
+        document.querySelector("#claim-preview-hub").textContent = `📍 Hub: ${item.hubName || item.address}`;
+      }
+
+      if (submitBtn) submitBtn.disabled = false;
+      showToast(`⚡ Valid code: "${item.title}" found at ${item.hubName}!`, "success");
+    });
+  }
+
+  if (claimForm) {
+    claimForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      clearClaimAlert();
+
+      const recipientId = document.querySelector("#claim-recipient-select")?.value;
+      const code = (codeInput?.value || "").toUpperCase().trim();
+
+      if (!recipientId) {
+        showClaimAlert("Please select your verified recipient organization.");
+        return;
+      }
+
+      if (!code) {
+        showClaimAlert("Please enter the claim code.");
+        return;
+      }
+
+      const item = liveGearInventory.find(g => g.claimCode.toUpperCase() === code);
+      if (!item || item.status === "claimed") {
+        showClaimAlert("Item cannot be claimed. Please verify code validity.");
+        return;
+      }
+
+      const recipient = recipients.find(r => r.id === recipientId);
+      const recipientName = recipient ? recipient.name : "Community Recipient";
+
+      item.status = "claimed";
+      item.claimedByRecipientId = recipientId;
+      item.claimedByRecipientName = recipientName;
+      item.claimedAt = new Date().toISOString();
+
+      rebuildAllMapNodes();
+      updateLiveImpactCounters();
+
+      const modalEl = document.querySelector("#claimGearModal");
+      if (modalEl) bootstrap.Modal.getInstance(modalEl)?.hide();
+      claimForm.reset();
+      if (previewCard) previewCard.classList.add("d-none");
+      if (submitBtn) submitBtn.disabled = true;
+
+      showToast(`🎉 Hardware Claim Verified! "${item.title}" has been officially released to ${recipientName}.`, "success", 6000);
+    });
+  }
+}
+
+function rebuildRecipientMapMarkers() {
+  if (!window.L) return;
+  rebuildAllMapNodes();
 }
 
 function initLeafletMaps() {
@@ -1989,28 +2597,15 @@ function initLeafletMaps() {
       L.tileLayer(darkTileUrl, tileOptions).addTo(dropMap);
       state.maps.dropMap = dropMap;
 
-      // Add verified partner markers
-      dropOffPartners.forEach(p => {
-        const marker = L.marker([p.lat, p.lng], { icon: createPartnerIcon(p.type) }).addTo(dropMap);
-        marker.bindPopup(`
-          <div>
-            <h6>${escapeHtml(p.name)}</h6>
-            <p class="mb-1 text-muted small">${escapeHtml(p.address)}</p>
-            <div class="d-flex justify-content-between align-items-center mt-2 pt-1 border-top border-secondary">
-              <span class="badge ${p.type === 'store' ? 'bg-info' : 'bg-primary'}">${p.type === 'store' ? 'Game Store' : 'Community Hub'}</span>
-              <small class="text-white">${p.hours}</small>
-            </div>
-            <button type="button" class="btn btn-neon btn-sm w-100 mt-2" onclick="selectDropoffPartner('${p.id}')">Drop Gear Here</button>
-          </div>
-        `);
-      });
-
       // Map click: drops pin & reverse geocodes
       dropMap.on("click", async (e) => {
         const { lat, lng } = e.latlng;
         updateUserPositionOnMaps(lat, lng, false);
         await reverseGeocodeAddress(lat, lng);
       });
+
+      // Initialize multi-layer nodes
+      rebuildAllMapNodes();
     } catch (err) {
       console.warn("Failed to initialize drop-map:", err.message);
     }
@@ -2028,7 +2623,6 @@ function initLeafletMaps() {
       L.tileLayer(darkTileUrl, tileOptions).addTo(donationMap);
       state.maps.donationMap = donationMap;
 
-      // Add partners to form map
       dropOffPartners.forEach(p => {
         const marker = L.marker([p.lat, p.lng], { icon: createPartnerIcon(p.type) }).addTo(donationMap);
         marker.bindPopup(`
@@ -2040,7 +2634,6 @@ function initLeafletMaps() {
         `);
       });
 
-      // Click to place custom pin and reverse geocode
       donationMap.on("click", async (e) => {
         const { lat, lng } = e.latlng;
         updateUserPositionOnMaps(lat, lng, false);
@@ -2050,9 +2643,6 @@ function initLeafletMaps() {
       console.warn("Failed to initialize donation-map:", err.message);
     }
   }
-
-  // Render recipient markers on maps
-  rebuildRecipientMapMarkers();
 }
 
 // ── Update user position marker across both maps ─────────────
@@ -2971,6 +3561,9 @@ function initApp() {
   initAuthHandlers();
   initAdminDashboardHandlers();
   initRecipientManagement();
+  initMapFilterSidebarHandlers();
+  initGearClaimHandlers();
+  updateLiveImpactCounters();
 
   // Category switcher
   const categoryBtns = document.querySelectorAll("[data-donation-type]");

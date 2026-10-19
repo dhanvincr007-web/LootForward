@@ -4,7 +4,8 @@
     "dependencies": {
         "firebase-functions": "^4.5.0",
         "stripe": "^14.0.0",
-        "razorpay": "^2.9.2"
+        "razorpay": "^2.9.2",
+        "nodemailer": "^6.9.13"
     },
     "engines": {
         "node": "18"

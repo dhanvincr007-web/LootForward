@@ -63,6 +63,21 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
+    // ── Gear Lifecycle, QR Verification & Recipient Claims ─────
+    match /gear/{gearId} {
+      // Available and claimed gear can be browsed on the public GIS map
+      allow read: if true;
+      // Registered donors or partners can list gear with claim codes
+      allow create: if isAuthenticated() || isAdmin() || request.resource.data.claimCode != null;
+      // Approved recipients can update status to 'claimed'; admins have full moderation authority
+      allow update: if isAdmin() || (
+        resource.data.status == 'available' &&
+        request.resource.data.status == 'claimed' &&
+        request.resource.data.claimedByRecipientId != null
+      );
+      allow delete: if isAdmin();
+    }
+
     // ── User Profiles & RBAC Tokens ─────────────────────────────
     match /users/{userId} {
       allow read: if isAuthenticated();
