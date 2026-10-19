@@ -527,8 +527,8 @@
           </div>
           <div>
             <button type="button" class="btn btn-neon btn-lg d-inline-flex align-items-center gap-2" id="btn-open-recipient-modal" data-bs-toggle="modal" data-bs-target="#addRecipientModal">
-              <span>➕</span>
-              <span>Register New Recipient</span>
+              <span>📋</span>
+              <span>Apply for Gear Support</span>
             </button>
           </div>
         </div>
@@ -859,6 +859,11 @@
                   📦 Hardware Audit Queue (<span id="admin-badge-queue-count">0</span>)
                 </button>
               </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link admin-tab-btn" id="tab-recipients-btn" data-bs-toggle="tab" data-bs-target="#admin-tab-recipients" type="button" role="tab">
+                  🎯 Recipient Applications (<span id="admin-badge-rec-apps-count">0</span>)
+                </button>
+              </li>
             </ul>
 
             <div class="tab-content" id="adminTabsContent">
@@ -944,6 +949,41 @@
                       </tr>
                     </thead>
                     <tbody id="admin-queue-tbody">
+                      <!-- Rendered by JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Tab 4: Recipient Applications & Approval Table -->
+              <div class="tab-pane fade" id="admin-tab-recipients" role="tabpanel">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+                  <div class="input-group" style="max-width: 360px;">
+                    <span class="input-group-text bg-dark border-secondary text-muted">🔍</span>
+                    <input type="text" class="form-control bg-dark border-secondary text-white small" id="admin-rec-search" placeholder="Search applicant, category, or city...">
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle py-2 px-3 small font-mono">
+                      <span id="admin-pending-rec-count">0</span> PENDING REVIEW
+                    </span>
+                  </div>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="table table-dark table-hover admin-table align-middle">
+                    <thead>
+                      <tr>
+                        <th>Application ID</th>
+                        <th>Applicant Organization</th>
+                        <th>Category</th>
+                        <th>Facility Location</th>
+                        <th>Contact Email / Phone</th>
+                        <th>Target Need</th>
+                        <th>Application Status</th>
+                        <th class="text-end">Approval Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="admin-rec-tbody">
                       <!-- Rendered by JS -->
                     </tbody>
                   </table>
@@ -1598,8 +1638,8 @@
             <div class="auth-logo-badge" aria-hidden="true" style="background: linear-gradient(135deg, #00f2fe, #9b51e0);">🎯</div>
             <div>
               <span class="small font-mono text-cyan fw-bold">DESTINATION ONBOARDING // COMMUNITY ENROLLMENT</span>
-              <h5 class="auth-title mb-0" id="addRecipientModalLabel">Register New Recipient Program</h5>
-              <p class="auth-subtitle mb-0">Nominate an esports club, hospital, NGO, or school for audited gear drops</p>
+              <h5 class="auth-title mb-0" id="addRecipientModalLabel">Apply for Recipient Gear Support</h5>
+              <p class="auth-subtitle mb-0">Apply for gaming equipment, STEM rigs, or esports gear support for your club, school, NGO, or individual need</p>
             </div>
           </div>
           <button type="button" class="pm-close-btn" data-bs-dismiss="modal" aria-label="Close">
@@ -1741,7 +1781,7 @@
               <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancel</button>
               <button type="submit" class="btn btn-neon px-4 d-inline-flex align-items-center gap-2" id="btn-submit-recipient">
                 <span class="spinner-border spinner-border-sm d-none" id="recipient-submit-spinner" role="status" aria-hidden="true"></span>
-                <span id="recipient-submit-text">Deploy Recipient to Platform</span>
+                <span id="recipient-submit-text">Submit Gear Assistance Application</span>
               </button>
             </div>
           </form>

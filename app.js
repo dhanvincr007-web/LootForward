@@ -219,6 +219,45 @@ let adminHardwareQueue = [
   }
 ];
 
+let recipientApplications = [
+  {
+    id: "rec_app_9918",
+    name: "Midwest Youth Robotics & Esports Academy",
+    category: "School / STEM",
+    email: "robotics@midwest-stem.edu",
+    phone: "(312) 555-0819",
+    address: "1000 W Adams St, Chicago, IL 60607",
+    lat: 41.8794,
+    lng: -87.6525,
+    region: "Chicago, IL",
+    mission: "Providing after-school STEM robotics and competitive Rocket League esports coaching for underprivileged middle school students.",
+    needs: ["Gaming PCs", "Mechanical Keyboards", "Controllers"],
+    targetItem: "Gaming PCs & Peripherals",
+    target: 6,
+    received: 0,
+    status: "pending",
+    date: "2026-10-19 21:30"
+  },
+  {
+    id: "rec_app_9904",
+    name: "Harbor Children's Center Digital Lounge",
+    category: "Pediatric / Hospital",
+    email: "programs@harborchildrens.org",
+    phone: "(212) 555-0321",
+    address: "420 E 70th St, New York, NY 10021",
+    lat: 40.7658,
+    lng: -73.9554,
+    region: "New York, NY",
+    mission: "Creating safe bedside and recovery-lounge gaming hubs for prolonged pediatric care patients and their siblings.",
+    needs: ["Nintendo Switch Consoles", "PS5 Consoles", "Wireless Controllers"],
+    targetItem: "Handheld & Home Consoles",
+    target: 5,
+    received: 0,
+    status: "pending",
+    date: "2026-10-19 18:15"
+  }
+];
+
 const state = {
   currentPage: "about",
   donationType: "console",
@@ -349,9 +388,10 @@ function renderRecipients() {
   if (!grid) return;
 
   const categoryFilter = state.activeRecipientCategoryFilter || "all";
-  const searchTerm = (state.recipientSearchTerm || "").toLowerCase().trim();
+  // Only verified approved recipients are visible in the public directory
+  const approvedList = recipients.filter(r => r.status === "approved" || !r.status);
 
-  let filtered = recipients.filter((r) => {
+  let filtered = approvedList.filter((r) => {
     // Category filter
     if (categoryFilter !== "all") {
       const cat = (r.category || "").toLowerCase();
@@ -1354,6 +1394,7 @@ function renderAdminDashboard() {
   renderAdminDonationsTable();
   renderAdminHubsTable();
   renderAdminQueueTable();
+  renderAdminRecipientApplicationsTable();
 }
 
 function renderAdminMetrics() {
@@ -1389,10 +1430,15 @@ function renderAdminMetrics() {
   const bDonations = document.querySelector("#admin-badge-donations-count");
   const bHubs = document.querySelector("#admin-badge-hubs-count");
   const bQueue = document.querySelector("#admin-badge-queue-count");
+  const bRecApps = document.querySelector("#admin-badge-rec-apps-count");
+  const pRecCount = document.querySelector("#admin-pending-rec-count");
 
+  const pendingApps = recipientApplications.filter(a => a.status === "pending").length;
   if (bDonations) bDonations.textContent = adminDonations.length;
   if (bHubs) bHubs.textContent = dropOffPartners.length;
   if (bQueue) bQueue.textContent = adminHardwareQueue.length;
+  if (bRecApps) bRecApps.textContent = pendingApps;
+  if (pRecCount) pRecCount.textContent = pendingApps;
 }
 
 function renderAdminDonationsTable() {
@@ -1568,6 +1614,129 @@ window.rejectHardwareSubmission = function(ticketId) {
   showToast(`⚠️ Drop ${ticketId} rejected and flagged.`, "warning");
 };
 
+function renderAdminRecipientApplicationsTable() {
+  const tbody = document.querySelector("#admin-rec-tbody");
+  if (!tbody) return;
+
+  const searchTerm = (document.querySelector("#admin-rec-search")?.value || "").toLowerCase().trim();
+
+  let filtered = recipientApplications.filter(app => {
+    if (searchTerm) {
+      const match = (app.name || "").toLowerCase().includes(searchTerm) ||
+                    (app.category || "").toLowerCase().includes(searchTerm) ||
+                    (app.email || "").toLowerCase().includes(searchTerm) ||
+                    (app.address || "").toLowerCase().includes(searchTerm) ||
+                    (app.targetItem || "").toLowerCase().includes(searchTerm);
+      if (!match) return false;
+    }
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-4">No recipient applications currently awaiting moderation.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(app => {
+    const isPending = app.status === "pending";
+    const statusBadge = isPending
+      ? `<span class="badge bg-warning text-dark">⏳ Pending Review</span>`
+      : app.status === "approved"
+      ? `<span class="badge bg-success">✓ Approved &amp; Live</span>`
+      : `<span class="badge bg-danger">✕ Rejected</span>`;
+
+    return `
+      <tr>
+        <td>
+          <div class="font-mono small text-cyan fw-bold">${escapeHtml(app.id)}</div>
+          <div class="small text-muted font-mono">${escapeHtml(app.date || 'Recent')}</div>
+        </td>
+        <td>
+          <div class="fw-bold text-white">${escapeHtml(app.name)}</div>
+          <div class="small text-white-50 text-truncate" style="max-width:220px;" title="${escapeHtml(app.mission || '')}">${escapeHtml(app.mission || '')}</div>
+        </td>
+        <td>
+          <span class="badge bg-primary" style="font-size:0.7rem;">${escapeHtml(app.category || 'General')}</span>
+        </td>
+        <td>
+          <div class="small text-white text-truncate" style="max-width:180px;">${escapeHtml(app.address || '—')}</div>
+          <div class="small font-mono text-cyan">[${(app.lat || 0).toFixed(4)}, ${(app.lng || 0).toFixed(4)}]</div>
+        </td>
+        <td class="small font-mono">
+          <div>✉️ ${escapeHtml(app.email || '—')}</div>
+          ${app.phone ? `<div class="text-muted">📞 ${escapeHtml(app.phone)}</div>` : ''}
+        </td>
+        <td class="small">
+          <div class="fw-bold text-cyan">${escapeHtml(app.targetItem || 'Hardware')}</div>
+          <div class="text-muted">Goal: ${app.target || 1} units</div>
+        </td>
+        <td>${statusBadge}</td>
+        <td class="text-end">
+          ${isPending ? `
+            <button type="button" class="btn btn-success btn-sm me-1" onclick="approveRecipientApplication('${escapeHtml(app.id)}')">
+              ✓ Approve
+            </button>
+            <button type="button" class="btn btn-outline-danger btn-sm" onclick="rejectRecipientApplication('${escapeHtml(app.id)}')">
+              ✕ Reject
+            </button>
+          ` : `
+            <button type="button" class="btn btn-outline-secondary btn-sm" disabled>
+              ${app.status === 'approved' ? '✓ Approved' : 'Archived'}
+            </button>
+          `}
+        </td>
+      </tr>
+    `;
+  }).join("");
+}
+
+window.approveRecipientApplication = function(appId) {
+  if (!state.isAdmin) {
+    showToast("Access Denied: Only verified administrators can approve applications.", "error");
+    return;
+  }
+
+  const app = recipientApplications.find(a => a.id === appId);
+  if (!app) return;
+
+  app.status = "approved";
+
+  // Check if not already in public recipients directory
+  if (!recipients.some(r => r.id === app.id)) {
+    recipients.unshift({
+      ...app,
+      status: "approved",
+      isNew: true
+    });
+  } else {
+    const existing = recipients.find(r => r.id === app.id);
+    if (existing) existing.status = "approved";
+  }
+
+  // Live UI updates without page reload
+  renderRecipients();
+  rebuildRecipientMapMarkers();
+  renderAdminDashboard();
+
+  showToast(`✅ Approved "${app.name}"! Now live on public directory and map.`, "success", 5000);
+};
+
+window.rejectRecipientApplication = function(appId) {
+  if (!state.isAdmin) {
+    showToast("Access Denied: Only verified administrators can moderate applications.", "error");
+    return;
+  }
+
+  const app = recipientApplications.find(a => a.id === appId);
+  if (!app) return;
+
+  if (!confirm(`Are you sure you want to reject the application for "${app.name}"?`)) return;
+
+  app.status = "rejected";
+  renderAdminDashboard();
+  showToast(`⚠️ Application for "${app.name}" rejected and archived.`, "warning");
+};
+
 function rebuildPartnerMapMarkers() {
   if (!window.L) return;
   if (state.partnerMarkers?.dropMap) {
@@ -1659,6 +1828,12 @@ function initAdminDashboardHandlers() {
       renderAdminDonationsTable();
     });
   });
+
+  // Recipient applications search input
+  const recSearchInput = document.querySelector("#admin-rec-search");
+  if (recSearchInput) {
+    recSearchInput.addEventListener("input", renderAdminRecipientApplicationsTable);
+  }
 
   // Hubs live search input
   const hubsSearchInput = document.querySelector("#admin-hubs-search");
@@ -1765,7 +1940,7 @@ function rebuildRecipientMapMarkers() {
 
   const renderOnMap = (mapInstance, targetList) => {
     if (!mapInstance) return;
-    recipients.forEach(r => {
+    recipients.filter(r => r.status === "approved" || !r.status).forEach(r => {
       if (r.lat && r.lng) {
         const marker = L.marker([r.lat, r.lng], { icon: createRecipientIcon() }).addTo(mapInstance);
         marker.bindPopup(`
@@ -2721,7 +2896,7 @@ function initRecipientManagement() {
 
       if (submitBtn) submitBtn.disabled = true;
       if (spinner) spinner.classList.remove("d-none");
-      if (submitText) submitText.textContent = "Deploying to Firestore...";
+      if (submitText) submitText.textContent = "Submitting to Firestore...";
 
       const recipientPayload = {
         name,
@@ -2737,13 +2912,13 @@ function initRecipientManagement() {
         targetItem,
         target: targetCount,
         received: 0,
-        status: "active",
-        isNew: true,
+        status: "pending",
+        date: new Date().toISOString().replace('T', ' ').substring(0, 16),
         createdAt: new Date().toISOString()
       };
 
       try {
-        // Send payload to Firestore 'recipients' collection
+        // Send payload to Firestore 'recipients' collection (status: 'pending')
         let saved;
         if (window.LootFirestore?.saveRecipient) {
           saved = await window.LootFirestore.saveRecipient(recipientPayload);
@@ -2751,48 +2926,32 @@ function initRecipientManagement() {
           saved = await window.LootAuth.saveRecipient(recipientPayload);
         } else {
           saved = {
-            id: `rec_${Date.now().toString(36)}`,
+            id: `rec_app_${Date.now().toString(36)}`,
             ...recipientPayload
           };
         }
 
-        // Add to in-memory recipients array
-        recipients.unshift(saved);
+        // Add to in-memory recipient applications moderation queue
+        recipientApplications.unshift(saved);
 
-        // Dynamically update public directory without full page reload
-        renderRecipients();
-
-        // Dynamically render newly added recipient as a custom marker on Leaflet map
-        rebuildRecipientMapMarkers();
-
-        // Update Admin stats if active
-        const hubsStatEl = document.querySelector("#admin-stat-hubs");
-        if (hubsStatEl) hubsStatEl.textContent = `${dropOffPartners.length + recipients.length} Nodes`;
+        // Refresh admin dashboard metrics and pending application tables
+        renderAdminMetrics();
+        renderAdminRecipientApplicationsTable();
 
         // Hide modal & reset form
         const bsModal = bootstrap.Modal.getInstance(modalEl);
         if (bsModal) bsModal.hide();
         recForm.reset();
 
-        showToast(`🎉 Recipient "${saved.name}" registered & deployed to map!`, "success", 5000);
-
-        // Navigate to recipients and scroll to new card
-        navigate("recipients");
-        setTimeout(() => {
-          const newCard = document.querySelector(`[data-recipient-card-id="${saved.id}"]`);
-          if (newCard) {
-            newCard.scrollIntoView({ behavior: "smooth", block: "center" });
-            newCard.classList.add("recipient-card-new");
-          }
-        }, 350);
+        showToast(`📋 Application for "${saved.name}" submitted! Awaiting administrator audit and verification.`, "success", 6000);
 
       } catch (err) {
         console.error("Error saving recipient:", err);
-        showRecipientAlert(`Failed to register recipient: ${err.message || 'Unknown network error'}`);
+        showRecipientAlert(`Failed to submit application: ${err.message || 'Unknown network error'}`);
       } finally {
         if (submitBtn) submitBtn.disabled = false;
         if (spinner) spinner.classList.add("d-none");
-        if (submitText) submitText.textContent = "Deploy Recipient to Platform";
+        if (submitText) submitText.textContent = "Submit Gear Assistance Application";
       }
     });
   }

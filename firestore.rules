@@ -55,11 +55,11 @@ service cloud.firestore {
 
     // ── Verified Recipients & Beneficiary Organizations ────────
     match /recipients/{recipientId} {
-      // Publicly readable so donors and gamers can browse and choose drop targets
-      allow read: if true;
-      // Authenticated users and administrators can create new recipient entries
-      allow create: if isAuthenticated() || request.resource.data.name != null;
-      // Only administrators can edit or archive recipient organizations
+      // Public read access restricted strictly to approved recipients; admins view all (including pending review)
+      allow read: if isAdmin() || (resource.data.status == 'approved');
+      // Public applicants can submit new applications ONLY with status 'pending'; admins can create directly
+      allow create: if (request.resource.data.status == 'pending' && request.resource.data.name != null) || isAdmin();
+      // Only verified administrators can approve, update status, edit, or delete recipient applications
       allow update, delete: if isAdmin();
     }
 
