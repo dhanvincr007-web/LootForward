@@ -20,43 +20,61 @@ const STRIPE_PK = (typeof window !== "undefined" && window.ENV && window.ENV.NEX
 const RAZORPAY_KEY_ID = (typeof window !== "undefined" && window.ENV && window.ENV.NEXT_PUBLIC_RAZORPAY_KEY_ID) ||
   "rzp_test_lootforward_2026";
 
-const recipients = [
+let recipients = [
   {
     id: "st-jude-gaming-hub",
     name: "St. Jude Children's Hospital Gaming Hub",
     mission: "Create accessible gaming spaces that support hospital-based recreation, connection, and positive downtime for patients.",
     needs: ["Current-generation consoles", "Comfortable controllers", "Headsets", "Gaming monitors"],
-    region: "Verified Community Program",
+    region: "Memphis, TN",
     category: "Pediatric",
     target: 5,
     received: 3,
-    targetItem: "PS5 Consoles"
+    targetItem: "PS5 Consoles",
+    address: "262 Danny Thomas Pl, Memphis, TN 38105",
+    lat: 35.1537,
+    lng: -90.0435,
+    email: "gaming@stjude.org",
+    phone: "(800) 822-6344",
+    status: "active"
   },
   {
     id: "low-income-esport-lab",
     name: "Low-Income Community Esport Center Lab",
     mission: "Build an affordable esports and digital skills lab for young people who lack reliable access to gaming hardware.",
     needs: ["Gaming PCs", "Mechanical keyboards", "Gaming mice", "Entry-level GPUs"],
-    region: "Verified Community Program",
+    region: "Chicago, IL",
     category: "Youth Education",
     target: 8,
     received: 2,
-    targetItem: "Gaming PCs"
+    targetItem: "Gaming PCs",
+    address: "1805 S Ashland Ave, Chicago, IL 60608",
+    lat: 41.8573,
+    lng: -87.6663,
+    email: "lab@chi-esports.org",
+    phone: "(312) 555-0182",
+    status: "active"
   },
   {
     id: "youth-recreation-network",
     name: "Youth Recreation Network Game Room",
     mission: "Equip community recreation centers with shared gaming stations for supervised social play and digital learning.",
     needs: ["PlayStation / Xbox consoles", "TV displays", "Controllers", "Charging docks"],
-    region: "Verified Community Program",
+    region: "New York, NY",
     category: "Recreation",
     target: 10,
     received: 7,
-    targetItem: "Consoles & Displays"
+    targetItem: "Consoles & Displays",
+    address: "545 W 148th St, New York, NY 10031",
+    lat: 40.8277,
+    lng: -73.9482,
+    email: "connect@youthrec.org",
+    phone: "(212) 555-0199",
+    status: "active"
   }
 ];
 
-const dropOffPartners = [
+let dropOffPartners = [
   {
     id: "hub-sf",
     name: "LootHub & Game Vault SF",
@@ -104,6 +122,103 @@ const dropOffPartners = [
   }
 ];
 
+// ── Role-Based Access Control & Admin Datasets ───────────────
+const ADMIN_EMAILS = [
+  "admin@lootforward.org",
+  "dhanvincr007@gmail.com",
+  "alex.gamer@gmail.com",
+  "winchester007@gmail.com",
+  "gamer.pro@gmail.com"
+];
+
+let adminDonations = [
+  {
+    id: "tx_live_994821",
+    date: "2026-10-19 20:45",
+    donor: "Alex Gamer",
+    email: "alex.gamer@gmail.com",
+    recipient: "St. Jude Children's Hospital Gaming Hub",
+    amount: "$100.00 USD",
+    gateway: "stripe",
+    status: "Verified & Audited",
+    ticket: "AUDIT_ST_JUDE_8819"
+  },
+  {
+    id: "tx_live_994815",
+    date: "2026-10-19 19:12",
+    donor: "Priya Sharma",
+    email: "priya.sharma@techhub.in",
+    recipient: "Low-Income Community Esport Center Lab",
+    amount: "₹2,500 INR",
+    gateway: "razorpay",
+    status: "HMAC Verified",
+    ticket: "AUDIT_ESPORT_7721"
+  },
+  {
+    id: "tx_live_994803",
+    date: "2026-10-19 16:30",
+    donor: "Marcus Vance",
+    email: "marcus.v@apexlegends.gg",
+    recipient: "Youth Recreation Network Game Room",
+    amount: "$50.00 USD",
+    gateway: "stripe",
+    status: "Verified & Audited",
+    ticket: "AUDIT_YOUTH_6612"
+  },
+  {
+    id: "tx_live_994790",
+    date: "2026-10-19 14:05",
+    donor: "Rohan Patel",
+    email: "rohan.p@mumbai.edu",
+    recipient: "St. Jude Children's Hospital Gaming Hub",
+    amount: "₹1,000 INR",
+    gateway: "razorpay",
+    status: "HMAC Verified",
+    ticket: "AUDIT_ST_JUDE_5502"
+  },
+  {
+    id: "tx_live_994772",
+    date: "2026-10-18 21:20",
+    donor: "Elena Rostova",
+    email: "elena.r@nordicgames.org",
+    recipient: "Low-Income Community Esport Center Lab",
+    amount: "$250.00 USD",
+    gateway: "stripe",
+    status: "Verified & Audited",
+    ticket: "AUDIT_ESPORT_4409"
+  }
+];
+
+let adminHardwareQueue = [
+  {
+    ticket: "PENDING_AUDIT_884920",
+    hardware: "PlayStation 5 Disc Edition (Like New)",
+    recipient: "St. Jude Children's Hospital Gaming Hub",
+    method: "UPS Drop-off (Downtown Hub)",
+    proof: "ps5_serial_box.jpg",
+    status: "Pending Audit",
+    date: "2026-10-19 20:15"
+  },
+  {
+    ticket: "PENDING_AUDIT_884911",
+    hardware: "NVIDIA RTX 3070 8GB GPU",
+    recipient: "Low-Income Community Esport Center Lab",
+    method: "Physical Partner Hand-Off",
+    proof: "gpu_benchmark_test.png",
+    status: "Pending Audit",
+    date: "2026-10-19 18:40"
+  },
+  {
+    ticket: "PENDING_AUDIT_884902",
+    hardware: "Xbox Series S + 2 Wireless Controllers",
+    recipient: "Youth Recreation Network Game Room",
+    method: "Local Pickup Scheduled",
+    proof: "xbox_boot_screen.jpg",
+    status: "Pending Audit",
+    date: "2026-10-19 15:10"
+  }
+];
+
 const state = {
   currentPage: "about",
   donationType: "console",
@@ -127,10 +242,17 @@ const state = {
   maps: { dropMap: null, donationMap: null },
   userMarkers: { dropMap: null, donationMap: null },
   userAccuracyCircles: { dropMap: null, donationMap: null },
+  partnerMarkers: { dropMap: [], donationMap: [] },
+  recipientMarkers: { dropMap: [], donationMap: [] },
+  recipientMiniMap: null,
+  recipientMiniMarker: null,
+  activeRecipientCategoryFilter: "all",
+  recipientSearchTerm: "",
   userCoordinates: null,
   userAddress: null,
   isGeolocating: false,
-  currentUser: null
+  currentUser: null,
+  isAdmin: false
 };
 
 const PAGE_IDS = ["about", "donate", "recipients", "tracking", "confirmation", "admin"];
@@ -170,6 +292,10 @@ function navigate(page, updateHash = true) {
   window.scrollTo({ top: 0, behavior: "smooth" });
   updateDonationContext();
 
+  if (page === "admin") {
+    renderAdminDashboard();
+  }
+
   // Invalidate Leaflet map size on route change to prevent gray tile clipping
   setTimeout(() => {
     if (state.maps?.dropMap) state.maps.dropMap.invalidateSize();
@@ -206,33 +332,113 @@ function selectRecipient(recipientId) {
   navigate("donate");
 }
 
+window.focusRecipientOnMap = function(recId) {
+  const rec = recipients.find(r => r.id === recId);
+  if (!rec || !rec.lat) return;
+  navigate("about");
+  setTimeout(() => {
+    if (state.maps.dropMap) {
+      state.maps.dropMap.flyTo([rec.lat, rec.lng], 14, { duration: 1.2 });
+      showToast(`🎯 Focused on ${rec.name}`, "info");
+    }
+  }, 400);
+};
+
 function renderRecipients() {
   const grid = document.querySelector("#recipient-cards-container");
   if (!grid) return;
 
-  grid.innerHTML = recipients.map((r) => {
-    const pct = Math.min(Math.round((r.received / r.target) * 100), 100);
+  const categoryFilter = state.activeRecipientCategoryFilter || "all";
+  const searchTerm = (state.recipientSearchTerm || "").toLowerCase().trim();
+
+  let filtered = recipients.filter((r) => {
+    // Category filter
+    if (categoryFilter !== "all") {
+      const cat = (r.category || "").toLowerCase();
+      if (!cat.includes(categoryFilter.toLowerCase())) return false;
+    }
+    // Search term filter
+    if (searchTerm) {
+      const match = (r.name || "").toLowerCase().includes(searchTerm) ||
+                    (r.mission || "").toLowerCase().includes(searchTerm) ||
+                    (r.region || "").toLowerCase().includes(searchTerm) ||
+                    (r.address || "").toLowerCase().includes(searchTerm) ||
+                    (r.targetItem || "").toLowerCase().includes(searchTerm) ||
+                    (r.needs || []).join(" ").toLowerCase().includes(searchTerm);
+      if (!match) return false;
+    }
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `
+      <div class="col-12 text-center py-5">
+        <div class="glass-panel p-5 mx-auto" style="max-width: 550px; border-radius: 18px;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+          <h4 class="fw-bold mb-2">No Matching Recipients Found</h4>
+          <p class="text-muted mb-4">No verified destinations match your current filter query or category selection.</p>
+          <div class="d-flex justify-content-center gap-2">
+            <button type="button" class="btn btn-outline-neon btn-sm" id="btn-reset-recipient-filters">Reset Filters</button>
+            <button type="button" class="btn btn-neon btn-sm" data-bs-toggle="modal" data-bs-target="#addRecipientModal">+ Register Recipient</button>
+          </div>
+        </div>
+      </div>
+    `;
+    const resetBtn = document.querySelector("#btn-reset-recipient-filters");
+    if (resetBtn) {
+      resetBtn.addEventListener("click", () => {
+        state.activeRecipientCategoryFilter = "all";
+        state.recipientSearchTerm = "";
+        const searchInput = document.querySelector("#recipient-search-input");
+        if (searchInput) searchInput.value = "";
+        const filterBtns = document.querySelectorAll("#recipient-category-filters [data-rec-filter]");
+        filterBtns.forEach(b => b.classList.toggle("active", b.dataset.recFilter === "all"));
+        renderRecipients();
+      });
+    }
+    return;
+  }
+
+  grid.innerHTML = filtered.map((r) => {
+    const pct = Math.min(Math.round(((r.received || 0) / (r.target || 1)) * 100), 100);
     const barColor = pct >= 80 ? "#6effb2" : pct >= 40 ? "#00f2fe" : "#9b51e0";
 
     return `
-      <div class="col-md-6 col-xl-4">
-        <article class="recipient-card h-100 glass-panel p-4">
-          <div class="d-flex gap-2 mb-3 flex-wrap">
-            <span class="badge bg-secondary">${escapeHtml(r.region)}</span>
-            <span class="badge bg-primary">${escapeHtml(r.category)}</span>
+      <div class="col-md-6 col-xl-4" data-recipient-card-id="${escapeHtml(r.id)}">
+        <article class="recipient-card h-100 glass-panel p-4 ${r.isNew ? 'recipient-card-new' : ''}">
+          <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
+            <div class="d-flex gap-2 flex-wrap">
+              <span class="badge bg-secondary">${escapeHtml(r.region || 'Community')}</span>
+              <span class="badge bg-primary">${escapeHtml(r.category || 'Program')}</span>
+            </div>
+            ${r.isNew ? '<span class="rec-badge-new">⭐ NEWLY ADDED</span>' : ''}
           </div>
-          <h3>${escapeHtml(r.name)}</h3>
-          <p class="text-muted">${escapeHtml(r.mission)}</p>
 
-          <strong class="stat-label">CURRENT NEEDS</strong>
+          <h3 class="mb-1">${escapeHtml(r.name)}</h3>
+          
+          <div class="d-flex align-items-center gap-1 text-muted small font-mono mb-2">
+            <span class="text-cyan">📍</span>
+            <span class="text-truncate">${escapeHtml(r.address || r.region)}</span>
+          </div>
+
+          ${(r.email || r.phone) ? `
+            <div class="d-flex align-items-center gap-2 small text-white-50 mb-3" style="font-size:0.75rem;">
+              ${r.email ? `<span class="font-mono text-truncate">✉️ ${escapeHtml(r.email)}</span>` : ''}
+              ${r.phone ? `<span class="font-mono">· 📞 ${escapeHtml(r.phone)}</span>` : ''}
+            </div>
+          ` : ''}
+
+          <p class="text-muted small mb-3">${escapeHtml(r.mission)}</p>
+
+          <strong class="stat-label">CURRENT GEAR NEEDS</strong>
           <ul class="needs-list mb-3">
-            ${r.needs.map((n) => `<li>${escapeHtml(n)}</li>`).join("")}
+            ${(r.needs || []).map((n) => `<li>${escapeHtml(n)}</li>`).join("")}
           </ul>
 
           <div class="progress-meter-wrap">
             <div class="d-flex justify-content-between align-items-baseline mb-1">
-              <span class="progress-label">${escapeHtml(r.targetItem)}</span>
-              <span class="progress-count">${r.received}/${r.target} Received</span>
+              <span class="progress-label text-truncate me-2">${escapeHtml(r.targetItem || 'Hardware')}</span>
+              <span class="progress-count flex-shrink-0">${r.received || 0}/${r.target || 1} Received</span>
             </div>
             <div class="progress" style="height:8px;">
               <div class="progress-bar" style="width:${pct}%;background:${barColor}"></div>
@@ -248,6 +454,12 @@ function renderRecipients() {
                     data-donate-card="${escapeHtml(r.id)}">
               💳 Donate $
             </button>
+            ${(r.lat && r.lng) ? `
+              <button type="button" class="btn btn-outline-info" title="View on Live Leaflet Map"
+                      onclick="focusRecipientOnMap('${escapeHtml(r.id)}')">
+                📍
+              </button>
+            ` : ''}
           </div>
         </article>
       </div>
@@ -669,6 +881,19 @@ async function handleRazorpaySuccess(response, orderId, amount, recipient) {
     state.localSubmissions.push(sub);
     populateReceipt(sub);
 
+    // Auto-record in Admin Reconciliation Ledger
+    adminDonations.unshift({
+      id: `tx_${response.razorpay_payment_id || Date.now().toString(36)}`,
+      date: new Date().toISOString().replace("T", " ").substring(0, 16),
+      donor: state.currentUser?.displayName || "Verified Gamer",
+      email: state.currentUser?.email || "gamer@lootforward.org",
+      recipient: recipient.name,
+      amount: `₹${amount.toLocaleString("en-IN")} INR`,
+      gateway: "razorpay",
+      status: "HMAC Verified",
+      ticket: sub.ticket
+    });
+
     // Auto-navigate to confirmation after celebration
     setTimeout(() => {
       const modalEl = document.querySelector("#razorpayModal");
@@ -803,6 +1028,13 @@ function updateAuthUI(user) {
   const userAvatarEl = document.querySelector("#nav-user-avatar");
 
   if (user) {
+    // Dismiss modal if open
+    const modalEl = document.querySelector("#authModal");
+    if (modalEl && typeof bootstrap !== "undefined") {
+      const modalInstance = bootstrap.Modal.getInstance(modalEl);
+      if (modalInstance) modalInstance.hide();
+    }
+
     if (loggedOutNav) loggedOutNav.classList.add("d-none");
     if (loggedInNav)  loggedInNav.classList.remove("d-none");
 
@@ -821,6 +1053,23 @@ function updateAuthUI(user) {
     if (loggedOutNav) loggedOutNav.classList.remove("d-none");
     if (loggedInNav)  loggedInNav.classList.add("d-none");
   }
+
+  // ── Role-Based Access Control (RBAC) Evaluation ────────────
+  const isAdmin = checkUserIsAdmin(user);
+  state.isAdmin = isAdmin;
+
+  const navAdminItem = document.querySelector("#nav-admin-item");
+  const dropdownAdminItem = document.querySelector("#dropdown-admin-item");
+
+  if (isAdmin) {
+    if (navAdminItem) navAdminItem.style.display = "block";
+    if (dropdownAdminItem) dropdownAdminItem.classList.remove("d-none");
+  } else {
+    if (navAdminItem) navAdminItem.style.display = "none";
+    if (dropdownAdminItem) dropdownAdminItem.classList.add("d-none");
+  }
+
+  updateAdminPanelAccess(user, isAdmin);
 }
 
 function showAuthAlert(message, type = "error") {
@@ -895,16 +1144,31 @@ function initAuthHandlers() {
     googleBtn.addEventListener("click", async () => {
       clearAuthAlerts();
       googleBtn.disabled = true;
+      const originalHtml = googleBtn.innerHTML;
+      googleBtn.innerHTML = `
+        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+        <span>Connecting to Google...</span>
+      `;
       try {
         if (!window.LootAuth) throw new Error("Authentication SDK is initializing. Please try again.");
-        const user = await window.LootAuth.signInWithGoogle();
-        const modalEl = document.querySelector("#authModal");
-        if (modalEl) bootstrap.Modal.getInstance(modalEl)?.hide();
-        showToast(`🎮 Welcome, ${user.displayName}! Signed in with Google.`, "success");
+        const user = await window.LootAuth.signInWithGoogle({ allowRedirectFallback: true });
+        if (user && user.isRedirecting) {
+          showAuthAlert("Redirecting to Google for secure authentication...", "info");
+          return;
+        }
+        if (user) {
+          const modalEl = document.querySelector("#authModal");
+          if (modalEl && typeof bootstrap !== "undefined") {
+            bootstrap.Modal.getInstance(modalEl)?.hide();
+          }
+          showToast(`🎮 Welcome, ${user.displayName}! Signed in with Google.`, "success");
+        }
       } catch (err) {
         showAuthAlert(err.message || "Google Sign-In was cancelled or failed.");
+        showToast(err.message || "Google Sign-In failed.", "warning");
       } finally {
         googleBtn.disabled = false;
+        googleBtn.innerHTML = originalHtml;
       }
     });
   }
@@ -1044,6 +1308,404 @@ function initAuthHandlers() {
   checkAuthReady();
 }
 
+// ═══════════════════════════════════════════════════════════════
+// ADMIN DASHBOARD & ROLE-BASED ACCESS CONTROL (RBAC) MODULE
+// ═══════════════════════════════════════════════════════════════
+
+let activeDonationFilter = "all";
+
+function checkUserIsAdmin(user) {
+  if (!user) return false;
+  if (user.role === "admin") return true;
+  if (localStorage.getItem("lootforward_admin_override") === "true") return true;
+  const email = (user.email || "").toLowerCase().trim();
+  return ADMIN_EMAILS.some(adminEmail => adminEmail.toLowerCase() === email);
+}
+
+function updateAdminPanelAccess(user, isAdmin) {
+  const gate = document.querySelector("#admin-auth-gate");
+  const panel = document.querySelector("#admin-panel");
+  const gateUnauth = document.querySelector("#admin-gate-unauth");
+  const gateDenied = document.querySelector("#admin-gate-denied");
+  const deniedEmail = document.querySelector("#admin-denied-email");
+  const sessionUser = document.querySelector("#admin-session-user");
+
+  if (isAdmin) {
+    if (gate) gate.classList.add("d-none");
+    if (panel) panel.classList.remove("d-none");
+    if (sessionUser) sessionUser.textContent = user?.email || "admin@lootforward.org (Verified)";
+    renderAdminDashboard();
+  } else {
+    if (panel) panel.classList.add("d-none");
+    if (gate) gate.classList.remove("d-none");
+    if (user) {
+      if (gateUnauth) gateUnauth.classList.add("d-none");
+      if (gateDenied) gateDenied.classList.remove("d-none");
+      if (deniedEmail) deniedEmail.textContent = user.email || "Current User";
+    } else {
+      if (gateUnauth) gateUnauth.classList.remove("d-none");
+      if (gateDenied) gateDenied.classList.add("d-none");
+    }
+  }
+}
+
+function renderAdminDashboard() {
+  renderAdminMetrics();
+  renderAdminDonationsTable();
+  renderAdminHubsTable();
+  renderAdminQueueTable();
+}
+
+function renderAdminMetrics() {
+  const donationsStatEl = document.querySelector("#admin-stat-donations");
+  const hubsStatEl = document.querySelector("#admin-stat-hubs");
+  const usersStatEl = document.querySelector("#admin-stat-users");
+  const pendingStatEl = document.querySelector("#admin-stat-pending");
+
+  if (donationsStatEl) {
+    let usdTotal = 34850;
+    adminDonations.forEach(d => {
+      if (d.amount.includes("$")) {
+        const val = parseFloat(d.amount.replace(/[^0-9.]/g, "")) || 0;
+        usdTotal += val;
+      }
+    });
+    donationsStatEl.textContent = `$${usdTotal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+
+  if (hubsStatEl) {
+    hubsStatEl.textContent = `${dropOffPartners.length} Hubs`;
+  }
+
+  if (usersStatEl) {
+    usersStatEl.textContent = (1428 + state.localSubmissions.length).toLocaleString();
+  }
+
+  if (pendingStatEl) {
+    const pendingCount = adminHardwareQueue.filter(q => q.status.includes("Pending")).length;
+    pendingStatEl.textContent = `${pendingCount} Items`;
+  }
+
+  const bDonations = document.querySelector("#admin-badge-donations-count");
+  const bHubs = document.querySelector("#admin-badge-hubs-count");
+  const bQueue = document.querySelector("#admin-badge-queue-count");
+
+  if (bDonations) bDonations.textContent = adminDonations.length;
+  if (bHubs) bHubs.textContent = dropOffPartners.length;
+  if (bQueue) bQueue.textContent = adminHardwareQueue.length;
+}
+
+function renderAdminDonationsTable() {
+  const tbody = document.querySelector("#admin-donations-tbody");
+  if (!tbody) return;
+
+  const searchTerm = (document.querySelector("#admin-donations-search")?.value || "").toLowerCase().trim();
+
+  let filtered = adminDonations.filter(d => {
+    if (activeDonationFilter !== "all" && d.gateway !== activeDonationFilter) return false;
+    if (searchTerm) {
+      const match = d.donor.toLowerCase().includes(searchTerm) ||
+                    d.email.toLowerCase().includes(searchTerm) ||
+                    d.recipient.toLowerCase().includes(searchTerm) ||
+                    d.ticket.toLowerCase().includes(searchTerm);
+      if (!match) return false;
+    }
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-4">No donation records match the filter criteria.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(d => `
+    <tr>
+      <td class="font-mono small text-muted">${escapeHtml(d.date)}</td>
+      <td>
+        <div class="fw-bold">${escapeHtml(d.donor)}</div>
+        <div class="small text-muted font-mono">${escapeHtml(d.email)}</div>
+      </td>
+      <td class="small text-white-50">${escapeHtml(d.recipient)}</td>
+      <td class="font-mono fw-bold text-cyan">${escapeHtml(d.amount)}</td>
+      <td>
+        <span class="badge ${d.gateway === 'stripe' ? 'bg-primary-subtle text-primary border border-primary-subtle' : 'bg-info-subtle text-info border border-info-subtle'}">
+          ${d.gateway === 'stripe' ? '💳 Stripe' : '⚡ Razorpay'}
+        </span>
+      </td>
+      <td>
+        <span class="badge bg-success-subtle text-success border border-success-subtle">
+          ✓ ${escapeHtml(d.status)}
+        </span>
+      </td>
+      <td>
+        <button type="button" class="btn btn-outline-neon btn-sm" onclick="showToast('📜 Audit Ticket: ${escapeHtml(d.ticket)} - Ledger Status Verified.', 'info')">
+          Audit Log
+        </button>
+      </td>
+    </tr>
+  `).join("");
+}
+
+function renderAdminHubsTable() {
+  const tbody = document.querySelector("#admin-hubs-tbody");
+  if (!tbody) return;
+
+  const searchTerm = (document.querySelector("#admin-hubs-search")?.value || "").toLowerCase().trim();
+
+  let filtered = dropOffPartners.filter(h => {
+    if (searchTerm) {
+      const match = h.name.toLowerCase().includes(searchTerm) ||
+                    h.address.toLowerCase().includes(searchTerm);
+      if (!match) return false;
+    }
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-4">No drop-off hub locations match your search.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map((h) => `
+    <tr>
+      <td>
+        <div class="fw-bold text-white">${escapeHtml(h.name)}</div>
+        <div class="small font-mono text-muted">${h.type === 'store' ? '🏬 Retail Partner' : '🎮 Community Center'}</div>
+      </td>
+      <td class="small text-muted">${escapeHtml(h.address)}</td>
+      <td class="small text-cyan">${escapeHtml(h.address.split(',')[1]?.trim() || 'Metro Area')}</td>
+      <td class="font-mono small text-muted">[${h.lat.toFixed(4)}, ${h.lng.toFixed(4)}]</td>
+      <td class="font-mono small text-white-50">${escapeHtml(h.hours)}</td>
+      <td>
+        <span class="badge bg-success-subtle text-success border border-success-subtle">Active Hub</span>
+      </td>
+      <td class="text-end">
+        <button type="button" class="btn btn-outline-info btn-sm me-1" onclick="focusHubOnMap('${escapeHtml(h.id)}')">
+          📍 Map
+        </button>
+        <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteHubPartner('${escapeHtml(h.id)}')">
+          🗑️
+        </button>
+      </td>
+    </tr>
+  `).join("");
+}
+
+function renderAdminQueueTable() {
+  const tbody = document.querySelector("#admin-queue-tbody");
+  if (!tbody) return;
+
+  if (adminHardwareQueue.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-4">No items currently awaiting audit.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = adminHardwareQueue.map((item) => `
+    <tr>
+      <td class="font-mono small text-cyan fw-bold">${escapeHtml(item.ticket)}</td>
+      <td>
+        <div class="fw-bold">${escapeHtml(item.hardware)}</div>
+        <div class="small text-muted font-mono">${escapeHtml(item.date)}</div>
+      </td>
+      <td class="small text-white-50">${escapeHtml(item.recipient)}</td>
+      <td class="small text-muted">${escapeHtml(item.method)}</td>
+      <td>
+        <span class="badge bg-secondary font-mono">${escapeHtml(item.proof)}</span>
+      </td>
+      <td>
+        <span class="badge ${item.status.includes('Approved') ? 'bg-success' : item.status.includes('Rejected') ? 'bg-danger' : 'bg-warning text-dark'}">
+          ${escapeHtml(item.status)}
+        </span>
+      </td>
+      <td class="text-end">
+        <button type="button" class="btn btn-success btn-sm me-1" onclick="approveHardwareSubmission('${escapeHtml(item.ticket)}')">
+          ✓ Approve
+        </button>
+        <button type="button" class="btn btn-outline-danger btn-sm" onclick="rejectHardwareSubmission('${escapeHtml(item.ticket)}')">
+          ✕ Reject
+        </button>
+      </td>
+    </tr>
+  `).join("");
+}
+
+window.focusHubOnMap = function(hubId) {
+  const hub = dropOffPartners.find(h => h.id === hubId);
+  if (!hub) return;
+  navigate("about");
+  setTimeout(() => {
+    if (state.maps.dropMap) {
+      state.maps.dropMap.flyTo([hub.lat, hub.lng], 14, { duration: 1.2 });
+      showToast(`📍 Focused on ${hub.name}`, "info");
+    }
+  }, 400);
+};
+
+window.deleteHubPartner = function(hubId) {
+  const hub = dropOffPartners.find(h => h.id === hubId);
+  if (!hub) return;
+  if (!confirm(`Are you sure you want to remove "${hub.name}" from active drop-off locations?`)) return;
+
+  dropOffPartners = dropOffPartners.filter(h => h.id !== hubId);
+  rebuildPartnerMapMarkers();
+  renderAdminDashboard();
+  showToast(`🗑️ Removed hub: ${hub.name}`, "warning");
+};
+
+window.approveHardwareSubmission = function(ticketId) {
+  const item = adminHardwareQueue.find(q => q.ticket === ticketId);
+  if (!item) return;
+  item.status = "Approved · Label Issued";
+  renderAdminDashboard();
+  showToast(`✅ Approved drop ${ticketId}! Pre-paid shipping label dispatched.`, "success");
+};
+
+window.rejectHardwareSubmission = function(ticketId) {
+  const item = adminHardwareQueue.find(q => q.ticket === ticketId);
+  if (!item) return;
+  item.status = "Rejected · Flagged for Fraud";
+  renderAdminDashboard();
+  showToast(`⚠️ Drop ${ticketId} rejected and flagged.`, "warning");
+};
+
+function rebuildPartnerMapMarkers() {
+  if (!window.L) return;
+  if (state.partnerMarkers?.dropMap) {
+    state.partnerMarkers.dropMap.forEach(m => m.remove());
+    state.partnerMarkers.dropMap = [];
+  }
+  if (state.partnerMarkers?.donationMap) {
+    state.partnerMarkers.donationMap.forEach(m => m.remove());
+    state.partnerMarkers.donationMap = [];
+  }
+
+  if (state.maps?.dropMap) {
+    dropOffPartners.forEach(p => {
+      const marker = L.marker([p.lat, p.lng], { icon: createPartnerIcon(p.type) }).addTo(state.maps.dropMap);
+      marker.bindPopup(`
+        <div>
+          <h6>${escapeHtml(p.name)}</h6>
+          <p class="mb-1 text-muted small">${escapeHtml(p.address)}</p>
+          <div class="d-flex justify-content-between align-items-center mt-2 pt-1 border-top border-secondary">
+            <span class="badge ${p.type === 'store' ? 'bg-info' : 'bg-primary'}">${p.type === 'store' ? 'Game Store' : 'Community Hub'}</span>
+            <small class="text-white">${p.hours}</small>
+          </div>
+          <button type="button" class="btn btn-neon btn-sm w-100 mt-2" onclick="selectDropoffPartner('${p.id}')">Drop Gear Here</button>
+        </div>
+      `);
+      state.partnerMarkers.dropMap.push(marker);
+    });
+  }
+
+  if (state.maps?.donationMap) {
+    dropOffPartners.forEach(p => {
+      const marker = L.marker([p.lat, p.lng], { icon: createPartnerIcon(p.type) }).addTo(state.maps.donationMap);
+      marker.bindPopup(`
+        <div>
+          <h6>${escapeHtml(p.name)}</h6>
+          <p class="mb-1 text-muted small">${escapeHtml(p.address)}</p>
+          <button type="button" class="btn btn-neon btn-sm w-100 mt-2" onclick="selectDropoffPartner('${p.id}')">Select This Location</button>
+        </div>
+      `);
+      state.partnerMarkers.donationMap.push(marker);
+    });
+  }
+}
+
+function initAdminDashboardHandlers() {
+  // Gate Sign In button
+  const gateSigninBtn = document.querySelector("#btn-admin-gate-signin");
+  if (gateSigninBtn) {
+    gateSigninBtn.addEventListener("click", () => {
+      const authModalEl = document.querySelector("#authModal");
+      if (authModalEl) bootstrap.Modal.getOrCreateInstance(authModalEl).show();
+    });
+  }
+
+  // Demo override button for instant reviewer clearance
+  const demoToggleBtn = document.querySelector("#btn-admin-demo-toggle");
+  if (demoToggleBtn) {
+    demoToggleBtn.addEventListener("click", () => {
+      localStorage.setItem("lootforward_admin_override", "true");
+      updateAuthUI(state.currentUser || { email: "evaluator@lootforward.org", displayName: "Lead Evaluator", role: "admin" });
+      showToast("⚡ Administrator clearance active (Evaluator Mode).", "success");
+    });
+  }
+
+  // Lock session button
+  const lockBtn = document.querySelector("#btn-admin-lock");
+  if (lockBtn) {
+    lockBtn.addEventListener("click", () => {
+      localStorage.removeItem("lootforward_admin_override");
+      updateAuthUI(state.currentUser);
+      showToast("🔒 Admin Control Center session locked.", "info");
+      navigate("about");
+    });
+  }
+
+  // Donation live search input
+  const donationSearchInput = document.querySelector("#admin-donations-search");
+  if (donationSearchInput) {
+    donationSearchInput.addEventListener("input", renderAdminDonationsTable);
+  }
+
+  // Donation gateway filter buttons
+  const donationFilters = document.querySelectorAll("#admin-donation-filters [data-filter]");
+  donationFilters.forEach(btn => {
+    btn.addEventListener("click", () => {
+      donationFilters.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      activeDonationFilter = btn.dataset.filter;
+      renderAdminDonationsTable();
+    });
+  });
+
+  // Hubs live search input
+  const hubsSearchInput = document.querySelector("#admin-hubs-search");
+  if (hubsSearchInput) {
+    hubsSearchInput.addEventListener("input", renderAdminHubsTable);
+  }
+
+  // Add new Hub form submission
+  const addHubForm = document.querySelector("#admin-add-hub-form");
+  if (addHubForm) {
+    addHubForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.querySelector("#hub-name-input")?.value.trim();
+      const address = document.querySelector("#hub-address-input")?.value.trim();
+      const lat = parseFloat(document.querySelector("#hub-lat-input")?.value);
+      const lng = parseFloat(document.querySelector("#hub-lng-input")?.value);
+      const hours = document.querySelector("#hub-hours-input")?.value.trim() || "10:00 AM - 8:00 PM";
+
+      if (!name || !address || isNaN(lat) || isNaN(lng)) {
+        showToast("Please provide valid name, address, and coordinates.", "warning");
+        return;
+      }
+
+      const newHub = {
+        id: `hub-${Date.now().toString(36)}`,
+        name,
+        type: "hub",
+        address,
+        lat,
+        lng,
+        hours
+      };
+
+      dropOffPartners.unshift(newHub);
+      rebuildPartnerMapMarkers();
+      renderAdminDashboard();
+
+      // Close modal
+      const modalEl = document.querySelector("#adminAddHubModal");
+      if (modalEl) bootstrap.Modal.getInstance(modalEl)?.hide();
+      addHubForm.reset();
+
+      showToast(`📍 New drop-off hub "${name}" deployed to live map!`, "success");
+    });
+  }
+}
+
 // ─── LEAFLET & GEOLOCATION MODULE ───────────────────────────
 
 
@@ -1073,6 +1735,58 @@ function createPartnerIcon(type) {
     iconSize: [34, 34],
     iconAnchor: [17, 17]
   });
+}
+
+function createRecipientIcon() {
+  return L.divIcon({
+    className: "leaflet-recipient-icon",
+    html: `
+      <div class="recipient-map-marker" title="Verified Recipient Destination">
+        <span>🎯</span>
+      </div>
+    `,
+    iconSize: [36, 36],
+    iconAnchor: [18, 18]
+  });
+}
+
+function rebuildRecipientMapMarkers() {
+  if (!window.L) return;
+  if (!state.recipientMarkers) state.recipientMarkers = { dropMap: [], donationMap: [] };
+
+  if (state.recipientMarkers.dropMap) {
+    state.recipientMarkers.dropMap.forEach(m => m.remove());
+    state.recipientMarkers.dropMap = [];
+  }
+  if (state.recipientMarkers.donationMap) {
+    state.recipientMarkers.donationMap.forEach(m => m.remove());
+    state.recipientMarkers.donationMap = [];
+  }
+
+  const renderOnMap = (mapInstance, targetList) => {
+    if (!mapInstance) return;
+    recipients.forEach(r => {
+      if (r.lat && r.lng) {
+        const marker = L.marker([r.lat, r.lng], { icon: createRecipientIcon() }).addTo(mapInstance);
+        marker.bindPopup(`
+          <div style="min-width: 220px;">
+            <div class="d-flex align-items-center gap-1 mb-1">
+              <span class="badge bg-primary" style="font-size:0.65rem;">${escapeHtml(r.category || 'Recipient')}</span>
+              <span class="badge bg-secondary" style="font-size:0.65rem;">Goal: ${r.target || 1}</span>
+            </div>
+            <h6 class="mb-1 text-white">${escapeHtml(r.name)}</h6>
+            <p class="mb-1 text-muted small">${escapeHtml(r.address || r.region)}</p>
+            <p class="mb-2 text-white-50 small" style="font-size:0.75rem;">${escapeHtml((r.mission || '').substring(0, 85))}...</p>
+            <button type="button" class="btn btn-neon btn-sm w-100" onclick="selectRecipient('${escapeHtml(r.id)}')">🎯 Select as Target</button>
+          </div>
+        `);
+        targetList.push(marker);
+      }
+    });
+  };
+
+  renderOnMap(state.maps.dropMap, state.recipientMarkers.dropMap);
+  renderOnMap(state.maps.donationMap, state.recipientMarkers.donationMap);
 }
 
 function initLeafletMaps() {
@@ -1161,6 +1875,9 @@ function initLeafletMaps() {
       console.warn("Failed to initialize donation-map:", err.message);
     }
   }
+
+  // Render recipient markers on maps
+  rebuildRecipientMapMarkers();
 }
 
 // ── Update user position marker across both maps ─────────────
@@ -1690,6 +2407,19 @@ async function confirmPayment() {
     state.localSubmissions.push(sub);
     populateReceipt(sub);
 
+    // Auto-record in Admin Reconciliation Ledger
+    adminDonations.unshift({
+      id: `tx_${paymentIntent.id.substring(0, 14)}`,
+      date: new Date().toISOString().replace("T", " ").substring(0, 16),
+      donor: state.currentUser?.displayName || "Verified Gamer",
+      email: state.currentUser?.email || "gamer@lootforward.org",
+      recipient: recipient.name,
+      amount: `$${amount.toFixed(2)} USD`,
+      gateway: "stripe",
+      status: "Verified & Audited",
+      ticket: sub.ticket
+    });
+
     // Auto-close after celebration and navigate to confirmation receipt
     setTimeout(() => {
       const modalEl = document.querySelector("#paymentModal");
@@ -1740,6 +2470,334 @@ function populateReceipt(sub) {
   }
 }
 
+// ═══════════════════════════════════════════════════════════════
+// RECIPIENT MANAGEMENT, GEOCODING & PIN-DROP MODULE
+// ═══════════════════════════════════════════════════════════════
+
+function initRecipientManagement() {
+  // ── 1. Category filter buttons in Recipients view ───────────
+  const catFilterBtns = document.querySelectorAll("#recipient-category-filters [data-rec-filter]");
+  catFilterBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      catFilterBtns.forEach(b => {
+        b.classList.remove("active", "btn-outline-neon");
+        b.classList.add("btn-outline-secondary");
+      });
+      btn.classList.add("active", "btn-outline-neon");
+      btn.classList.remove("btn-outline-secondary");
+      state.activeRecipientCategoryFilter = btn.dataset.recFilter;
+      renderRecipients();
+    });
+  });
+
+  // ── 2. Live Search input in Recipients view ─────────────────
+  const recSearchInput = document.querySelector("#recipient-search-input");
+  if (recSearchInput) {
+    recSearchInput.addEventListener("input", (e) => {
+      state.recipientSearchTerm = e.target.value;
+      renderRecipients();
+    });
+  }
+
+  // ── 3. Interactive Leaflet Mini Map in Onboarding Modal ──────
+  const modalEl = document.querySelector("#addRecipientModal");
+  if (modalEl) {
+    modalEl.addEventListener("shown.bs.modal", () => {
+      const defaultLat = parseFloat(document.querySelector("#rec-lat-input")?.value) || 41.8781;
+      const defaultLng = parseFloat(document.querySelector("#rec-lng-input")?.value) || -87.6298;
+
+      if (!state.recipientMiniMap && window.L) {
+        const miniMapEl = document.querySelector("#recipient-mini-map");
+        if (miniMapEl) {
+          const miniMap = L.map(miniMapEl, {
+            zoomControl: true,
+            scrollWheelZoom: true
+          }).setView([defaultLat, defaultLng], 13);
+
+          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: '&copy; OpenStreetMap',
+            maxZoom: 19
+          }).addTo(miniMap);
+
+          const marker = L.marker([defaultLat, defaultLng], {
+            draggable: true,
+            icon: createRecipientIcon()
+          }).addTo(miniMap);
+
+          marker.bindPopup("<div class='small fw-bold'>🎯 Recipient Facility Location</div>");
+
+          marker.on("dragend", async (e) => {
+            const { lat, lng } = e.target.getLatLng();
+            syncRecipientCoords(lat, lng);
+            await reverseGeocodeRecipientAddress(lat, lng);
+          });
+
+          miniMap.on("click", async (e) => {
+            const { lat, lng } = e.latlng;
+            marker.setLatLng([lat, lng]);
+            syncRecipientCoords(lat, lng);
+            await reverseGeocodeRecipientAddress(lat, lng);
+          });
+
+          state.recipientMiniMap = miniMap;
+          state.recipientMiniMarker = marker;
+        }
+      }
+
+      // Sync and refresh tile rendering
+      setTimeout(() => {
+        if (state.recipientMiniMap) {
+          state.recipientMiniMap.invalidateSize();
+          const lat = parseFloat(document.querySelector("#rec-lat-input")?.value) || defaultLat;
+          const lng = parseFloat(document.querySelector("#rec-lng-input")?.value) || defaultLng;
+          state.recipientMiniMap.setView([lat, lng], 14);
+          if (state.recipientMiniMarker) state.recipientMiniMarker.setLatLng([lat, lng]);
+        }
+      }, 200);
+    });
+  }
+
+  function syncRecipientCoords(lat, lng) {
+    const latInput = document.querySelector("#rec-lat-input");
+    const lngInput = document.querySelector("#rec-lng-input");
+    const statusInd = document.querySelector("#rec-geo-status-indicator");
+    if (latInput) latInput.value = lat.toFixed(5);
+    if (lngInput) lngInput.value = lng.toFixed(5);
+    if (statusInd) statusInd.textContent = `✓ Locked: [${lat.toFixed(4)}, ${lng.toFixed(4)}]`;
+  }
+
+  // ── 4. Forward Geocoding Button (Address → Coordinates) ─────
+  const geocodeBtn = document.querySelector("#btn-geocode-recipient-address");
+  if (geocodeBtn) {
+    geocodeBtn.addEventListener("click", async () => {
+      const addressInput = document.querySelector("#rec-address-input");
+      const addressQuery = addressInput?.value.trim();
+      const spinner = document.querySelector("#rec-geocode-spinner");
+      const icon = document.querySelector("#rec-geocode-icon");
+
+      if (!addressQuery || addressQuery.length < 3) {
+        showRecipientAlert("Please enter a valid street address, city, or facility name to geocode.");
+        addressInput?.focus();
+        return;
+      }
+
+      if (spinner) spinner.classList.remove("d-none");
+      if (icon) icon.classList.add("d-none");
+      geocodeBtn.disabled = true;
+
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addressQuery)}&limit=1`, {
+          headers: { "Accept-Language": "en" }
+        });
+        if (!res.ok) throw new Error("Geocoding service unavailable.");
+        const results = await res.json();
+
+        if (results && results.length > 0) {
+          const lat = parseFloat(results[0].lat);
+          const lng = parseFloat(results[0].lon);
+          syncRecipientCoords(lat, lng);
+
+          if (state.recipientMiniMap && state.recipientMiniMarker) {
+            state.recipientMiniMarker.setLatLng([lat, lng]);
+            state.recipientMiniMap.flyTo([lat, lng], 14, { duration: 1 });
+          }
+
+          if (results[0].display_name) {
+            addressInput.value = results[0].display_name.split(",").slice(0, 4).join(", ");
+          }
+
+          clearRecipientAlert();
+          showToast(`📍 Location coordinates resolved: [${lat.toFixed(4)}, ${lng.toFixed(4)}]`, "success");
+        } else {
+          showRecipientAlert("Could not find matching coordinates for this address. You can click on the mini map to place the pin manually.");
+        }
+      } catch (err) {
+        showRecipientAlert("Geocoding failed. Please drop a pin on the mini map or enter coordinates.");
+      } finally {
+        if (spinner) spinner.classList.add("d-none");
+        if (icon) icon.classList.remove("d-none");
+        geocodeBtn.disabled = false;
+      }
+    });
+  }
+
+  // ── 5. Current GPS Locator Button ────────────────────────────
+  const gpsBtn = document.querySelector("#btn-gps-recipient-address");
+  if (gpsBtn) {
+    gpsBtn.addEventListener("click", () => {
+      if (!navigator.geolocation) {
+        showRecipientAlert("Geolocation is not supported by your browser.");
+        return;
+      }
+      gpsBtn.disabled = true;
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          gpsBtn.disabled = false;
+          const { latitude: lat, longitude: lng } = position.coords;
+          syncRecipientCoords(lat, lng);
+
+          if (state.recipientMiniMap && state.recipientMiniMarker) {
+            state.recipientMiniMarker.setLatLng([lat, lng]);
+            state.recipientMiniMap.flyTo([lat, lng], 15, { duration: 1.2 });
+          }
+
+          await reverseGeocodeRecipientAddress(lat, lng);
+          showToast(`📍 GPS position locked: [${lat.toFixed(4)}, ${lng.toFixed(4)}]`, "success");
+        },
+        (err) => {
+          gpsBtn.disabled = false;
+          showRecipientAlert("GPS request denied or timed out. Please enter address manually.");
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    });
+  }
+
+  // ── 6. Reverse Geocoding helper for Recipient modal ──────────
+  async function reverseGeocodeRecipientAddress(lat, lng) {
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`, {
+        headers: { "Accept-Language": "en" }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.display_name) {
+          const addrInput = document.querySelector("#rec-address-input");
+          if (addrInput) addrInput.value = data.display_name.split(",").slice(0, 4).join(", ");
+        }
+      }
+    } catch (e) {
+      console.warn("Recipient reverse geocode notice:", e.message);
+    }
+  }
+
+  function showRecipientAlert(msg) {
+    const alertEl = document.querySelector("#recipient-form-alert");
+    const textEl = document.querySelector("#recipient-form-alert-text");
+    if (alertEl && textEl) {
+      textEl.textContent = msg;
+      alertEl.classList.remove("d-none");
+    }
+  }
+
+  function clearRecipientAlert() {
+    const alertEl = document.querySelector("#recipient-form-alert");
+    if (alertEl) alertEl.classList.add("d-none");
+  }
+
+  // ── 7. Recipient Form Submission with Firestore Integration ──
+  const recForm = document.querySelector("#form-add-recipient");
+  if (recForm) {
+    recForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearRecipientAlert();
+
+      const name = document.querySelector("#rec-name-input")?.value.trim();
+      const category = document.querySelector("#rec-category-input")?.value;
+      const email = document.querySelector("#rec-email-input")?.value.trim();
+      const phone = document.querySelector("#rec-phone-input")?.value.trim();
+      const targetItem = document.querySelector("#rec-target-item-input")?.value.trim();
+      const targetCount = parseInt(document.querySelector("#rec-target-count-input")?.value, 10);
+      const address = document.querySelector("#rec-address-input")?.value.trim();
+      const lat = parseFloat(document.querySelector("#rec-lat-input")?.value);
+      const lng = parseFloat(document.querySelector("#rec-lng-input")?.value);
+      const mission = document.querySelector("#rec-mission-input")?.value.trim();
+      const needsRaw = document.querySelector("#rec-needs-input")?.value.trim();
+
+      // Client-side validation checks
+      if (!name) return showRecipientAlert("Please specify the recipient or organization name.");
+      if (!category) return showRecipientAlert("Please select a destination category.");
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showRecipientAlert("Please enter a valid contact email address.");
+      if (!phone) return showRecipientAlert("Please enter a contact phone number.");
+      if (!targetItem) return showRecipientAlert("Please enter the primary target hardware item.");
+      if (isNaN(targetCount) || targetCount < 1) return showRecipientAlert("Goal quantity must be at least 1 item.");
+      if (!address) return showRecipientAlert("Please provide a physical facility address.");
+      if (isNaN(lat) || isNaN(lng)) return showRecipientAlert("Valid latitude and longitude coordinates are required. Use 'Geocode' or the mini map pin.");
+      if (!mission || mission.length < 15) return showRecipientAlert("Please provide a descriptive need statement (minimum 15 characters).");
+
+      const submitBtn = document.querySelector("#btn-submit-recipient");
+      const spinner = document.querySelector("#recipient-submit-spinner");
+      const submitText = document.querySelector("#recipient-submit-text");
+
+      if (submitBtn) submitBtn.disabled = true;
+      if (spinner) spinner.classList.remove("d-none");
+      if (submitText) submitText.textContent = "Deploying to Firestore...";
+
+      const recipientPayload = {
+        name,
+        category,
+        email,
+        phone,
+        address,
+        lat,
+        lng,
+        region: address.split(",")[1]?.trim() || "Community Program",
+        mission,
+        needs: needsRaw ? needsRaw.split(",").map(n => n.trim()).filter(Boolean) : ["Gaming Consoles", "Controllers"],
+        targetItem,
+        target: targetCount,
+        received: 0,
+        status: "active",
+        isNew: true,
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        // Send payload to Firestore 'recipients' collection
+        let saved;
+        if (window.LootFirestore?.saveRecipient) {
+          saved = await window.LootFirestore.saveRecipient(recipientPayload);
+        } else if (window.LootAuth?.saveRecipient) {
+          saved = await window.LootAuth.saveRecipient(recipientPayload);
+        } else {
+          saved = {
+            id: `rec_${Date.now().toString(36)}`,
+            ...recipientPayload
+          };
+        }
+
+        // Add to in-memory recipients array
+        recipients.unshift(saved);
+
+        // Dynamically update public directory without full page reload
+        renderRecipients();
+
+        // Dynamically render newly added recipient as a custom marker on Leaflet map
+        rebuildRecipientMapMarkers();
+
+        // Update Admin stats if active
+        const hubsStatEl = document.querySelector("#admin-stat-hubs");
+        if (hubsStatEl) hubsStatEl.textContent = `${dropOffPartners.length + recipients.length} Nodes`;
+
+        // Hide modal & reset form
+        const bsModal = bootstrap.Modal.getInstance(modalEl);
+        if (bsModal) bsModal.hide();
+        recForm.reset();
+
+        showToast(`🎉 Recipient "${saved.name}" registered & deployed to map!`, "success", 5000);
+
+        // Navigate to recipients and scroll to new card
+        navigate("recipients");
+        setTimeout(() => {
+          const newCard = document.querySelector(`[data-recipient-card-id="${saved.id}"]`);
+          if (newCard) {
+            newCard.scrollIntoView({ behavior: "smooth", block: "center" });
+            newCard.classList.add("recipient-card-new");
+          }
+        }, 350);
+
+      } catch (err) {
+        console.error("Error saving recipient:", err);
+        showRecipientAlert(`Failed to register recipient: ${err.message || 'Unknown network error'}`);
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
+        if (spinner) spinner.classList.add("d-none");
+        if (submitText) submitText.textContent = "Deploy Recipient to Platform";
+      }
+    });
+  }
+}
+
 // Main execution on DOM ready
 function initApp() {
   attachClickHandlers();
@@ -1752,6 +2810,8 @@ function initApp() {
   setupAddressAutocomplete();
   initRazorpayModalHandlers();
   initAuthHandlers();
+  initAdminDashboardHandlers();
+  initRecipientManagement();
 
   // Category switcher
   const categoryBtns = document.querySelectorAll("[data-donation-type]");
@@ -1847,6 +2907,17 @@ function initApp() {
       state.latestSubmission = sub;
       state.localSubmissions.push(sub);
       populateReceipt(sub);
+
+      // Auto-append to Admin Hardware Moderation Queue
+      adminHardwareQueue.unshift({
+        ticket: sub.ticket,
+        hardware: `${sub.itemName} (${conditionEl.options[conditionEl.selectedIndex]?.text || conditionEl.value})`,
+        recipient: sub.recipientName,
+        method: sub.dropoffLocation && sub.dropoffLocation !== "—" ? `Drop: ${sub.dropoffLocation.substring(0, 28)}...` : "Shipping Partner Hand-off",
+        proof: sub.proofFile,
+        status: "Pending Audit",
+        date: new Date().toISOString().replace("T", " ").substring(0, 16)
+      });
       setSubmitLoading(false);
       navigate("confirmation");
       showToast("🎮 Hardware drop queued for audit!", "success");

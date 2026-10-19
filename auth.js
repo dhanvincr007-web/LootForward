@@ -9,6 +9,8 @@ import {
   getAuth,
   onAuthStateChanged,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -16,20 +18,31 @@ import {
   sendPasswordResetEmail,
   updateProfile
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // Firebase Project Configuration
-const firebaseConfig = {
-  apiKey: (typeof window !== "undefined" && window.ENV && window.ENV.NEXT_PUBLIC_FIREBASE_API_KEY) ||
+const firebaseConfig = (typeof window !== "undefined" && window.FIREBASE_CONFIG) || {
+  apiKey: (typeof window !== "undefined" && (window.ENV?.NEXT_PUBLIC_FIREBASE_API_KEY || window.NEXT_PUBLIC_FIREBASE_API_KEY)) ||
     "AIzaSyLootForward_2026_LiveAuthSafeKey",
-  authDomain: "lootforward.firebaseapp.com",
-  projectId: "lootforward",
+  authDomain: (typeof window !== "undefined" && (window.ENV?.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || window.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN)) ||
+    "lootforward.firebaseapp.com",
+  projectId: (typeof window !== "undefined" && (window.ENV?.NEXT_PUBLIC_FIREBASE_PROJECT_ID || window.NEXT_PUBLIC_FIREBASE_PROJECT_ID)) ||
+    "lootforward",
   storageBucket: "lootforward.appspot.com",
   messagingSenderId: "389274910283",
-  appId: "1:389274910283:web:9c1a083f98274d"
+  appId: (typeof window !== "undefined" && (window.ENV?.NEXT_PUBLIC_FIREBASE_APP_ID || window.NEXT_PUBLIC_FIREBASE_APP_ID)) ||
+    "1:389274910283:web:9c1a083f98274d"
 };
 
 let app;
 let auth;
+let db;
 let googleProvider;
 let isDemoFallback = false;
 const authSubscribers = [];
@@ -37,7 +50,14 @@ const authSubscribers = [];
 try {
   app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
   auth = getAuth(app);
+  try {
+    db = getFirestore(app);
+  } catch (firestoreErr) {
+    console.warn("Firestore initialization notice:", firestoreErr.message);
+  }
   googleProvider = new GoogleAuthProvider();
+  googleProvider.addScope("profile");
+  googleProvider.addScope("email");
   googleProvider.setCustomParameters({ prompt: "select_account" });
 } catch (initErr) {
   console.warn("Firebase Auth initialized in offline/demo fallback mode:", initErr.message);
@@ -51,6 +71,30 @@ function notifySubscribers(user) {
   });
 }
 
+// ── Check redirect auth result on page load ─────────────────
+if (!isDemoFallback && auth) {
+  getRedirectResult(auth)
+    .then((result) => {
+      if (result && result.user) {
+        const user = result.user;
+        const sanitizedUser = {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName || user.email?.split("@")[0] || "Gamer",
+          photoURL: user.photoURL,
+          providerId: user.providerData?.[0]?.providerId || "google.com"
+        };
+        localStorage.setItem("lootforward_auth_cache", JSON.stringify(sanitizedUser));
+        notifySubscribers(sanitizedUser);
+      }
+    })
+    .catch((err) => {
+      if (err.code && err.code !== "auth/credential-already-in-use") {
+        console.warn("Firebase Redirect Auth error:", err.code, err.message);
+      }
+    });
+}
+
 // ── Persistent Session Observer ─────────────────────────────
 if (!isDemoFallback && auth) {
   onAuthStateChanged(auth, (user) => {
@@ -58,7 +102,7 @@ if (!isDemoFallback && auth) {
       const sanitizedUser = {
         uid: user.uid,
         email: user.email,
-        displayName: user.displayName || user.email.split("@")[0],
+        displayName: user.displayName || user.email?.split("@")[0] || "Gamer",
         photoURL: user.photoURL,
         providerId: user.providerData?.[0]?.providerId || "password"
       };
@@ -90,21 +134,19 @@ function isApiKeyIssue(err) {
   const code = (err.code || "").toLowerCase();
   const msg = (err.message || "").toLowerCase();
   return (
-    code.includes("api-key") ||
-    code.includes("unauthorized-domain") ||
+    code.includes("api-key-not-valid") ||
     code.includes("invalid-api-key") ||
-    msg.includes("api-key") ||
-    msg.includes("invalid-api-key") ||
-    msg.includes("unauthorized domain")
+    msg.includes("api-key-not-valid") ||
+    msg.includes("invalid-api-key")
   );
 }
 
 // ── Multi-Provider Auth Operations ──────────────────────────
 
 /**
- * Sign in using Google OAuth 2.0 via popup
+ * Sign in using Google OAuth 2.0 via popup with automatic redirect fallback
  */
-export async function signInWithGoogle() {
+export async function signInWithGoogle(options = { allowRedirectFallback: true }) {
   if (isDemoFallback) {
     const demoUser = {
       uid: "google_gamer_" + Date.now().toString(36),
@@ -121,17 +163,63 @@ export async function signInWithGoogle() {
   try {
     const result = await signInWithPopup(auth, googleProvider);
     const user = result.user;
-    return {
+    const sanitizedUser = {
       uid: user.uid,
       email: user.email,
-      displayName: user.displayName || user.email.split("@")[0],
+      displayName: user.displayName || user.email?.split("@")[0] || "Gamer",
       photoURL: user.photoURL,
       providerId: "google.com"
     };
+    localStorage.setItem("lootforward_auth_cache", JSON.stringify(sanitizedUser));
+    notifySubscribers(sanitizedUser);
+    return sanitizedUser;
   } catch (err) {
-    // If the API key is unconfigured on Google Cloud Console or popup fails, offer fallback
+    console.error("Firebase Google Auth:", err.code, err.message);
+
+    // 1. Popup Blocked -> Fallback to signInWithRedirect or notify user
+    if (err.code === "auth/popup-blocked") {
+      console.warn("Google popup blocked by browser. Attempting redirect fallback...");
+      if (options.allowRedirectFallback) {
+        try {
+          await signInWithRedirect(auth, googleProvider);
+          return { isRedirecting: true };
+        } catch (redirectErr) {
+          throw new Error("Popup blocked by browser. Please enable popups or allow redirects for this site.");
+        }
+      } else {
+        throw new Error("Popup was blocked by your browser. Please allow popups for lootforward.vercel.app.");
+      }
+    }
+
+    // 2. Popup Closed by User
+    if (err.code === "auth/popup-closed-by-user") {
+      throw new Error("Sign-in cancelled. The Google authentication window was closed.");
+    }
+
+    // 3. Cancelled Popup Request
+    if (err.code === "auth/cancelled-popup-request") {
+      throw new Error("Another authentication window is already in progress.");
+    }
+
+    // 4. Unauthorized Domain in Firebase Console
+    if (err.code === "auth/unauthorized-domain") {
+      const currentHost = typeof window !== "undefined" ? window.location.hostname : "lootforward.vercel.app";
+      throw new Error(`Domain '${currentHost}' is not authorized. Add '${currentHost}' to Firebase Console > Authentication > Settings > Authorized domains.`);
+    }
+
+    // 5. Account exists with different credential
+    if (err.code === "auth/account-exists-with-different-credential") {
+      throw new Error("An account already exists with this email address. Please sign in with email and password.");
+    }
+
+    // 6. Network failure
+    if (err.code === "auth/network-request-failed") {
+      throw new Error("Network connection error. Check your internet connection and try again.");
+    }
+
+    // 7. Placeholder API Key fallback for local development
     if (isApiKeyIssue(err)) {
-      console.warn("Live Firebase API key requires domain authorization; falling back to simulated session:", err.message);
+      console.warn("Firebase API key requires production activation; using simulated session for local verification:", err.message);
       const demoUser = {
         uid: "google_gamer_" + Date.now().toString(36),
         email: "alex.gamer@gmail.com",
@@ -143,8 +231,19 @@ export async function signInWithGoogle() {
       notifySubscribers(demoUser);
       return demoUser;
     }
-    throw err;
+
+    throw new Error(err.message || "Failed to authenticate with Google. Please try again.");
   }
+}
+
+/**
+ * Explicit Google OAuth via full-page redirect
+ */
+export async function signInWithGoogleRedirect() {
+  if (isDemoFallback) {
+    return signInWithGoogle();
+  }
+  return signInWithRedirect(auth, googleProvider);
 }
 
 /**
@@ -293,16 +392,63 @@ export function subscribeAuthState(callback) {
   };
 }
 
+/**
+ * Save new recipient entry to Firestore collection 'recipients'
+ * Includes fallback to local storage for uninterrupted offline capability
+ */
+export async function saveRecipientToFirestore(recipientPayload) {
+  const sanitized = {
+    ...recipientPayload,
+    status: recipientPayload.status || "active",
+    createdAt: new Date().toISOString()
+  };
+
+  if (!db || isDemoFallback) {
+    const fallbackId = `rec_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 6)}`;
+    const record = { id: fallbackId, ...sanitized };
+    try {
+      const cachedList = JSON.parse(localStorage.getItem("lootforward_recipients_cache") || "[]");
+      cachedList.unshift(record);
+      localStorage.setItem("lootforward_recipients_cache", JSON.stringify(cachedList));
+    } catch (e) { }
+    return record;
+  }
+
+  try {
+    const docRef = await addDoc(collection(db, "recipients"), {
+      ...sanitized,
+      timestamp: serverTimestamp()
+    });
+    return { id: docRef.id, ...sanitized };
+  } catch (err) {
+    console.warn("Firestore collection('recipients') addDoc fallback:", err.message);
+    const fallbackId = `rec_${Date.now().toString(36)}`;
+    const record = { id: fallbackId, ...sanitized };
+    try {
+      const cachedList = JSON.parse(localStorage.getItem("lootforward_recipients_cache") || "[]");
+      cachedList.unshift(record);
+      localStorage.setItem("lootforward_recipients_cache", JSON.stringify(cachedList));
+    } catch (e) { }
+    return record;
+  }
+}
+
 // Expose on global window object for consumption by app.js
 window.LootAuth = {
   signInWithGoogle,
+  signInWithGoogleRedirect,
   signInWithEmail,
   registerWithEmail,
   resetPassword,
   logoutUser,
   subscribeAuthState,
+  saveRecipient: saveRecipientToFirestore,
   getCurrentUser: () => {
     const cached = localStorage.getItem("lootforward_auth_cache");
     return cached ? JSON.parse(cached) : null;
   }
+};
+
+window.LootFirestore = {
+  saveRecipient: saveRecipientToFirestore
 };

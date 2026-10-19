@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anti Gravity — Defying Gravity, Elevating Future Tech</title>
+  <meta name="description" content="Anti Gravity is an advanced zero-gravity tech and physics exploration platform featuring quantum levitation, inertial control, and orbital dynamics simulation.">
+  <meta name="theme-color" content="#05050e">
+
+  <!-- Google Fonts: Orbitron & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    /* ─── CSS VARIABLES & THEME TOKENS ──────────────────────── */
+    :root {
+      --bg-space: #05050f;
+      --bg-surface: rgba(14, 15, 30, 0.72);
+      --bg-card: rgba(18, 20, 42, 0.55);
+      --bg-card-hover: rgba(26, 30, 62, 0.75);
+      --border-glow: rgba(0, 242, 254, 0.25);
+      --border-violet: rgba(155, 81, 224, 0.3);
+      --cyan: #00f2fe;
+      --cyan-glow: rgba(0, 242, 254, 0.45);
+      --violet: #9b51e0;
+      --violet-glow: rgba(155, 81, 224, 0.45);
+      --magenta: #ff007f;
+      --text-main: #f0f4ff;
+      --text-muted: #8c96b5;
+      --text-dim: #545e82;
+      --font-display: 'Orbitron', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'Share Tech Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-space);
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(0, 242, 254, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 85% 75%, rgba(155, 81, 224, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(5, 5, 20, 1) 0%, rgba(3, 3, 10, 1) 100%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ─── SCROLLBAR ─────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-space); }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, var(--cyan), var(--violet));
+      border-radius: 4px;
+    }
+
+    /* ─── TYPOGRAPHY UTILITIES ──────────────────────────────── */
+    .font-orbitron { font-family: var(--font-display); }
+    .font-mono { font-family: var(--font-mono); }
+    
+    .gradient-text-cyan {
+      background: linear-gradient(135deg, #ffffff 10%, #00f2fe 70%, #4facfe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .gradient-text-violet {
+      background: linear-gradient(135deg, #00f2fe 0%, #a18cd1 50%, #fbc2eb 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* ─── GLASSMORPHISM CONTAINERS ──────────────────────────── */
+    .glass-nav {
+      background: rgba(8, 9, 22, 0.82);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-glow);
+      transition: all 0.3s ease;
+    }
+
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border-glow);
+      border-radius: 18px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+      transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), var(--violet), transparent);
+      opacity: 0.6;
+    }
+
+    .glass-card:hover {
+      transform: translateY(-6px);
+      background: var(--bg-card-hover);
+      border-color: rgba(0, 242, 254, 0.5);
+      box-shadow: 0 20px 48px rgba(0, 242, 254, 0.16);
+    }
+
+    /* ─── BUTTONS & PILLS ───────────────────────────────────── */
+    .btn-neon-cyan {
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.2), rgba(0, 242, 254, 0.05));
+      color: #00f2fe;
+      border: 1px solid var(--cyan);
+      box-shadow: 0 0 18px rgba(0, 242, 254, 0.3);
+      font-family: var(--font-display);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      border-radius: 12px;
+      padding: 12px 28px;
+      transition: all 0.25s ease;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+    }
+
+    .btn-neon-cyan:hover {
+      background: var(--cyan);
+      color: #05050f;
+      box-shadow: 0 0 30px rgba(0, 242, 254, 0.7);
+      transform: translateY(-2px);
+    }
+
+    .btn-neon-violet {
+      background: rgba(155, 81, 224, 0.15);
+      color: #c9a7ff;
+      border: 1px solid var(--violet);
+      font-family: var(--font-display);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      border-radius: 12px;
+      padding: 12px 28px;
+      transition: all 0.25s ease;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+    }
+
+    .btn-neon-violet:hover {
+      background: var(--violet);
+      color: #fff;
+      box-shadow: 0 0 28px rgba(155, 81, 224, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .telemetry-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 242, 254, 0.08);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      padding: 6px 14px;
+      border-radius: 99px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--cyan);
+      letter-spacing: 0.08em;
+    }
+
+    .telemetry-dot {
+      width: 7px;
+      height: 7px;
+      background-color: var(--cyan);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--cyan);
+      animation: pulseDot 1.8s infinite;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(0.7); }
+    }
+
+    /* ─── FLOATING OBJECT ANIMATIONS ────────────────────────── */
+    @keyframes floatZeroG {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-16px) rotate(2.5deg); }
+    }
+
+    .float-node {
+      animation: floatZeroG 6s ease-in-out infinite;
+    }
+
+    /* ─── CANVAS SIMULATION CONTAINER ───────────────────────── */
+    .sim-shell {
+      position: relative;
+      background: radial-gradient(circle at center, rgba(16, 20, 48, 0.95) 0%, rgba(6, 8, 20, 0.98) 100%);
+      border: 1px solid var(--border-glow);
+      border-radius: 20px;
+      box-shadow: 0 0 50px rgba(0, 242, 254, 0.12);
+      overflow: hidden;
+    }
+
+    #zeroGCanvas {
+      display: block;
+      width: 100%;
+      height: 480px;
+      cursor: crosshair;
+    }
+
+    .sim-hud-overlay {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .sim-controls-bar {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      right: 16px;
+      background: rgba(9, 11, 26, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 10px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      z-index: 10;
+    }
+
+    /* ─── METRICS COUNTER BOXES ─────────────────────────────── */
+    .metric-value {
+      font-family: var(--font-display);
+      font-size: 2.8rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+    }
+
+    .metric-label {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* ─── ACCESS MODAL ──────────────────────────────────────── */
+    .modal-content.dark-glass {
+      background: rgba(12, 14, 30, 0.96);
+      backdrop-filter: blur(24px);
+      border: 1px solid var(--cyan);
+      box-shadow: 0 0 45px rgba(0, 242, 254, 0.25);
+      border-radius: 20px;
+      color: var(--text-main);
+    }
+
+    .form-control.dark-input, .form-select.dark-input {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      border-radius: 10px;
+      padding: 11px 16px;
+      font-size: 0.9rem;
+    }
+
+    .form-control.dark-input:focus, .form-select.dark-input:focus {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--cyan);
+      box-shadow: 0 0 14px rgba(0, 242, 254, 0.3);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       1. NAVIGATION / TELEMETRY HUD
+  ════════════════════════════════════════════════════════════ -->
+  <nav class="navbar navbar-expand-lg glass-nav sticky-top py-3" id="mainNav">
+    <div class="container-fluid px-lg-5">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+        <div style="width: 34px; height: 34px; border: 1.5px solid var(--cyan); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 12px var(--cyan);">
+          <span style="font-size: 1.1rem;">🪐</span>
+        </div>
+        <div>
+          <span class="font-orbitron fw-bold tracking-wider fs-5" style="letter-spacing: 0.1em; color: #fff;">ANTI<span style="color: var(--cyan);">GRAVITY</span></span>
+          <span class="d-none d-sm-inline-block font-mono text-muted fs-6 ms-2" style="font-size: 0.7rem !important;">// LABS v4.0</span>
+        </div>
+      </a>
+
+      <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navContent" aria-controls="navContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon" style="filter: invert(1);"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navContent">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-lg-4 text-center">
+          <li class="nav-item"><a class="nav-link text-white-50 hover-cyan" href="#hero">Overview</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50 hover-cyan" href="#simulation">0G Sandbox</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50 hover-cyan" href="#pillars">Pillars</a></li>
+          <li class="nav-item"><a class="nav-link text-white-50 hover-cyan" href="#telemetry">Telemetry</a></li>
+        </ul>
+
+        <div class="d-flex align-items-center justify-content-center gap-3">
+          <div class="d-none d-xl-flex align-items-center telemetry-badge">
+            <span class="telemetry-dot"></span>
+            <span id="hud-gravity-val">G-FORCE: 0.000G (NOMINAL)</span>
+          </div>
+          <button type="button" class="btn btn-neon-cyan py-2 px-4" data-bs-toggle="modal" data-bs-target="#accessModal" id="btn-open-access">
+            Request Clearance
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       2. HERO SECTION
+  ════════════════════════════════════════════════════════════ -->
+  <section class="py-5 my-lg-4 position-relative overflow-hidden" id="hero">
+    <div class="container py-lg-4">
+      <div class="row align-items-center gy-5">
+        <div class="col-lg-7 text-center text-lg-start">
+          <div class="telemetry-badge mb-3">
+            <span class="telemetry-dot"></span>
+            <span>NEXT-GEN RELATIVISTIC INERTIAL PROPULSION</span>
+          </div>
+          
+          <h1 class="font-orbitron display-4 fw-bolder mb-3 lh-sm">
+            Defying Gravity,<br>
+            <span class="gradient-text-cyan">Elevating Future Tech</span>
+          </h1>
+
+          <p class="lead text-muted pe-lg-5 mb-4" style="max-width: 620px; font-size: 1.05rem;">
+            Pioneering quantum levitation matrices, momentum dampening arrays, and zero-G physics infrastructure engineered for deep-space transport and next-generation planetary habitations.
+          </p>
+
+          <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start pt-2">
+            <a href="#simulation" class="btn btn-neon-cyan d-inline-flex align-items-center gap-2" id="hero-btn-simulator">
+              <span>⚡ Launch Simulator</span>
+            </a>
+            <a href="#pillars" class="btn btn-neon-violet d-inline-flex align-items-center gap-2">
+              <span>🔬 Explore Research</span>
+            </a>
+          </div>
+
+          <!-- Live Telemetry Mini Bar -->
+          <div class="row mt-5 pt-3 g-3 border-top border-secondary border-opacity-25" style="max-width: 580px;">
+            <div class="col-4">
+              <div class="font-mono text-cyan small">CORE FREQ</div>
+              <div class="font-orbitron fw-bold fs-5 text-white">438.2 THz</div>
+            </div>
+            <div class="col-4">
+              <div class="font-mono text-violet small">FLUX DENSITY</div>
+              <div class="font-orbitron fw-bold fs-5 text-white">18.4 Tesla</div>
+            </div>
+            <div class="col-4">
+              <div class="font-mono text-cyan small">CURVATURE</div>
+              <div class="font-orbitron fw-bold fs-5 text-white">-0.9998</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero 3D Float Node -->
+        <div class="col-lg-5 text-center">
+          <div class="float-node position-relative d-inline-block">
+            <div style="width: 320px; height: 320px; border-radius: 50%; background: radial-gradient(circle, rgba(0,242,254,0.15) 0%, rgba(155,81,224,0.2) 50%, transparent 70%); border: 2px dashed rgba(0,242,254,0.4); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 60px rgba(0,242,254,0.25); margin: auto;">
+              <div style="width: 210px; height: 210px; border-radius: 50%; border: 2px solid rgba(155,81,224,0.6); display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(10,12,32,0.85); backdrop-filter: blur(12px);">
+                <div style="font-size: 3.5rem;">🌌</div>
+                <div class="font-orbitron fw-bold text-cyan mt-1" style="font-size: 0.85rem; letter-spacing: 0.12em;">ZERO-G MATRIX</div>
+                <div class="font-mono text-muted" style="font-size: 0.7rem;">STATUS: ACTIVE</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       3. INTERACTIVE ZERO-G PHYSICS SIMULATOR
+  ════════════════════════════════════════════════════════════ -->
+  <section class="py-5" id="simulation">
+    <div class="container">
+      <div class="d-flex flex-column flex-md-row align-items-md-end justify-content-between mb-4">
+        <div>
+          <div class="telemetry-badge mb-2">
+            <span class="telemetry-dot"></span>
+            <span>HTML5 ACCELERATION SANDBOX</span>
+          </div>
+          <h2 class="font-orbitron fw-bold fs-1 gradient-text-cyan mb-1">Interactive Zero-G Sandbox</h2>
+          <p class="text-muted mb-0">Interact with quantum particles in micro-gravity. Move cursor to generate gravitational wells or pulse shockwaves.</p>
+        </div>
+        <div class="mt-3 mt-md-0 font-mono small text-muted">
+          <span>FPS: <strong id="sim-fps" class="text-cyan">60</strong> | PARTICLES: <strong id="sim-particles-count" class="text-cyan">100</strong></span>
+        </div>
+      </div>
+
+      <!-- Canvas Simulator Box -->
+      <div class="sim-shell" id="sim-container">
+        <!-- Floating HUD readout -->
+        <div class="sim-hud-overlay">
+          <div class="font-mono" style="font-size: 0.75rem; color: rgba(0, 242, 254, 0.8);">
+            <div>TARGET FIELD: <span id="hud-field-mode" class="fw-bold">MICRO-GRAVITY [0.0G]</span></div>
+            <div>DAMPENING FACTOR: <span id="hud-damping-val" class="fw-bold">0.992</span></div>
+            <div>CURSOR INTERACTION: <span id="hud-interaction-mode" class="fw-bold text-warning">GRAVITY WELL (PULL)</span></div>
+          </div>
+        </div>
+
+        <canvas id="zeroGCanvas"></canvas>
+
+        <!-- Controls Toolbar -->
+        <div class="sim-controls-bar">
+          <div class="d-flex align-items-center gap-2">
+            <label class="font-mono text-muted small text-nowrap d-none d-sm-inline">ENVIRONMENT:</label>
+            <div class="btn-group btn-group-sm" role="group">
+              <button type="button" class="btn btn-outline-info active" id="btn-env-0g">0G (Zero)</button>
+              <button type="button" class="btn btn-outline-info" id="btn-env-lunar">0.16G (Moon)</button>
+              <button type="button" class="btn btn-outline-info" id="btn-env-mars">0.38G (Mars)</button>
+              <button type="button" class="btn btn-outline-info" id="btn-env-invert">-1G (Invert)</button>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn btn-sm btn-outline-warning" id="btn-toggle-cursor">
+              Mode: <span id="lbl-cursor-mode">Attract</span>
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-primary" id="btn-pulse-disrupt">
+              💥 Shockwave Pulse
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" id="btn-reset-sim">
+              Reset Sandbox
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       4. CORE PILLARS & RESEARCH METRICS
+  ════════════════════════════════════════════════════════════ -->
+  <section class="py-5 my-4" id="pillars">
+    <div class="container">
+      <div class="text-center mb-5">
+        <div class="telemetry-badge mb-2">
+          <span class="telemetry-dot"></span>
+          <span>SCIENTIFIC FOUNDATIONS</span>
+        </div>
+        <h2 class="font-orbitron fw-bold fs-1 gradient-text-cyan mb-2">Core Technological Pillars</h2>
+        <p class="text-muted mx-auto" style="max-width: 640px;">
+          Our three foundational disciplines bridging quantum field theory, relativistic mechanics, and deep-space orbital logistics.
+        </p>
+      </div>
+
+      <div class="row g-4">
+        <!-- Pillar 1 -->
+        <div class="col-md-4">
+          <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+            <div>
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <span style="font-size: 2.2rem;">⚡</span>
+                <span class="font-mono text-cyan small fw-bold">PILLAR // 01</span>
+              </div>
+              <h4 class="font-orbitron text-white mb-3">Quantum Levitation</h4>
+              <p class="text-muted small">
+                High-temperature Type-II superconductors engineered for Meissner-Ochsenfeld flux pinning, providing friction-free magnetic locking across three spatial dimensions.
+              </p>
+            </div>
+            <div class="border-top border-secondary border-opacity-25 pt-3 mt-3">
+              <span class="font-mono text-cyan" style="font-size: 0.78rem;">STABILITY COEFFICIENT: 99.98%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pillar 2 -->
+        <div class="col-md-4">
+          <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+            <div>
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <span style="font-size: 2.2rem;">🌀</span>
+                <span class="font-mono text-violet small fw-bold">PILLAR // 02</span>
+              </div>
+              <h4 class="font-orbitron text-white mb-3">Inertial Dampening</h4>
+              <p class="text-muted small">
+                Dynamic localized metric tensor distortion canceling acceleration stresses, enabling human payloads to sustain rapid vector shifts exceeding 40G without physical trauma.
+              </p>
+            </div>
+            <div class="border-top border-secondary border-opacity-25 pt-3 mt-3">
+              <span class="font-mono text-violet" style="font-size: 0.78rem;">RESPONSE LATENCY: 0.002 ms</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pillar 3 -->
+        <div class="col-md-4">
+          <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+            <div>
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <span style="font-size: 2.2rem;">🛰️</span>
+                <span class="font-mono text-cyan small fw-bold">PILLAR // 03</span>
+              </div>
+              <h4 class="font-orbitron text-white mb-3">Orbital Logistics</h4>
+              <p class="text-muted small">
+                Reactionless momentum transfer protocols optimizing delta-V trajectories between Earth, cis-lunar transfer gateways, and Lagrange points with zero propellant loss.
+              </p>
+            </div>
+            <div class="border-top border-secondary border-opacity-25 pt-3 mt-3">
+              <span class="font-mono text-cyan" style="font-size: 0.78rem;">PROPULSION EFFICIENCY: 98.4%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Telemetry Stats Grid with Animated Counters -->
+      <div class="row g-4 mt-4" id="telemetry">
+        <div class="col-6 col-lg-3">
+          <div class="glass-card p-4 text-center">
+            <div class="metric-value text-cyan counter-val" data-target="99.98" data-suffix="%">0.00%</div>
+            <div class="metric-label">Flux Stability</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="glass-card p-4 text-center">
+            <div class="metric-value text-violet counter-val" data-target="14.2" data-suffix="M+">0.0M+</div>
+            <div class="metric-label">Simulated Vectors</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="glass-card p-4 text-center">
+            <div class="metric-value text-cyan counter-val" data-target="0.001" data-prefix="< " data-suffix="G">< 0.000G</div>
+            <div class="metric-label">Inertial Variance</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="glass-card p-4 text-center">
+            <div class="metric-value text-white counter-val" data-target="100" data-suffix="%">0%</div>
+            <div class="metric-label">Zero-G Reliability</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       5. EARLY ACCESS / CLEARANCE REQUEST MODAL
+  ════════════════════════════════════════════════════════════ -->
+  <div class="modal fade" id="accessModal" tabindex="-1" aria-labelledby="accessModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content dark-glass">
+        <div class="modal-header border-0 pb-0">
+          <div>
+            <div class="telemetry-badge mb-1">
+              <span class="telemetry-dot"></span>
+              <span>MISSION REGISTRATION</span>
+            </div>
+            <h5 class="modal-title font-orbitron fw-bold" id="accessModalLabel">Request Laboratory Clearance</h5>
+          </div>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body pt-3">
+          <!-- Alert feedback -->
+          <div id="modal-alert" class="alert alert-info d-none py-2 px-3 small font-mono mb-3" role="alert"></div>
+
+          <form id="accessForm">
+            <div class="mb-3">
+              <label for="inputName" class="form-label font-mono small text-muted">OPERATIVE / RESEARCHER NAME</label>
+              <input type="text" class="form-control dark-input" id="inputName" placeholder="Dr. Elena Vance" required>
+            </div>
+            
+            <div class="mb-3">
+              <label for="inputEmail" class="form-label font-mono small text-muted">ORGANIZATIONAL EMAIL</label>
+              <input type="email" class="form-control dark-input" id="inputEmail" placeholder="elena@antigravity-labs.org" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="inputAffiliation" class="form-label font-mono small text-muted">DISCIPLINARY AFFILIATION</label>
+              <select class="form-select dark-input" id="inputAffiliation" required>
+                <option value="aerospace">Aerospace & Orbital Dynamics</option>
+                <option value="quantum">Quantum Field Mechanics</option>
+                <option value="defense">Inertial Damping Defense Arrays</option>
+                <option value="academic">Independent Researcher / Academic</option>
+              </select>
+            </div>
+
+            <!-- Clearance Generated Result (hidden initially) -->
+            <div id="clearanceResult" class="d-none p-3 border border-info rounded-3 mb-3 bg-dark">
+              <div class="font-mono text-cyan small fw-bold">✓ MISSION CLEARANCE GRANTED</div>
+              <div class="font-orbitron text-white fs-6 mt-1" id="clearanceKey">AGY-SEC-99482-ALPHA</div>
+              <div class="font-mono text-muted small mt-1">Status: Authorized for Cis-Lunar Physics Access</div>
+            </div>
+
+            <button type="submit" class="btn btn-neon-cyan w-100 py-3 mt-2" id="btn-submit-access">
+              Submit Clearance Request
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       6. FOOTER
+  ════════════════════════════════════════════════════════════ -->
+  <footer class="py-5 border-top border-secondary border-opacity-25 mt-5">
+    <div class="container text-center">
+      <div class="font-orbitron fw-bold fs-4 mb-2">ANTI<span class="text-cyan">GRAVITY</span></div>
+      <p class="text-muted small mb-3">Relativistic Engineering // Quantum Propulsion Research Group</p>
+      <div class="font-mono small text-muted">
+        LAT: 28.5721° N | LON: 80.6480° W | STATUS: MICRO-GRAVITY STABLE | © 2026 ANTI GRAVITY LABS
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap 5 Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       7. ZERO-G PHYSICS SIMULATION JAVASCRIPT ENGINE
+  ════════════════════════════════════════════════════════════ -->
+  <script>
+    (function () {
+      "use strict";
+
+      // ─── CANVAS SETUP ──────────────────────────────────────────
+      const canvas = document.getElementById("zeroGCanvas");
+      const ctx = canvas.getContext("2d");
+      const container = document.getElementById("sim-container");
+
+      let width = (canvas.width = container.clientWidth);
+      let height = (canvas.height = 480);
+
+      window.addEventListener("resize", () => {
+        width = canvas.width = container.clientWidth;
+        height = canvas.height = 480;
+      });
+
+      // ─── SIMULATION STATE ──────────────────────────────────────
+      const state = {
+        gravityY: 0.0,           // 0G default
+        damping: 0.994,          // Inertial velocity retention
+        cursorMode: "attract",   // "attract" | "repel"
+        mouse: { x: null, y: null, isDown: false, radius: 160 },
+        particles: [],
+        shockwaves: []
+      };
+
+      // ─── PARTICLE CLASS ────────────────────────────────────────
+      class Particle {
+        constructor(x, y) {
+          this.x = x || Math.random() * width;
+          this.y = y || Math.random() * height;
+          this.radius = Math.random() * 3.5 + 2;
+          this.vx = (Math.random() - 0.5) * 1.5;
+          this.vy = (Math.random() - 0.5) * 1.5;
+          this.color = Math.random() > 0.4 ? "#00f2fe" : "#9b51e0";
+          this.glow = this.radius * 2.5;
+          this.mass = this.radius * 1.2;
+        }
+
+        update() {
+          // Apply environment gravity
+          this.vy += state.gravityY;
+
+          // Apply mouse force field
+          if (state.mouse.x !== null && state.mouse.y !== null) {
+            const dx = state.mouse.x - this.x;
+            const dy = state.mouse.y - this.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < state.mouse.radius && dist > 5) {
+              const force = (1 - dist / state.mouse.radius) * 0.45;
+              const angle = Math.atan2(dy, dx);
+              const factor = state.cursorMode === "attract" ? 1 : -1.8;
+
+              this.vx += Math.cos(angle) * force * factor;
+              this.vy += Math.sin(angle) * force * factor;
+            }
+          }
+
+          // Apply shockwaves
+          for (let sw of state.shockwaves) {
+            const dx = this.x - sw.x;
+            const dy = this.y - sw.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (Math.abs(dist - sw.radius) < 25 && dist > 0) {
+              const push = (sw.intensity / (dist + 10)) * 6;
+              this.vx += (dx / dist) * push;
+              this.vy += (dy / dist) * push;
+            }
+          }
+
+          // Inertial damping
+          this.vx *= state.damping;
+          this.vy *= state.damping;
+
+          // Move
+          this.x += this.vx;
+          this.y += this.vy;
+
+          // Soft boundary bounce with momentum loss
+          const bounce = -0.7;
+          if (this.x - this.radius < 0) {
+            this.x = this.radius;
+            this.vx *= bounce;
+          } else if (this.x + this.radius > width) {
+            this.x = width - this.radius;
+            this.vx *= bounce;
+          }
+
+          if (this.y - this.radius < 0) {
+            this.y = this.radius;
+            this.vy *= bounce;
+          } else if (this.y + this.radius > height) {
+            this.y = height - this.radius;
+            this.vy *= bounce;
+          }
+        }
+
+        draw() {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+          ctx.fillStyle = this.color;
+          ctx.shadowBlur = this.glow;
+          ctx.shadowColor = this.color;
+          ctx.fill();
+          ctx.shadowBlur = 0; // reset
+        }
+      }
+
+      // ─── INITIALIZE PARTICLES ──────────────────────────────────
+      function initParticles(count = 110) {
+        state.particles = [];
+        for (let i = 0; i < count; i++) {
+          state.particles.push(new Particle());
+        }
+        document.getElementById("sim-particles-count").textContent = count;
+      }
+      initParticles();
+
+      // ─── MOUSE EVENT LISTENERS ─────────────────────────────────
+      canvas.addEventListener("mousemove", (e) => {
+        const rect = canvas.getBoundingClientRect();
+        state.mouse.x = e.clientX - rect.left;
+        state.mouse.y = e.clientY - rect.top;
+      });
+
+      canvas.addEventListener("mouseleave", () => {
+        state.mouse.x = null;
+        state.mouse.y = null;
+      });
+
+      canvas.addEventListener("click", (e) => {
+        const rect = canvas.getBoundingClientRect();
+        triggerShockwave(e.clientX - rect.left, e.clientY - rect.top, 8);
+      });
+
+      function triggerShockwave(x, y, intensity = 6) {
+        state.shockwaves.push({
+          x: x,
+          y: y,
+          radius: 10,
+          maxRadius: Math.max(width, height) * 0.45,
+          speed: 7,
+          intensity: intensity,
+          alpha: 1.0
+        });
+      }
+
+      // ─── MAIN ANIMATION LOOP ───────────────────────────────────
+      let lastTime = performance.now();
+      let frames = 0;
+      let lastFpsUpdate = performance.now();
+
+      function animate() {
+        requestAnimationFrame(animate);
+
+        // Semi-transparent clearing for zero-g particle trails
+        ctx.fillStyle = "rgba(6, 8, 20, 0.28)";
+        ctx.fillRect(0, 0, width, height);
+
+        // Update & draw shockwaves
+        for (let i = state.shockwaves.length - 1; i >= 0; i--) {
+          const sw = state.shockwaves[i];
+          sw.radius += sw.speed;
+          sw.alpha = 1 - sw.radius / sw.maxRadius;
+
+          if (sw.alpha <= 0) {
+            state.shockwaves.splice(i, 1);
+            continue;
+          }
+
+          ctx.beginPath();
+          ctx.arc(sw.x, sw.y, sw.radius, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(0, 242, 254, ${sw.alpha * 0.7})`;
+          ctx.lineWidth = 2.5;
+          ctx.shadowBlur = 12;
+          ctx.shadowColor = "#00f2fe";
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+        }
+
+        // Draw spring connection web lines between near particles
+        ctx.lineWidth = 0.5;
+        const maxDist = 75;
+        for (let i = 0; i < state.particles.length; i++) {
+          for (let j = i + 1; j < state.particles.length; j++) {
+            const p1 = state.particles[i];
+            const p2 = state.particles[j];
+            const dx = p1.x - p2.x;
+            const dy = p1.y - p2.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < maxDist) {
+              const alpha = (1 - dist / maxDist) * 0.22;
+              ctx.strokeStyle = `rgba(0, 242, 254, ${alpha})`;
+              ctx.beginPath();
+              ctx.moveTo(p1.x, p1.y);
+              ctx.lineTo(p2.x, p2.y);
+              ctx.stroke();
+            }
+          }
+        }
+
+        // Update and draw particles
+        for (let p of state.particles) {
+          p.update();
+          p.draw();
+        }
+
+        // Draw cursor interaction halo
+        if (state.mouse.x !== null && state.mouse.y !== null) {
+          ctx.beginPath();
+          ctx.arc(state.mouse.x, state.mouse.y, state.mouse.radius * 0.45, 0, Math.PI * 2);
+          ctx.strokeStyle = state.cursorMode === "attract" ? "rgba(0, 242, 254, 0.4)" : "rgba(255, 170, 0, 0.45)";
+          ctx.setLineDash([4, 4]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
+        // FPS Counter
+        frames++;
+        const now = performance.now();
+        if (now - lastFpsUpdate >= 500) {
+          const fps = Math.round((frames * 1000) / (now - lastFpsUpdate));
+          document.getElementById("sim-fps").textContent = fps;
+          frames = 0;
+          lastFpsUpdate = now;
+        }
+      }
+      animate();
+
+      // ─── SIMULATION UI CONTROLS ────────────────────────────────
+      const btn0G = document.getElementById("btn-env-0g");
+      const btnLunar = document.getElementById("btn-env-lunar");
+      const btnMars = document.getElementById("btn-env-mars");
+      const btnInvert = document.getElementById("btn-env-invert");
+      const hudGravity = document.getElementById("hud-gravity-val");
+      const hudField = document.getElementById("hud-field-mode");
+
+      function setActiveEnvBtn(activeBtn) {
+        [btn0G, btnLunar, btnMars, btnInvert].forEach(b => b.classList.remove("active"));
+        activeBtn.classList.add("active");
+      }
+
+      btn0G.addEventListener("click", () => {
+        state.gravityY = 0.0;
+        setActiveEnvBtn(btn0G);
+        hudGravity.textContent = "G-FORCE: 0.000G (NOMINAL)";
+        hudField.textContent = "MICRO-GRAVITY [0.0G]";
+      });
+
+      btnLunar.addEventListener("click", () => {
+        state.gravityY = 0.04;
+        setActiveEnvBtn(btnLunar);
+        hudGravity.textContent = "G-FORCE: 0.160G (LUNAR)";
+        hudField.textContent = "LUNAR GRAVITY [0.16G]";
+      });
+
+      btnMars.addEventListener("click", () => {
+        state.gravityY = 0.09;
+        setActiveEnvBtn(btnMars);
+        hudGravity.textContent = "G-FORCE: 0.380G (MARTIAN)";
+        hudField.textContent = "MARTIAN GRAVITY [0.38G]";
+      });
+
+      btnInvert.addEventListener("click", () => {
+        state.gravityY = -0.15;
+        setActiveEnvBtn(btnInvert);
+        hudGravity.textContent = "G-FORCE: -1.000G (INVERTED)";
+        hudField.textContent = "ANTIGRAVITY INVERTED [-1.0G]";
+      });
+
+      // Cursor mode toggle
+      const btnToggleCursor = document.getElementById("btn-toggle-cursor");
+      const lblCursorMode = document.getElementById("lbl-cursor-mode");
+      const hudInteractionMode = document.getElementById("hud-interaction-mode");
+
+      btnToggleCursor.addEventListener("click", () => {
+        if (state.cursorMode === "attract") {
+          state.cursorMode = "repel";
+          lblCursorMode.textContent = "Repel";
+          hudInteractionMode.textContent = "REPULSION FIELD (PUSH)";
+          hudInteractionMode.className = "fw-bold text-danger";
+        } else {
+          state.cursorMode = "attract";
+          lblCursorMode.textContent = "Attract";
+          hudInteractionMode.textContent = "GRAVITY WELL (PULL)";
+          hudInteractionMode.className = "fw-bold text-warning";
+        }
+      });
+
+      // Shockwave Disrupt Button
+      document.getElementById("btn-pulse-disrupt").addEventListener("click", () => {
+        triggerShockwave(width / 2, height / 2, 10);
+      });
+
+      // Reset Button
+      document.getElementById("btn-reset-sim").addEventListener("click", () => {
+        initParticles(100);
+      });
+
+      // ─── ANIMATED TELEMETRY STATS COUNTERS ──────────────────────
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            animateCounters();
+            observer.disconnect();
+          }
+        });
+      }, { threshold: 0.2 });
+
+      const telemetrySection = document.getElementById("telemetry");
+      if (telemetrySection) observer.observe(telemetrySection);
+
+      function animateCounters() {
+        const counters = document.querySelectorAll(".counter-val");
+        counters.forEach(counter => {
+          const target = parseFloat(counter.getAttribute("data-target"));
+          const prefix = counter.getAttribute("data-prefix") || "";
+          const suffix = counter.getAttribute("data-suffix") || "";
+          const isDecimal = target % 1 !== 0;
+          let current = 0;
+          const step = target / 40;
+
+          const timer = setInterval(() => {
+            current += step;
+            if (current >= target) {
+              current = target;
+              clearInterval(timer);
+            }
+            counter.textContent = prefix + (isDecimal ? current.toFixed(target < 1 ? 3 : 2) : Math.round(current)) + suffix;
+          }, 30);
+        });
+      }
+
+      // ─── CLEARANCE REQUEST FORM HANDLER ────────────────────────
+      const accessForm = document.getElementById("accessForm");
+      if (accessForm) {
+        accessForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const name = document.getElementById("inputName").value.trim();
+          const email = document.getElementById("inputEmail").value.trim();
+          const modalAlert = document.getElementById("modal-alert");
+          const resultBox = document.getElementById("clearanceResult");
+          const keyBox = document.getElementById("clearanceKey");
+          const submitBtn = document.getElementById("btn-submit-access");
+
+          if (!name || !email) {
+            modalAlert.className = "alert alert-danger py-2 px-3 small font-mono mb-3";
+            modalAlert.textContent = "⚠️ Please provide your full name and email.";
+            modalAlert.classList.remove("d-none");
+            return;
+          }
+
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Verifying Clearance...";
+
+          setTimeout(() => {
+            const randomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+            const clearanceId = `AGY-SEC-${Math.floor(10000 + Math.random() * 90000)}-${randomCode}`;
+
+            modalAlert.className = "alert alert-success py-2 px-3 small font-mono mb-3";
+            modalAlert.textContent = `✓ Clearance approved for ${name}. Verification packet dispatched to ${email}.`;
+            modalAlert.classList.remove("d-none");
+
+            keyBox.textContent = clearanceId;
+            resultBox.classList.remove("d-none");
+
+            submitBtn.textContent = "Clearance Granted";
+          }, 650);
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

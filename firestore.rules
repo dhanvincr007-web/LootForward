@@ -1,0 +1,74 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper Functions ────────────────────────────────────────
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.role == 'admin' ||
+        request.auth.token.email in ['admin@lootforward.org', 'dhanvincr007@gmail.com', 'alex.gamer@gmail.com', 'winchester007@gmail.com'] ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // ── Verified Admin Document Registry ────────────────────────
+    match /admins/{adminId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // ── Monetary Donations & Transaction Ledger ─────────────────
+    match /donations/{donationId} {
+      // Donors can read their own donations; admins have full audit visibility
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.donorUid == request.auth.uid);
+      // Valid transactions can be created by authenticated users or payment webhook workers
+      allow create: if isAuthenticated() || request.resource.data.gateway in ['stripe', 'razorpay'];
+      // Transactions are tamper-evident; only administrators can update audit status or delete
+      allow update, delete: if isAdmin();
+    }
+
+    // ── Gear Drop-Off Partner Locations (GIS Map Markers) ───────
+    match /dropoff_locations/{locationId} {
+      // Publicly readable so all gamers can browse and locate drop-off hubs on Leaflet map
+      allow read: if true;
+      // Strictly restricted: only administrators can add, update coordinates, or delete hubs
+      allow write, update, delete: if isAdmin();
+    }
+
+    // ── Hardware Drop Submissions & Audit Queue ─────────────────
+    match /hardware_submissions/{submissionId} {
+      // Donors can track their own tickets; admins view the full moderation queue
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.donorUid == request.auth.uid);
+      // Gamers can submit new hardware drops for review
+      allow create: if isAuthenticated() || request.resource.data.itemName != null;
+      // Only administrators can moderate, approve/reject, or issue shipping labels
+      allow update, delete: if isAdmin();
+    }
+
+    // ── Verified Recipients & Beneficiary Organizations ────────
+    match /recipients/{recipientId} {
+      // Publicly readable so donors and gamers can browse and choose drop targets
+      allow read: if true;
+      // Authenticated users and administrators can create new recipient entries
+      allow create: if isAuthenticated() || request.resource.data.name != null;
+      // Only administrators can edit or archive recipient organizations
+      allow update, delete: if isAdmin();
+    }
+
+    // ── User Profiles & RBAC Tokens ─────────────────────────────
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      // Users can modify their own non-role profile fields; only admins can grant the 'admin' role
+      allow create, update: if isOwner(userId) && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']) || isAdmin());
+      allow delete: if isAdmin();
+    }
+  }
+}

@@ -98,6 +98,7 @@
               <li><hr class="dropdown-divider border-secondary"></li>
               <li><a class="dropdown-item d-flex align-items-center gap-2" href="#tracking" data-route="tracking"><span>📦</span> My Tracked Drops</a></li>
               <li><a class="dropdown-item d-flex align-items-center gap-2" href="#donate" data-route="donate"><span>🎮</span> Make a Contribution</a></li>
+              <li id="dropdown-admin-item" class="d-none"><a class="dropdown-item d-flex align-items-center gap-2 text-warning fw-bold" href="#admin" data-route="admin"><span>🛡️</span> Admin Console</a></li>
               <li><hr class="dropdown-divider border-secondary"></li>
               <li>
                 <button type="button" class="dropdown-item text-danger d-flex align-items-center gap-2" id="btn-auth-signout">
@@ -518,12 +519,38 @@
     <!-- PAGE 3: RECIPIENTS -->
     <section id="page-recipients" class="page-view" data-page="recipients">
       <div class="container py-5">
-        <div class="section-heading">
-          <span class="eyebrow">VERIFIED DESTINATIONS</span>
-          <h2>Choose who receives your contribution.</h2>
-          <p>These approved community programs are matched against real need assessments. Select a recipient to lock
-            them as your drop target.</p>
+        <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+          <div class="section-heading mb-0">
+            <span class="eyebrow">VERIFIED DESTINATIONS</span>
+            <h2>Choose who receives your contribution.</h2>
+            <p class="mb-0">These approved community programs are matched against real need assessments. Select a recipient to lock them as your drop target.</p>
+          </div>
+          <div>
+            <button type="button" class="btn btn-neon btn-lg d-inline-flex align-items-center gap-2" id="btn-open-recipient-modal" data-bs-toggle="modal" data-bs-target="#addRecipientModal">
+              <span>➕</span>
+              <span>Register New Recipient</span>
+            </button>
+          </div>
         </div>
+
+        <!-- Recipient Filter & Search Bar -->
+        <div class="glass-panel p-3 mb-4 d-flex flex-wrap align-items-center justify-content-between gap-3" style="border-radius: 14px;">
+          <div class="d-flex flex-wrap gap-2 align-items-center" id="recipient-category-filters">
+            <button type="button" class="btn btn-sm btn-outline-neon active" data-rec-filter="all">All Destinations</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-rec-filter="Pediatric">Pediatric / Hospital</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-rec-filter="Youth Education">Youth Education</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-rec-filter="Esports Club">Esports Club</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-rec-filter="School">School / STEM</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-rec-filter="NGO">NGO / Non-Profit</button>
+          </div>
+          <div class="d-flex align-items-center gap-2" style="min-width: 260px; max-width: 360px; flex: 1;">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-dark border-secondary text-muted">🔍</span>
+              <input type="text" class="form-control bg-dark border-secondary text-white" id="recipient-search-input" placeholder="Search recipient, need, or region..." autocomplete="off">
+            </div>
+          </div>
+        </div>
+
         <div class="row g-4" id="recipient-cards-container">
           <!-- Recipient Cards Rendered Dynamically by app.js -->
         </div>
@@ -700,56 +727,232 @@
       </div>
     </section>
 
-    <!-- PAGE 6: ADMIN -->
+    <!-- PAGE 6: ADMIN CONTROL CENTER -->
     <section id="page-admin" class="page-view" data-page="admin">
       <div class="container py-5">
-        <div class="section-heading">
-          <span class="eyebrow">PROTECTED — VERIFIER DASHBOARD</span>
-          <h2>Moderation &amp; Audit Control Panel.</h2>
-          <p>Review pending hardware drops. Approve to generate a pre-paid shipping label or reject to flag the
-            submission for fraud review.</p>
+        
+        <!-- Section Heading -->
+        <div class="section-heading mb-4">
+          <span class="eyebrow">PROTECTED // AUDIT &amp; MODERATION</span>
+          <h2>Platform Control Center &amp; Ledger.</h2>
+          <p>Role-Based administrative control center for financial reconciliation, GIS drop-off hub deployments, and hardware moderation.</p>
         </div>
 
-        <!-- Auth Gate -->
-        <div id="admin-auth-gate" class="glass-panel admin-auth-gate">
-          <div class="admin-lock-icon">🔐</div>
-          <h3>Verifier Access Required</h3>
-          <p class="text-muted mb-0">This panel is restricted to verified admin accounts.</p>
-          <div class="input-group mt-4" style="max-width:460px; margin:auto">
-            <input type="password" class="form-control" id="admin-passphrase" placeholder="Admin passphrase"
-              autocomplete="current-password">
-            <button class="btn btn-neon" type="button" id="admin-unlock-btn">Unlock</button>
+        <!-- Auth & RBAC Gate (Shown when unauthenticated or non-admin) -->
+        <div id="admin-auth-gate" class="glass-panel text-center p-5 my-4" style="max-width: 600px; margin: 0 auto; border-radius: 20px;">
+          <div style="font-size: 3.5rem; margin-bottom: 1rem;">🛡️</div>
+          <h3 class="h4 fw-bold mb-2">Administrator Clearance Required</h3>
+          <p class="text-muted mb-4">
+            This module is restricted to authorized LootForward platform administrators and verified audit coordinators.
+          </p>
+          
+          <div id="admin-gate-unauth">
+            <p class="small text-warning mb-3">Please sign in with your administrative account to access this terminal.</p>
+            <button type="button" class="btn btn-neon px-4 py-2" id="btn-admin-gate-signin">
+              <span>👤</span> Sign In as Admin
+            </button>
           </div>
-          <div id="admin-auth-error" class="form-alert d-none mt-3" role="alert">
-            Incorrect passphrase. Access denied.
+
+          <div id="admin-gate-denied" class="d-none">
+            <div class="alert alert-warning py-2 px-3 small d-inline-block mb-3">
+              Signed in as <strong id="admin-denied-email">user@email.com</strong> (Role: Gamer).
+            </div>
+            <p class="small text-muted mb-3">Your credentials do not have administrator permissions.</p>
+            <button type="button" class="btn btn-outline-warning btn-sm" id="btn-admin-demo-toggle">
+              ⚡ Grant Temporary Evaluator Clearance (Demo Mode)
+            </button>
           </div>
-          <p class="admin-hint mt-3">Demo passphrase: <code>LOOTFORWARD2026</code></p>
         </div>
 
-        <!-- Admin Panel -->
+        <!-- Authenticated Admin Control Panel -->
         <div id="admin-panel" class="d-none">
-          <div class="admin-toolbar glass-panel mb-4">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-              <div class="d-flex align-items-center gap-2">
-                <span class="admin-status-dot"></span>
-                <span id="admin-user-label" class="admin-user-label">Verifier Mode Active</span>
+          <!-- Top Control Header -->
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 p-3 glass-panel" style="border-radius: 16px;">
+            <div class="d-flex align-items-center gap-3">
+              <div class="admin-badge-indicator">
+                <span class="admin-pulse-dot"></span>
+                <span class="small font-mono fw-bold text-cyan">ADMIN VERIFIER ACTIVE</span>
               </div>
-              <div class="d-flex gap-3 align-items-center flex-wrap">
-                <div>
-                  <span class="stat-label me-2">PENDING REVIEWS</span>
-                  <span id="pending-count" class="pending-count-badge">0</span>
+              <span class="text-muted small">|</span>
+              <span class="small text-white-50" id="admin-session-user">admin@lootforward.org</span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <button type="button" class="btn btn-sm btn-outline-neon" id="btn-admin-add-hub" data-bs-toggle="modal" data-bs-target="#adminAddHubModal">
+                <span>➕ Add Drop-off Hub</span>
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-secondary" id="btn-admin-lock">
+                <span>🔒 Lock Session</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 4 Analytics Overview Cards -->
+          <div class="row g-4 mb-5">
+            <div class="col-sm-6 col-xl-3">
+              <div class="glass-panel p-4 h-100 admin-stat-card border-cyan">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <span class="stat-label">TOTAL FUNDS RAISED</span>
+                  <span class="fs-4">💰</span>
                 </div>
-                <button class="btn btn-outline-neon btn-sm" id="admin-logout-btn">🔒 Lock Panel</button>
+                <div class="fs-2 fw-bold text-cyan font-mono" id="admin-stat-donations">$34,850.00</div>
+                <div class="small text-muted mt-1">
+                  <span class="text-success">↑ +18.4%</span> vs last month · 248 donors
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-6 col-xl-3">
+              <div class="glass-panel p-4 h-100 admin-stat-card border-violet">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <span class="stat-label">ACTIVE MAP HUBS</span>
+                  <span class="fs-4">📍</span>
+                </div>
+                <div class="fs-2 fw-bold text-violet font-mono" id="admin-stat-hubs">34 Hubs</div>
+                <div class="small text-muted mt-1">
+                  Across 12 major metro areas
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-6 col-xl-3">
+              <div class="glass-panel p-4 h-100 admin-stat-card border-cyan">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <span class="stat-label">REGISTERED GAMERS</span>
+                  <span class="fs-4">👥</span>
+                </div>
+                <div class="fs-2 fw-bold text-white font-mono" id="admin-stat-users">1,428</div>
+                <div class="small text-muted mt-1">
+                  <span class="text-success">↑ 92</span> new players this week
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-6 col-xl-3">
+              <div class="glass-panel p-4 h-100 admin-stat-card border-warning">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <span class="stat-label">PENDING AUDIT QUEUE</span>
+                  <span class="fs-4">📦</span>
+                </div>
+                <div class="fs-2 fw-bold text-warning font-mono" id="admin-stat-pending">5 Items</div>
+                <div class="small text-muted mt-1">
+                  Awaiting shipping label issuance
+                </div>
               </div>
             </div>
           </div>
-          <div id="admin-queue" class="admin-queue">
-            <div class="text-center py-5 text-muted" id="admin-empty">
-              <div style="font-size:2.5rem;margin-bottom:12px">📭</div>
-              No pending submissions in the local queue.
+
+          <!-- Tabbed Interactive Management Section -->
+          <div class="glass-panel p-4" style="border-radius: 18px;">
+            <ul class="nav nav-pills admin-tabs mb-4 gap-2" id="adminTabs" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active admin-tab-btn" id="tab-donations-btn" data-bs-toggle="tab" data-bs-target="#admin-tab-donations" type="button" role="tab">
+                  💳 Recent Donations (<span id="admin-badge-donations-count">0</span>)
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link admin-tab-btn" id="tab-hubs-btn" data-bs-toggle="tab" data-bs-target="#admin-tab-hubs" type="button" role="tab">
+                  📍 Drop-off Locations (<span id="admin-badge-hubs-count">0</span>)
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link admin-tab-btn" id="tab-queue-btn" data-bs-toggle="tab" data-bs-target="#admin-tab-queue" type="button" role="tab">
+                  📦 Hardware Audit Queue (<span id="admin-badge-queue-count">0</span>)
+                </button>
+              </li>
+            </ul>
+
+            <div class="tab-content" id="adminTabsContent">
+              <!-- Tab 1: Donations Table -->
+              <div class="tab-pane fade show active" id="admin-tab-donations" role="tabpanel">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+                  <div class="input-group" style="max-width: 340px;">
+                    <span class="input-group-text bg-dark border-secondary text-muted">🔍</span>
+                    <input type="text" class="form-control bg-dark border-secondary text-white small" id="admin-donations-search" placeholder="Search by donor or ticket...">
+                  </div>
+                  <div class="d-flex gap-2" id="admin-donation-filters">
+                    <button type="button" class="btn btn-sm btn-outline-secondary active" data-filter="all">All</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-filter="stripe">Stripe ($)</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-filter="razorpay">Razorpay (₹)</button>
+                  </div>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="table table-dark table-hover admin-table align-middle">
+                    <thead>
+                      <tr>
+                        <th>Date &amp; Time</th>
+                        <th>Donor</th>
+                        <th>Recipient Program</th>
+                        <th>Amount</th>
+                        <th>Gateway</th>
+                        <th>Status</th>
+                        <th>Audit Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="admin-donations-tbody">
+                      <!-- Rendered by JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Tab 2: Hub Locations Table -->
+              <div class="tab-pane fade" id="admin-tab-hubs" role="tabpanel">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+                  <div class="input-group" style="max-width: 340px;">
+                    <span class="input-group-text bg-dark border-secondary text-muted">🔍</span>
+                    <input type="text" class="form-control bg-dark border-secondary text-white small" id="admin-hubs-search" placeholder="Search hub name or city...">
+                  </div>
+                  <button type="button" class="btn btn-sm btn-neon" data-bs-toggle="modal" data-bs-target="#adminAddHubModal">
+                    + Add New Partner Hub
+                  </button>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="table table-dark table-hover admin-table align-middle">
+                    <thead>
+                      <tr>
+                        <th>Hub / Partner Name</th>
+                        <th>Street Address</th>
+                        <th>City / Region</th>
+                        <th>Coordinates</th>
+                        <th>Hours</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="admin-hubs-tbody">
+                      <!-- Rendered by JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Tab 3: Hardware Queue Table -->
+              <div class="tab-pane fade" id="admin-tab-queue" role="tabpanel">
+                <div class="table-responsive">
+                  <table class="table table-dark table-hover admin-table align-middle">
+                    <thead>
+                      <tr>
+                        <th>Ticket ID</th>
+                        <th>Submitted Hardware</th>
+                        <th>Target Recipient</th>
+                        <th>Drop-off Method</th>
+                        <th>Proof File</th>
+                        <th>Audit Status</th>
+                        <th class="text-end">Verification Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="admin-queue-tbody">
+                      <!-- Rendered by JS -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+
       </div>
     </section>
 
@@ -1335,6 +1538,217 @@
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
   </div><!-- /#authModal -->
+
+  <!-- Modal: Add New Drop-off Location -->
+  <div class="modal fade" id="adminAddHubModal" tabindex="-1" aria-labelledby="adminAddHubModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content auth-content">
+        <div class="auth-header">
+          <div>
+            <span class="small font-mono text-cyan">ADMIN CONTROL // GIS MANAGEMENT</span>
+            <h5 class="auth-title mb-0" id="adminAddHubModalLabel">Add Drop-off Hub Location</h5>
+          </div>
+          <button type="button" class="pm-close-btn" data-bs-dismiss="modal" aria-label="Close">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="auth-body">
+          <form id="admin-add-hub-form">
+            <div class="mb-3">
+              <label class="form-label small text-muted font-mono">HUB / VENUE NAME</label>
+              <input type="text" class="form-control" id="hub-name-input" placeholder="e.g. PixelVault Arcade & Gaming Hub" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small text-muted font-mono">PHYSICAL ADDRESS</label>
+              <input type="text" class="form-control" id="hub-address-input" placeholder="e.g. 520 S Michigan Ave, Chicago, IL 60605" required>
+            </div>
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label small text-muted font-mono">LATITUDE</label>
+                <input type="number" step="any" class="form-control" id="hub-lat-input" placeholder="41.8756" required>
+              </div>
+              <div class="col-6">
+                <label class="form-label small text-muted font-mono">LONGITUDE</label>
+                <input type="number" step="any" class="form-control" id="hub-lng-input" placeholder="-87.6244" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small text-muted font-mono">OPERATING HOURS</label>
+              <input type="text" class="form-control" id="hub-hours-input" placeholder="e.g. 10:00 AM - 9:00 PM Daily" required>
+            </div>
+            <button type="submit" class="btn btn-neon w-100 py-2 mt-2" id="btn-save-hub">Save &amp; Deploy Marker to Map</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div><!-- /#adminAddHubModal -->
+
+  <!-- ═══════════════════════════════════════════════════════════
+       ADD NEW RECIPIENT MODAL · Bootstrap 5 & Leaflet Pin-Drop
+  ════════════════════════════════════════════════════════════ -->
+  <div class="modal fade" id="addRecipientModal" tabindex="-1" aria-labelledby="addRecipientModalLabel" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg recipient-dialog">
+      <div class="modal-content recipient-content">
+
+        <!-- Modal Header -->
+        <div class="auth-header">
+          <div class="d-flex align-items-center gap-3">
+            <div class="auth-logo-badge" aria-hidden="true" style="background: linear-gradient(135deg, #00f2fe, #9b51e0);">🎯</div>
+            <div>
+              <span class="small font-mono text-cyan fw-bold">DESTINATION ONBOARDING // COMMUNITY ENROLLMENT</span>
+              <h5 class="auth-title mb-0" id="addRecipientModalLabel">Register New Recipient Program</h5>
+              <p class="auth-subtitle mb-0">Nominate an esports club, hospital, NGO, or school for audited gear drops</p>
+            </div>
+          </div>
+          <button type="button" class="pm-close-btn" data-bs-dismiss="modal" aria-label="Close">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="auth-body py-4 px-4">
+          <!-- Validation Feedback Alert -->
+          <div id="recipient-form-alert" class="alert alert-danger d-none py-2 px-3 small d-flex align-items-start gap-2 mb-3" role="alert">
+            <span class="flex-shrink-0">⚠️</span>
+            <span id="recipient-form-alert-text"></span>
+          </div>
+
+          <form id="form-add-recipient" novalidate>
+            <!-- Row 1: Name and Category -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-7">
+                <label class="form-label small text-muted font-mono" for="rec-name-input">
+                  ORGANIZATION / RECIPIENT NAME <span class="text-danger">*</span>
+                </label>
+                <input type="text" class="form-control" id="rec-name-input" placeholder="e.g. Chicago Youth Esports League &amp; STEM Lab" required autocomplete="off">
+              </div>
+              <div class="col-md-5">
+                <label class="form-label small text-muted font-mono" for="rec-category-input">
+                  DESTINATION CATEGORY <span class="text-danger">*</span>
+                </label>
+                <select class="form-select" id="rec-category-input" required>
+                  <option value="">Select category...</option>
+                  <option value="Esports Club">🎮 Esports Club</option>
+                  <option value="Pediatric / Hospital">🏥 Pediatric / Hospital</option>
+                  <option value="Youth Education">🎓 Youth Education</option>
+                  <option value="School / STEM">🏫 School / STEM Lab</option>
+                  <option value="NGO / Non-Profit">🤝 NGO / Non-Profit</option>
+                  <option value="Individual Gamer">⭐ Individual Gamer in Need</option>
+                  <option value="Recreation Center">🕹️ Recreation Center</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Row 2: Contact Email & Phone -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label class="form-label small text-muted font-mono" for="rec-email-input">
+                  CONTACT EMAIL ADDRESS <span class="text-danger">*</span>
+                </label>
+                <input type="email" class="form-control" id="rec-email-input" placeholder="e.g. director@esportschi.org" required autocomplete="off">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label small text-muted font-mono" for="rec-phone-input">
+                  CONTACT PHONE NUMBER <span class="text-danger">*</span>
+                </label>
+                <input type="tel" class="form-control" id="rec-phone-input" placeholder="e.g. (312) 555-0144" required autocomplete="off">
+              </div>
+            </div>
+
+            <!-- Row 3: Target Hardware & Quantity Goal -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-8">
+                <label class="form-label small text-muted font-mono" for="rec-target-item-input">
+                  PRIMARY TARGET HARDWARE <span class="text-danger">*</span>
+                </label>
+                <input type="text" class="form-control" id="rec-target-item-input" placeholder="e.g. High-End Gaming PCs &amp; 144Hz Displays" required autocomplete="off">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small text-muted font-mono" for="rec-target-count-input">
+                  GOAL QUANTITY <span class="text-danger">*</span>
+                </label>
+                <input type="number" class="form-control" id="rec-target-count-input" min="1" max="100" value="6" required>
+              </div>
+            </div>
+
+            <!-- Row 4: Physical Address & Geocoding Bar -->
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="form-label small text-muted font-mono mb-0" for="rec-address-input">
+                  PHYSICAL FACILITY ADDRESS <span class="text-danger">*</span>
+                </label>
+                <span class="small font-mono text-cyan" id="rec-geo-status-indicator">📍 Pin ready</span>
+              </div>
+              <div class="input-group">
+                <input type="text" class="form-control" id="rec-address-input" placeholder="e.g. 520 S Michigan Ave, Chicago, IL 60605" required autocomplete="off">
+                <button type="button" class="btn btn-outline-neon d-flex align-items-center gap-1" id="btn-geocode-recipient-address">
+                  <span class="spinner-border spinner-border-sm d-none" id="rec-geocode-spinner"></span>
+                  <span id="rec-geocode-icon">🔍</span>
+                  <span>Geocode Location</span>
+                </button>
+                <button type="button" class="btn btn-outline-secondary d-flex align-items-center gap-1" id="btn-gps-recipient-address" title="Detect device GPS position">
+                  <span>📍 GPS</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Row 5: Coordinates & Interactive Mini Leaflet Pin-Drop Map -->
+            <div class="mb-3">
+              <div class="row g-2 mb-2">
+                <div class="col-6">
+                  <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-dark border-secondary text-muted font-mono">LAT</span>
+                    <input type="number" step="any" class="form-control font-mono bg-dark border-secondary text-cyan" id="rec-lat-input" placeholder="41.8756" required>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-dark border-secondary text-muted font-mono">LNG</span>
+                    <input type="number" step="any" class="form-control font-mono bg-dark border-secondary text-cyan" id="rec-lng-input" placeholder="-87.6244" required>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Interactive Mini Map -->
+              <div class="recipient-mini-map-wrap">
+                <span class="mini-map-overlay-badge">🗺️ Click or drag pin to adjust coordinates</span>
+                <div id="recipient-mini-map"></div>
+              </div>
+            </div>
+
+            <!-- Row 6: Description & Need Statement -->
+            <div class="mb-3">
+              <label class="form-label small text-muted font-mono" for="rec-mission-input">
+                NEED STATEMENT &amp; COMMUNITY MISSION <span class="text-danger">*</span>
+              </label>
+              <textarea class="form-control" id="rec-mission-input" rows="3" placeholder="Explain the community program, beneficiaries served, and how donated gear transforms their daily engagement..." required></textarea>
+            </div>
+
+            <!-- Row 7: Current Specific Needs Tag List -->
+            <div class="mb-4">
+              <label class="form-label small text-muted font-mono" for="rec-needs-input">
+                SPECIFIC GEAR NEEDED (COMMA-SEPARATED)
+              </label>
+              <input type="text" class="form-control" id="rec-needs-input" placeholder="e.g. Gaming PCs, Ergonomic Chairs, Wireless Headsets, Entry GPUs">
+            </div>
+
+            <!-- Modal Action Buttons -->
+            <div class="d-flex justify-content-end gap-2 pt-2 border-top border-secondary">
+              <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-neon px-4 d-inline-flex align-items-center gap-2" id="btn-submit-recipient">
+                <span class="spinner-border spinner-border-sm d-none" id="recipient-submit-spinner" role="status" aria-hidden="true"></span>
+                <span id="recipient-submit-text">Deploy Recipient to Platform</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div><!-- /#addRecipientModal -->
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

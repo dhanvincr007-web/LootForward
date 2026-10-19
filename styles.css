@@ -2840,5 +2840,203 @@ body {
   color: var(--cyan) !important;
 }
 
+/* ─── ADMIN DASHBOARD CONTROL CENTER ───────────────────────── */
+.admin-badge-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 242, 254, 0.08);
+  border: 1px solid rgba(0, 242, 254, 0.25);
+  padding: 4px 12px;
+  border-radius: 99px;
+}
 
+.admin-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 10px var(--cyan);
+  animation: adminPulse 1.8s infinite;
+}
 
+@keyframes adminPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.7); }
+}
+
+.admin-stat-card {
+  border-radius: 16px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.5);
+}
+
+.admin-stat-card.border-cyan {
+  border-top: 3px solid var(--cyan) !important;
+}
+
+.admin-stat-card.border-violet {
+  border-top: 3px solid var(--violet) !important;
+}
+
+.admin-stat-card.border-warning {
+  border-top: 3px solid #ffaa00 !important;
+}
+
+.admin-tabs {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 8px;
+}
+
+.admin-tab-btn {
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: var(--muted) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 10px !important;
+  padding: 8px 18px !important;
+  font-size: 0.86rem !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+}
+
+.admin-tab-btn:hover {
+  color: var(--white) !important;
+  border-color: rgba(0, 242, 254, 0.4) !important;
+}
+
+.admin-tab-btn.active {
+  background: rgba(0, 242, 254, 0.12) !important;
+  color: var(--cyan) !important;
+  border-color: var(--cyan) !important;
+  box-shadow: 0 0 16px rgba(0, 242, 254, 0.25) !important;
+}
+
+.admin-table {
+  --bs-table-bg: transparent !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  font-size: 0.88rem;
+}
+
+.admin-table th {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-family: var(--font-display);
+  border-bottom: 2px solid rgba(0, 242, 254, 0.3) !important;
+  padding: 12px 14px;
+}
+
+.admin-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.admin-table tr:hover td {
+  background: rgba(0, 242, 254, 0.04) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RECIPIENT MANAGEMENT & ONBOARDING MODAL STYLES
+   ═══════════════════════════════════════════════════════════════ */
+.recipient-dialog {
+  max-width: 680px;
+  width: 95%;
+}
+
+.recipient-content {
+  background: rgba(13, 17, 23, 0.98);
+  border: 1px solid rgba(0, 242, 254, 0.3);
+  border-radius: 20px;
+  box-shadow: 0 0 40px rgba(0, 242, 254, 0.15), 0 24px 60px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+  position: relative;
+  color: var(--white);
+}
+
+.recipient-mini-map-wrap {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 242, 254, 0.3);
+  background: #0d1117;
+}
+
+#recipient-mini-map {
+  height: 220px;
+  width: 100%;
+}
+
+.mini-map-overlay-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(13, 17, 23, 0.85);
+  border: 1px solid rgba(0, 242, 254, 0.4);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  color: var(--cyan);
+  z-index: 1000;
+  pointer-events: none;
+  backdrop-filter: blur(6px);
+}
+
+.recipient-card-new {
+  position: relative;
+  animation: recipientCardHighlight 2.5s ease-out;
+}
+
+@keyframes recipientCardHighlight {
+  0% {
+    box-shadow: 0 0 35px rgba(0, 242, 254, 0.8), 0 0 15px rgba(110, 255, 178, 0.6);
+    transform: translateY(-4px) scale(1.02);
+  }
+  100% {
+    box-shadow: none;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.rec-badge-new {
+  background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(110, 255, 178, 0.25));
+  border: 1px solid #00f2fe;
+  color: #00f2fe;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 4px 8px;
+  border-radius: 6px;
+  animation: adminPulse 2s infinite;
+}
+
+.leaflet-recipient-icon {
+  background: transparent;
+  border: none;
+}
+
+.recipient-map-marker {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00f2fe, #9b51e0);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 16px rgba(0, 242, 254, 0.8), 0 0 25px rgba(155, 81, 224, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.recipient-map-marker:hover {
+  transform: scale(1.2);
+}
