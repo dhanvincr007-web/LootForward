@@ -195,13 +195,14 @@ const { onDocumentUpdated } = require("firebase-functions/v2/firestore");
 const nodemailer = require("nodemailer");
 
 // Nodemailer SMTP / SendGrid Transporter
+// Secure credentials read directly from environment variables: EMAIL_USER and EMAIL_PASS
 const mailTransporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST || "smtp.sendgrid.net",
     port: parseInt(process.env.SMTP_PORT || "587", 10),
     secure: process.env.SMTP_SECURE === "true",
     auth: {
-        user: process.env.SMTP_USER || "apikey",
-        pass: process.env.SMTP_PASS || process.env.SENDGRID_API_KEY || "dummy_key"
+        user: process.env.EMAIL_USER || process.env.SMTP_USER || "apikey",
+        pass: process.env.EMAIL_PASS || process.env.SMTP_PASS || process.env.SENDGRID_API_KEY || "dummy_key"
     }
 });
 
@@ -215,11 +216,8 @@ exports.onRecipientApproved = onDocumentUpdated("recipients/{recipientId}", asyn
         return null;
     }
 
-    // State transition guard: Detect unapproved/pending -> approved
-    const wasPending = beforeData.status === "pending" || beforeData.status !== "approved";
-    const isNowApproved = afterData.status === "approved";
-
-    if (!wasPending || !isNowApproved) {
+    // State transition guard: Fires specifically when status moves from 'pending' to 'approved'
+    if (beforeData.status !== "pending" || afterData.status !== "approved") {
         return null;
     }
 
