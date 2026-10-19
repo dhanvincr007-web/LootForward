@@ -2553,6 +2553,11 @@ function initGearClaimHandlers() {
       item.claimedByRecipientName = recipientName;
       item.claimedAt = new Date().toISOString();
 
+      // Persist to Firestore collection 'gear'
+      if (window.LootFirestore?.claimGear) {
+        window.LootFirestore.claimGear(item.gearId, item.claimCode, recipientId, recipientName);
+      }
+
       rebuildAllMapNodes();
       updateLiveImpactCounters();
 

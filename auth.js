@@ -23,6 +23,8 @@ import {
   collection,
   addDoc,
   getDocs,
+  doc,
+  updateDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -433,6 +435,45 @@ export async function saveRecipientToFirestore(recipientPayload) {
   }
 }
 
+/**
+ * Update gear record status to 'claimed' in Firestore 'gear' collection
+ * Records claiming recipient organization ID, name, and atomic timestamp
+ */
+export async function claimGearInFirestore(gearId, claimCode, recipientId, recipientName) {
+  const updatePayload = {
+    status: "claimed",
+    claimedByRecipientId: recipientId,
+    claimedByRecipientName: recipientName,
+    claimedAt: new Date().toISOString()
+  };
+
+  if (db && !isDemoFallback) {
+    try {
+      const gearRef = doc(db, "gear", gearId);
+      await updateDoc(gearRef, {
+        ...updatePayload,
+        updatedTimestamp: serverTimestamp()
+      });
+    } catch (err) {
+      console.warn("Firestore updateDoc for gear collection error:", err.message);
+    }
+  }
+
+  // Sync to local storage for offline continuity
+  try {
+    const cachedGear = JSON.parse(localStorage.getItem("lootforward_gear_cache") || "[]");
+    const idx = cachedGear.findIndex(g => g.gearId === gearId || g.claimCode === claimCode);
+    if (idx !== -1) {
+      cachedGear[idx] = { ...cachedGear[idx], ...updatePayload };
+    } else {
+      cachedGear.push({ gearId, claimCode, ...updatePayload });
+    }
+    localStorage.setItem("lootforward_gear_cache", JSON.stringify(cachedGear));
+  } catch (e) { }
+
+  return updatePayload;
+}
+
 // Expose on global window object for consumption by app.js
 window.LootAuth = {
   signInWithGoogle,
@@ -443,6 +484,7 @@ window.LootAuth = {
   logoutUser,
   subscribeAuthState,
   saveRecipient: saveRecipientToFirestore,
+  claimGear: claimGearInFirestore,
   getCurrentUser: () => {
     const cached = localStorage.getItem("lootforward_auth_cache");
     return cached ? JSON.parse(cached) : null;
@@ -450,5 +492,6 @@ window.LootAuth = {
 };
 
 window.LootFirestore = {
-  saveRecipient: saveRecipientToFirestore
+  saveRecipient: saveRecipientToFirestore,
+  claimGear: claimGearInFirestore
 };
