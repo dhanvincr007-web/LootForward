@@ -3170,3 +3170,78 @@ body {
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
 }
+
+/* ─── GLOBAL MULTI-CURRENCY CONVERTER & DROPDOWN ──────────── */
+.converter-glass-card {
+  border: 1px solid rgba(0, 242, 254, 0.2) !important;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.converter-glass-card:hover {
+  border-color: rgba(0, 242, 254, 0.45) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 25px rgba(0, 242, 254, 0.15);
+}
+
+.converter-swap-btn {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s ease, background-color 0.25s ease;
+}
+.converter-swap-btn:hover {
+  transform: rotate(180deg) scale(1.08);
+}
+
+.currency-dropdown-list {
+  max-height: 380px;
+  overflow-y: auto;
+  border-radius: 10px;
+}
+.currency-dropdown-item {
+  color: #cbd5e1;
+  font-size: 0.85rem;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background 0.15s ease, color 0.15s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.currency-dropdown-item:hover,
+.currency-dropdown-item.active {
+  background: rgba(0, 242, 254, 0.15);
+  color: #00f2fe;
+}
+.currency-flag-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+/* ─── REGIONAL I18N DROPDOWN STYLING ──────────────────────── */
+.region-dropdown-list {
+  max-height: 380px;
+  overflow-y: auto;
+  border-radius: 10px;
+}
+.region-dropdown-item {
+  color: #cbd5e1;
+  font-size: 0.85rem;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background 0.15s ease, color 0.15s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.region-dropdown-item:hover,
+.region-dropdown-item.active {
+  background: rgba(0, 242, 254, 0.15);
+  color: #00f2fe;
+}
+.region-flag-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+}

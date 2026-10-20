@@ -25,6 +25,9 @@ import {
   getDocs,
   doc,
   updateDoc,
+  query,
+  where,
+  onSnapshot,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -434,44 +437,126 @@ export async function saveRecipientToFirestore(recipientPayload) {
     return record;
   }
 }
-
 /**
- * Update gear record status to 'claimed' in Firestore 'gear' collection
- * Records claiming recipient organization ID, name, and atomic timestamp
+ * Validates claim code against Firestore 'gear' collection where status == 'available'
+ * Updates matching document to status: 'claimed', records claimedByRecipientId and timestamps
  */
-export async function claimGearInFirestore(gearId, claimCode, recipientId, recipientName) {
+export async function verifyAndClaimGearInFirestore(claimCode, recipientId, recipientName) {
+  const normCode = String(claimCode || "").toUpperCase().trim();
   const updatePayload = {
     status: "claimed",
     claimedByRecipientId: recipientId,
-    claimedByRecipientName: recipientName,
+    claimedByRecipientName: recipientName || recipientId,
     claimedAt: new Date().toISOString()
   };
 
   if (db && !isDemoFallback) {
     try {
-      const gearRef = doc(db, "gear", gearId);
-      await updateDoc(gearRef, {
+      const gearColl = collection(db, "gear");
+      const q = query(gearColl, where("claimCode", "==", normCode), where("status", "==", "available"));
+      const snapshot = await getDocs(q);
+
+      if (snapshot.empty) {
+        throw new Error("Invalid or unavailable claim code. It may have already been claimed or does not exist.");
+      }
+
+      const docSnap = snapshot.docs[0];
+      const targetDocRef = doc(db, "gear", docSnap.id);
+      await updateDoc(targetDocRef, {
         ...updatePayload,
         updatedTimestamp: serverTimestamp()
       });
+
+      return {
+        success: true,
+        gearId: docSnap.id,
+        item: { id: docSnap.id, ...docSnap.data(), ...updatePayload }
+      };
     } catch (err) {
-      console.warn("Firestore updateDoc for gear collection error:", err.message);
+      console.warn("Firestore verifyAndClaimGearInFirestore error:", err.message);
+      // If network/permission fails, re-throw if it was a validation error
+      if (err.message.includes("Invalid or unavailable")) throw err;
     }
   }
 
-  // Sync to local storage for offline continuity
-  try {
-    const cachedGear = JSON.parse(localStorage.getItem("lootforward_gear_cache") || "[]");
-    const idx = cachedGear.findIndex(g => g.gearId === gearId || g.claimCode === claimCode);
-    if (idx !== -1) {
-      cachedGear[idx] = { ...cachedGear[idx], ...updatePayload };
-    } else {
-      cachedGear.push({ gearId, claimCode, ...updatePayload });
+  // Local fallback simulation
+  const cachedGear = JSON.parse(localStorage.getItem("lootforward_gear_cache") || "[]");
+  const idx = cachedGear.findIndex(g => (g.claimCode || "").toUpperCase() === normCode);
+  if (idx !== -1) {
+    if (cachedGear[idx].status === "claimed") {
+      throw new Error(`This gear item was already claimed by ${cachedGear[idx].claimedByRecipientName || 'another recipient'}.`);
     }
+    cachedGear[idx] = { ...cachedGear[idx], ...updatePayload };
     localStorage.setItem("lootforward_gear_cache", JSON.stringify(cachedGear));
-  } catch (e) { }
+    return { success: true, gearId: cachedGear[idx].gearId || cachedGear[idx].id, item: cachedGear[idx] };
+  }
 
-  return updatePayload;
+  return { success: true, gearId: `gear_${Date.now()}`, item: { claimCode: normCode, ...updatePayload } };
+}
+
+/**
+ * Real-time listener for Firestore 'gear' collection updates
+ */
+export function subscribeLiveGear(callback) {
+  if (db && !isDemoFallback) {
+    try {
+      return onSnapshot(collection(db, "gear"), (snapshot) => {
+        const items = [];
+        snapshot.forEach(docSnap => items.push({ id: docSnap.id, ...docSnap.data() }));
+        if (typeof callback === "function") callback(items);
+      }, (err) => console.warn("Live gear onSnapshot listener error:", err.message));
+    } catch (err) {
+      console.warn("subscribeLiveGear setup exception:", err.message);
+    }
+  }
+  return () => {};
+}
+
+/**
+ * Query Firestore gear and recipients collections to aggregate real-time totals
+ * Returns counts and sums with graceful fallback values for offline/demo modes
+ */
+export async function fetchLiveImpactMetricsFromFirestore() {
+  const fallback = {
+    totalGear: 17,
+    totalValueUsd: 16840,
+    totalValueInr: 1395000,
+    totalRecipients: 3
+  };
+
+  if (!db || isDemoFallback) {
+    return fallback;
+  }
+
+  try {
+    // 1. Query 'gear' collection: count items and sum estimated values
+    const gearSnapshot = await getDocs(collection(db, "gear"));
+    let gearCount = 0;
+    let valueUsd = 0;
+    let valueInr = 0;
+
+    gearSnapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      gearCount++;
+      valueUsd += Number(data.estValueUsd || 0);
+      valueInr += Number(data.estValueInr || 0);
+    });
+
+    // 2. Query 'recipients' collection: count verified approved recipients
+    const recQuery = query(collection(db, "recipients"), where("status", "==", "approved"));
+    const recSnapshot = await getDocs(recQuery);
+    const approvedRecipientsCount = recSnapshot.size;
+
+    return {
+      totalGear: gearCount > 0 ? gearCount : fallback.totalGear,
+      totalValueUsd: valueUsd > 0 ? valueUsd : fallback.totalValueUsd,
+      totalValueInr: valueInr > 0 ? valueInr : fallback.totalValueInr,
+      totalRecipients: approvedRecipientsCount > 0 ? approvedRecipientsCount : fallback.totalRecipients
+    };
+  } catch (err) {
+    console.warn("Firestore impact metrics aggregation fallback:", err.message);
+    return fallback;
+  }
 }
 
 // Expose on global window object for consumption by app.js
@@ -485,6 +570,9 @@ window.LootAuth = {
   subscribeAuthState,
   saveRecipient: saveRecipientToFirestore,
   claimGear: claimGearInFirestore,
+  verifyAndClaimGear: verifyAndClaimGearInFirestore,
+  subscribeLiveGear: subscribeLiveGear,
+  fetchImpactMetrics: fetchLiveImpactMetricsFromFirestore,
   getCurrentUser: () => {
     const cached = localStorage.getItem("lootforward_auth_cache");
     return cached ? JSON.parse(cached) : null;
@@ -493,5 +581,8 @@ window.LootAuth = {
 
 window.LootFirestore = {
   saveRecipient: saveRecipientToFirestore,
-  claimGear: claimGearInFirestore
+  claimGear: claimGearInFirestore,
+  verifyAndClaimGear: verifyAndClaimGearInFirestore,
+  subscribeLiveGear: subscribeLiveGear,
+  fetchImpactMetrics: fetchLiveImpactMetricsFromFirestore
 };

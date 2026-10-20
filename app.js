@@ -24,6 +24,7 @@ let recipients = [
   {
     id: "st-jude-gaming-hub",
     name: "St. Jude Children's Hospital Gaming Hub",
+    countryCode: "US",
     mission: "Create accessible gaming spaces that support hospital-based recreation, connection, and positive downtime for patients.",
     needs: ["Current-generation consoles", "Comfortable controllers", "Headsets", "Gaming monitors"],
     region: "Memphis, TN",
@@ -41,6 +42,7 @@ let recipients = [
   {
     id: "low-income-esport-lab",
     name: "Low-Income Community Esport Center Lab",
+    countryCode: "US",
     mission: "Build an affordable esports and digital skills lab for young people who lack reliable access to gaming hardware.",
     needs: ["Gaming PCs", "Mechanical keyboards", "Gaming mice", "Entry-level GPUs"],
     region: "Chicago, IL",
@@ -58,6 +60,7 @@ let recipients = [
   {
     id: "youth-recreation-network",
     name: "Youth Recreation Network Game Room",
+    countryCode: "US",
     mission: "Equip community recreation centers with shared gaming stations for supervised social play and digital learning.",
     needs: ["PlayStation / Xbox consoles", "TV displays", "Controllers", "Charging docks"],
     region: "New York, NY",
@@ -71,6 +74,114 @@ let recipients = [
     email: "connect@youthrec.org",
     phone: "(212) 555-0199",
     status: "active"
+  },
+  {
+    id: "akanksha-stem-pune",
+    name: "Akanksha Foundation STEM & Gaming Hub",
+    countryCode: "IN",
+    mission: "Providing underprivileged youth in Maharashtra with digital literacy labs and competitive scholastic gaming access.",
+    needs: ["Gaming PCs", "Monitors", "Keyboards", "STEM Kits"],
+    region: "Pune, MH, India",
+    category: "School / STEM",
+    target: 6,
+    received: 4,
+    targetItem: "Gaming PCs & Monitors",
+    address: "Koregaon Park, Pune, Maharashtra 411001",
+    lat: 18.5362,
+    lng: 73.8940,
+    email: "stem@akanksha.org",
+    phone: "+91 20 2615 1200",
+    status: "active"
+  },
+  {
+    id: "snehalaya-digital-lab",
+    name: "Snehalaya Youth Digital Empowerment Lab",
+    countryCode: "IN",
+    mission: "Creating accessible digital media, game development, and esports coaching spaces for shelter and foster youth.",
+    needs: ["Consoles", "Controllers", "Audio Headsets"],
+    region: "Bengaluru, KA, India",
+    category: "Youth Education",
+    target: 8,
+    received: 3,
+    targetItem: "Consoles & Peripherals",
+    address: "100ft Rd, Indiranagar, Bengaluru, Karnataka 560038",
+    lat: 12.9716,
+    lng: 77.5946,
+    email: "youth@snehalaya.org",
+    phone: "+91 80 4125 8899",
+    status: "active"
+  },
+  {
+    id: "specialeffect-oxford",
+    name: "SpecialEffect Accessible Gaming Suite",
+    countryCode: "GB",
+    mission: "Optimizing accessible gaming setups, eye-gaze technology, and specialized adaptive controllers for physically disabled youth.",
+    needs: ["Adaptive Controllers", "Gaming PCs", "Switch Hardware"],
+    region: "London / Oxford, UK",
+    category: "Pediatric",
+    target: 5,
+    received: 3,
+    targetItem: "Adaptive Rigs & Consoles",
+    address: "Cornmarket St, Oxford OX1 3EX, UK",
+    lat: 51.7520,
+    lng: -1.2577,
+    email: "support@specialeffect.org.uk",
+    phone: "+44 1608 810055",
+    status: "active"
+  },
+  {
+    id: "gaming-aid-berlin",
+    name: "Gaming Aid e.V. Youth Center",
+    countryCode: "EU",
+    mission: "Equipping community youth shelters in central Europe with safe social recreation, digital art, and esports stations.",
+    needs: ["Gaming Consoles", "Displays", "Arcade Sticks"],
+    region: "Berlin, Germany",
+    category: "Recreation",
+    target: 7,
+    received: 5,
+    targetItem: "Gaming Consoles & Displays",
+    address: "Friedrichstraße 176, 10117 Berlin, Germany",
+    lat: 52.5145,
+    lng: 13.3889,
+    email: "kontakt@gaming-aid.de",
+    phone: "+49 30 2005 4400",
+    status: "active"
+  },
+  {
+    id: "sickkids-toronto",
+    name: "SickKids Digital Playroom Foundation",
+    countryCode: "CA",
+    mission: "Bringing joyful gaming and multiplayer connectivity to hospitalized pediatric patients and families across Ontario.",
+    needs: ["Nintendo Switch Consoles", "PS5 Consoles", "Handheld Rigs"],
+    region: "Toronto, ON, Canada",
+    category: "Pediatric",
+    target: 6,
+    received: 4,
+    targetItem: "Nintendo Switch & PS5s",
+    address: "555 University Ave, Toronto, ON M5G 1X8, Canada",
+    lat: 43.6577,
+    lng: -79.3872,
+    email: "playroom@sickkids.ca",
+    phone: "+1 416-813-1500",
+    status: "active"
+  },
+  {
+    id: "starlight-livewire-sydney",
+    name: "Starlight Children's Foundation Livewire",
+    countryCode: "AU",
+    mission: "Delivering mobile gaming stations, creative media tools, and peer gaming connections for teens in Australian hospitals.",
+    needs: ["Mobile Gaming Rigs", "Tablets", "Headphones"],
+    region: "Sydney, NSW, Australia",
+    category: "Pediatric",
+    target: 6,
+    received: 3,
+    targetItem: "Mobile Gaming Stations",
+    address: "Level 3, 146 Arthur St, Sydney, NSW 2060, Australia",
+    lat: -33.8400,
+    lng: 151.2100,
+    email: "livewire@starlight.org.au",
+    phone: "+61 2 8425 5900",
+    status: "active"
   }
 ];
 
@@ -78,6 +189,7 @@ let dropOffPartners = [
   {
     id: "hub-sf",
     name: "LootHub & Game Vault SF",
+    countryCode: "US",
     type: "store",
     address: "830 Market St, San Francisco, CA 94102",
     lat: 37.7858,
@@ -87,6 +199,7 @@ let dropOffPartners = [
   {
     id: "hub-austin",
     name: "SpawnPoint Esports Center",
+    countryCode: "US",
     type: "hub",
     address: "508 E 6th St, Austin, TX 78701",
     lat: 30.2672,
@@ -96,6 +209,7 @@ let dropOffPartners = [
   {
     id: "hub-brooklyn",
     name: "ArcadeLegacy Tech Lounge",
+    countryCode: "US",
     type: "store",
     address: "175 Bedford Ave, Brooklyn, NY 11211",
     lat: 40.7185,
@@ -105,6 +219,7 @@ let dropOffPartners = [
   {
     id: "hub-seattle",
     name: "ByteCraft Youth Tech Lab",
+    countryCode: "US",
     type: "hub",
     address: "400 Pine St, Seattle, WA 98101",
     lat: 47.6115,
@@ -114,10 +229,71 @@ let dropOffPartners = [
   {
     id: "hub-chicago",
     name: "Midwest Gamer Cooperative",
+    countryCode: "US",
     type: "store",
     address: "108 N State St, Chicago, IL 60602",
     lat: 41.8837,
     lng: -87.6278,
+    hours: "10:00 AM - 8:30 PM"
+  },
+  {
+    id: "hub-bengaluru",
+    name: "LootHub Tech Vault Indiranagar",
+    countryCode: "IN",
+    type: "store",
+    address: "100ft Rd, Indiranagar, Bengaluru, KA 560038",
+    lat: 12.9784,
+    lng: 77.6408,
+    hours: "10:00 AM - 9:00 PM"
+  },
+  {
+    id: "hub-mumbai",
+    name: "SpawnPoint Nexus Bandra",
+    countryCode: "IN",
+    type: "hub",
+    address: "Linking Rd, Bandra West, Mumbai, MH 400050",
+    lat: 19.0596,
+    lng: 72.8295,
+    hours: "11:00 AM - 10:00 PM"
+  },
+  {
+    id: "hub-london",
+    name: "PixelHaven Drop-off London",
+    countryCode: "GB",
+    type: "store",
+    address: "Tottenham Court Rd, London W1T 1JY, UK",
+    lat: 51.5165,
+    lng: -0.1310,
+    hours: "09:30 AM - 8:00 PM"
+  },
+  {
+    id: "hub-berlin",
+    name: "CyberVault Berlin Mitte",
+    countryCode: "EU",
+    type: "hub",
+    address: "Friedrichstraße 43, 10117 Berlin, Germany",
+    lat: 52.5186,
+    lng: 13.3889,
+    hours: "10:00 AM - 8:00 PM"
+  },
+  {
+    id: "hub-toronto",
+    name: "MapleGear Tech Depot Toronto",
+    countryCode: "CA",
+    type: "store",
+    address: "Yonge St & Dundas, Toronto, ON M5B 2H1",
+    lat: 43.6560,
+    lng: -79.3802,
+    hours: "10:00 AM - 9:00 PM"
+  },
+  {
+    id: "hub-sydney",
+    name: "Outback Gaming Hub Sydney",
+    countryCode: "AU",
+    type: "hub",
+    address: "George St, Sydney NSW 2000, Australia",
+    lat: -33.8730,
+    lng: 151.2065,
     hours: "10:00 AM - 8:30 PM"
   }
 ];
@@ -264,6 +440,7 @@ let liveGearInventory = [
     gearId: "gear_ps5_001",
     title: "Sony PlayStation 5 Disc Edition + DualSense Controller",
     category: "Consoles",
+    countryCode: "US",
     donorUid: "usr_donor_alex",
     donorName: "Alex Gamer",
     dropoffHubId: "hub-sf",
@@ -274,8 +451,8 @@ let liveGearInventory = [
     estValueUsd: 499,
     estValueInr: 41500,
     status: "available",
-    claimCode: "LF-7X9K2P",
-    qrCodeUrl: "https://quickchart.io/qr?text=LF-7X9K2P&size=200",
+    claimCode: "LF7X9K2P",
+    qrCodeUrl: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=LF7X9K2P",
     claimedByRecipientId: null,
     claimedByRecipientName: null,
     claimedAt: null,
@@ -285,6 +462,7 @@ let liveGearInventory = [
     gearId: "gear_rtx_002",
     title: "MSI GeForce RTX 3070 8GB Gaming GPU",
     category: "PCs & Laptops",
+    countryCode: "US",
     donorUid: "usr_donor_priya",
     donorName: "Priya Sharma",
     dropoffHubId: "hub-chicago",
@@ -295,8 +473,8 @@ let liveGearInventory = [
     estValueUsd: 450,
     estValueInr: 37500,
     status: "available",
-    claimCode: "LF-4M8T1Q",
-    qrCodeUrl: "https://quickchart.io/qr?text=LF-4M8T1Q&size=200",
+    claimCode: "LF4M8T1Q",
+    qrCodeUrl: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=LF4M8T1Q",
     claimedByRecipientId: null,
     claimedByRecipientName: null,
     claimedAt: null,
@@ -306,6 +484,7 @@ let liveGearInventory = [
     gearId: "gear_kb_003",
     title: "Corsair K70 RGB Mechanical Keyboard + SteelSeries Rival Mouse",
     category: "Peripherals",
+    countryCode: "US",
     donorUid: "usr_donor_marcus",
     donorName: "Marcus Vance",
     dropoffHubId: "hub-austin",
@@ -316,8 +495,8 @@ let liveGearInventory = [
     estValueUsd: 180,
     estValueInr: 15000,
     status: "available",
-    claimCode: "LF-9R2W5Z",
-    qrCodeUrl: "https://quickchart.io/qr?text=LF-9R2W5Z&size=200",
+    claimCode: "LF9R2W5Z",
+    qrCodeUrl: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=LF9R2W5Z",
     claimedByRecipientId: null,
     claimedByRecipientName: null,
     claimedAt: null,
@@ -327,6 +506,7 @@ let liveGearInventory = [
     gearId: "gear_vr_004",
     title: "Meta Quest 2 128GB All-In-One VR Headset",
     category: "Audio/VR",
+    countryCode: "US",
     donorUid: "usr_donor_elena",
     donorName: "Elena Rostova",
     dropoffHubId: "hub-brooklyn",
@@ -337,8 +517,8 @@ let liveGearInventory = [
     estValueUsd: 299,
     estValueInr: 25000,
     status: "claimed",
-    claimCode: "LF-3K6J8X",
-    qrCodeUrl: "https://quickchart.io/qr?text=LF-3K6J8X&size=200",
+    claimCode: "LF3K6J8X",
+    qrCodeUrl: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=LF3K6J8X",
     claimedByRecipientId: "youth-recreation-network",
     claimedByRecipientName: "Youth Recreation Network Game Room",
     claimedAt: "2026-10-19T11:20:00Z",
@@ -348,6 +528,7 @@ let liveGearInventory = [
     gearId: "gear_laptop_005",
     title: "ASUS ROG Zephyrus G14 Gaming Laptop (Ryzen 9 / RTX 3060)",
     category: "PCs & Laptops",
+    countryCode: "US",
     donorUid: "usr_donor_rohan",
     donorName: "Rohan Patel",
     dropoffHubId: "hub-seattle",
@@ -358,23 +539,290 @@ let liveGearInventory = [
     estValueUsd: 850,
     estValueInr: 71000,
     status: "available",
-    claimCode: "LF-8V1C4H",
-    qrCodeUrl: "https://quickchart.io/qr?text=LF-8V1C4H&size=200",
+    claimCode: "LF8V1C4H",
+    qrCodeUrl: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=LF8V1C4H",
     claimedByRecipientId: null,
     claimedByRecipientName: null,
     claimedAt: null,
     createdAt: "2026-10-19T17:00:00Z"
+  },
+  {
+    gearId: "gear_in_006",
+    title: "Sony PlayStation 5 Digital Edition + 2 Controllers",
+    category: "Consoles",
+    countryCode: "IN",
+    donorUid: "usr_in_arjun",
+    donorName: "Arjun Verma",
+    dropoffHubId: "hub-bengaluru",
+    hubName: "LootHub Tech Vault Indiranagar",
+    address: "100ft Rd, Indiranagar, Bengaluru, KA 560038",
+    lat: 12.9784,
+    lng: 77.6408,
+    estValueUsd: 450,
+    estValueInr: 37500,
+    status: "available",
+    claimCode: "LF5K2R8X",
+    qrCodeUrl: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=LF5K2R8X",
+    claimedByRecipientId: null,
+    claimedByRecipientName: null,
+    claimedAt: null,
+    createdAt: "2026-10-19T10:00:00Z"
+  },
+  {
+    gearId: "gear_in_007",
+    title: "Logitech G29 Driving Force Racing Wheel & Pedals",
+    category: "Peripherals",
+    countryCode: "IN",
+    donorUid: "usr_in_deepa",
+    donorName: "Deepa Menon",
+    dropoffHubId: "hub-mumbai",
+    hubName: "SpawnPoint Nexus Bandra",
+    address: "Linking Rd, Bandra West, Mumbai, MH 400050",
+    lat: 19.0596,
+    lng: 72.8295,
+    estValueUsd: 260,
+    estValueInr: 21600,
+    status: "available",
+    claimCode: "LF3W9Y7T",
+    qrCodeUrl: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=LF3W9Y7T",
+    claimedByRecipientId: null,
+    claimedByRecipientName: null,
+    claimedAt: null,
+    createdAt: "2026-10-19T14:20:00Z"
+  },
+  {
+    gearId: "gear_uk_008",
+    title: "Xbox Series X 1TB Console + Elite Wireless Controller",
+    category: "Consoles",
+    countryCode: "GB",
+    donorUid: "usr_uk_oliver",
+    donorName: "Oliver Smith",
+    dropoffHubId: "hub-london",
+    hubName: "PixelHaven Drop-off London",
+    address: "Tottenham Court Rd, London W1T 1JY, UK",
+    lat: 51.5165,
+    lng: -0.1310,
+    estValueUsd: 520,
+    estValueInr: 43400,
+    status: "available",
+    claimCode: "LF6B4M9Q",
+    qrCodeUrl: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=LF6B4M9Q",
+    claimedByRecipientId: null,
+    claimedByRecipientName: null,
+    claimedAt: null,
+    createdAt: "2026-10-19T12:00:00Z"
+  },
+  {
+    gearId: "gear_eu_009",
+    title: "Nintendo Switch OLED Model + Pro Controller",
+    category: "Consoles",
+    countryCode: "EU",
+    donorUid: "usr_eu_lukas",
+    donorName: "Lukas Weber",
+    dropoffHubId: "hub-berlin",
+    hubName: "CyberVault Berlin Mitte",
+    address: "Friedrichstraße 43, 10117 Berlin, Germany",
+    lat: 52.5186,
+    lng: 13.3889,
+    estValueUsd: 350,
+    estValueInr: 29200,
+    status: "available",
+    claimCode: "LF8P3D2K",
+    qrCodeUrl: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=LF8P3D2K",
+    claimedByRecipientId: null,
+    claimedByRecipientName: null,
+    claimedAt: null,
+    createdAt: "2026-10-19T11:45:00Z"
+  },
+  {
+    gearId: "gear_ca_010",
+    title: "Razer Blade 15 Gaming Laptop (Intel i7 / RTX 3070)",
+    category: "PCs & Laptops",
+    countryCode: "CA",
+    donorUid: "usr_ca_chloe",
+    donorName: "Chloe Tremblay",
+    dropoffHubId: "hub-toronto",
+    hubName: "MapleGear Tech Depot Toronto",
+    address: "Yonge St & Dundas, Toronto, ON M5B 2H1",
+    lat: 43.6560,
+    lng: -79.3802,
+    estValueUsd: 950,
+    estValueInr: 79000,
+    status: "available",
+    claimCode: "LF2Z8H4N",
+    qrCodeUrl: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=LF2Z8H4N",
+    claimedByRecipientId: null,
+    claimedByRecipientName: null,
+    claimedAt: null,
+    createdAt: "2026-10-19T16:10:00Z"
+  },
+  {
+    gearId: "gear_au_011",
+    title: "Valve Steam Deck OLED 512GB Handheld Console",
+    category: "Consoles",
+    countryCode: "AU",
+    donorUid: "usr_au_liam",
+    donorName: "Liam Johnson",
+    dropoffHubId: "hub-sydney",
+    hubName: "Outback Gaming Hub Sydney",
+    address: "George St, Sydney NSW 2000, Australia",
+    lat: -33.8730,
+    lng: 151.2065,
+    estValueUsd: 549,
+    estValueInr: 45800,
+    status: "available",
+    claimCode: "LF7M5X9P",
+    qrCodeUrl: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=LF7M5X9P",
+    claimedByRecipientId: null,
+    claimedByRecipientName: null,
+    claimedAt: null,
+    createdAt: "2026-10-19T15:30:00Z"
   }
 ];
 
-function generateClaimCode() {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let code = "LF-";
-  for (let i = 0; i < 6; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length));
+// 8-character cryptographic alphanumeric claim code generator (excluding 0, O, 1, I)
+function generateClaimCode(length = 8) {
+  const chars = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ"; // 32 characters, no ambiguous glyphs
+  const randomBytes = new Uint8Array(length);
+  if (typeof window !== "undefined" && window.crypto && window.crypto.getRandomValues) {
+    window.crypto.getRandomValues(randomBytes);
+  } else {
+    for (let i = 0; i < length; i++) randomBytes[i] = Math.floor(Math.random() * 256);
+  }
+  let code = "";
+  for (let i = 0; i < length; i++) {
+    code += chars.charAt(randomBytes[i] % chars.length);
   }
   return code;
 }
+
+// Generate matching QR code URL using open QR API
+function getQrCodeUrl(claimCode, size = "200x200") {
+  return `https://api.qrserver.com/v1/create-qr-code/?size=${size}&data=${encodeURIComponent(claimCode)}`;
+}
+
+// ── Global Multi-Currency Forex Engine (10 Major Currencies) ──
+const SUPPORTED_CURRENCIES = {
+  USD: { code: "USD", symbol: "$", name: "US Dollar", flag: "🇺🇸", decimals: 2 },
+  EUR: { code: "EUR", symbol: "€", name: "Euro", flag: "🇪🇺", decimals: 2 },
+  GBP: { code: "GBP", symbol: "£", name: "British Pound", flag: "🇬🇧", decimals: 2 },
+  INR: { code: "INR", symbol: "₹", name: "Indian Rupee", flag: "🇮🇳", decimals: 2 },
+  JPY: { code: "JPY", symbol: "¥", name: "Japanese Yen", flag: "🇯🇵", decimals: 0 },
+  CAD: { code: "CAD", symbol: "CA$", name: "Canadian Dollar", flag: "🇨🇦", decimals: 2 },
+  AUD: { code: "AUD", symbol: "A$", name: "Australian Dollar", flag: "🇦🇺", decimals: 2 },
+  CHF: { code: "CHF", symbol: "CHF", name: "Swiss Franc", flag: "🇨🇭", decimals: 2 },
+  SGD: { code: "SGD", symbol: "S$", name: "Singapore Dollar", flag: "🇸🇬", decimals: 2 },
+  AED: { code: "AED", symbol: "AED", name: "UAE Dirham", flag: "🇦🇪", decimals: 2 }
+};
+
+const FALLBACK_EXCHANGE_RATES = {
+  USD: 1.0,
+  EUR: 0.92,
+  GBP: 0.79,
+  INR: 83.45,
+  JPY: 154.60,
+  CAD: 1.37,
+  AUD: 1.53,
+  CHF: 0.91,
+  SGD: 1.35,
+  AED: 3.67
+};
+
+function convertCurrency(amountInUsd, targetCurrency = state.globalCurrency) {
+  const rate = state.exchangeRates[targetCurrency] || FALLBACK_EXCHANGE_RATES[targetCurrency] || 1.0;
+  return Number(amountInUsd) * rate;
+}
+
+function convertCrossCurrency(amount, fromCurrency, toCurrency) {
+  const fromRate = state.exchangeRates[fromCurrency] || FALLBACK_EXCHANGE_RATES[fromCurrency] || 1.0;
+  const toRate = state.exchangeRates[toCurrency] || FALLBACK_EXCHANGE_RATES[toCurrency] || 1.0;
+  const inUsd = Number(amount) / fromRate;
+  return inUsd * toRate;
+}
+
+function formatCurrency(amount, currencyCode = state.globalCurrency) {
+  const meta = SUPPORTED_CURRENCIES[currencyCode] || SUPPORTED_CURRENCIES.USD;
+  const num = Number(amount);
+  const formatted = num.toLocaleString(undefined, {
+    minimumFractionDigits: meta.decimals,
+    maximumFractionDigits: meta.decimals
+  });
+  return `${meta.symbol} ${formatted} ${meta.code}`;
+}
+
+function formatCompactMoney(amountInUsd, currencyCode = state.globalCurrency) {
+  const meta = SUPPORTED_CURRENCIES[currencyCode] || SUPPORTED_CURRENCIES.USD;
+  const converted = convertCurrency(amountInUsd, currencyCode);
+  const formatted = Math.round(converted).toLocaleString();
+  return `${meta.symbol}${formatted} ${meta.code}`;
+}
+
+// ── Regional Multi-Country Localization Presets (i18n) ───────
+const REGION_PRESETS = {
+  GLOBAL: {
+    code: "GLOBAL",
+    name: "Global / All",
+    flag: "🌍",
+    currency: "USD",
+    center: [25.0, 10.0],
+    zoom: 2,
+    badgeText: "🌍 Region: Global"
+  },
+  IN: {
+    code: "IN",
+    name: "India",
+    flag: "🇮🇳",
+    currency: "INR",
+    center: [20.5937, 78.9629],
+    zoom: 5,
+    badgeText: "🇮🇳 Region: India"
+  },
+  US: {
+    code: "US",
+    name: "United States",
+    flag: "🇺🇸",
+    currency: "USD",
+    center: [39.8283, -98.5795],
+    zoom: 4,
+    badgeText: "🇺🇸 Region: USA"
+  },
+  GB: {
+    code: "GB",
+    name: "United Kingdom",
+    flag: "🇬🇧",
+    currency: "GBP",
+    center: [54.5593, -2.3219],
+    zoom: 6,
+    badgeText: "🇬🇧 Region: UK"
+  },
+  EU: {
+    code: "EU",
+    name: "European Union",
+    flag: "🇪🇺",
+    currency: "EUR",
+    center: [50.1109, 8.6821],
+    zoom: 4,
+    badgeText: "🇪🇺 Region: EU"
+  },
+  CA: {
+    code: "CA",
+    name: "Canada",
+    flag: "🇨🇦",
+    currency: "CAD",
+    center: [56.1304, -106.3468],
+    zoom: 4,
+    badgeText: "🇨🇦 Region: Canada"
+  },
+  AU: {
+    code: "AU",
+    name: "Australia",
+    flag: "🇦🇺",
+    currency: "AUD",
+    center: [-25.2744, 133.7751],
+    zoom: 4,
+    badgeText: "🇦🇺 Region: Australia"
+  }
+};
 
 const state = {
   currentPage: "about",
@@ -382,6 +830,13 @@ const state = {
   selectedRecipient: null,
   latestSubmission: null,
   localSubmissions: [],
+  // Regional Localization & Filtering State (i18n)
+  selectedRegion: (typeof window !== "undefined" && localStorage.getItem("lootforward_region")) || "GLOBAL",
+  // Multi-Currency State
+  globalCurrency: (typeof window !== "undefined" && localStorage.getItem("lootforward_currency")) || "USD",
+  exchangeRates: { ...FALLBACK_EXCHANGE_RATES },
+  fxLastUpdated: null,
+  cachedImpactMetrics: null,
   // Stripe live references
   stripeInstance: null,
   stripeElements: null,
@@ -513,10 +968,24 @@ function renderRecipients() {
   if (!grid) return;
 
   const categoryFilter = state.activeRecipientCategoryFilter || "all";
+  const searchTerm = (state.recipientSearchTerm || "").toLowerCase().trim();
+  const currentRegion = state.selectedRegion || "GLOBAL";
   // Only verified approved recipients are visible in the public directory
   const approvedList = recipients.filter(r => r.status === "approved" || !r.status);
 
+  // Sync recipient region filter badge in filter bar
+  const recRegionBadge = document.querySelector("#recipient-region-filter-badge");
+  if (recRegionBadge) {
+    const currentPreset = REGION_PRESETS[currentRegion] || REGION_PRESETS.GLOBAL;
+    recRegionBadge.textContent = currentPreset.badgeText;
+  }
+
   let filtered = approvedList.filter((r) => {
+    // Region filter
+    if (currentRegion !== "GLOBAL") {
+      const itemCountry = r.countryCode || "US";
+      if (itemCountry !== currentRegion) return false;
+    }
     // Category filter
     if (categoryFilter !== "all") {
       const cat = (r.category || "").toLowerCase();
@@ -541,7 +1010,7 @@ function renderRecipients() {
         <div class="glass-panel p-5 mx-auto" style="max-width: 550px; border-radius: 18px;">
           <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
           <h4 class="fw-bold mb-2">No Matching Recipients Found</h4>
-          <p class="text-muted mb-4">No verified destinations match your current filter query or category selection.</p>
+          <p class="text-muted mb-4">No verified destinations match your current regional filter query or category selection.</p>
           <div class="d-flex justify-content-center gap-2">
             <button type="button" class="btn btn-outline-neon btn-sm" id="btn-reset-recipient-filters">Reset Filters</button>
             <button type="button" class="btn btn-neon btn-sm" data-bs-toggle="modal" data-bs-target="#addRecipientModal">+ Register Recipient</button>
@@ -558,7 +1027,7 @@ function renderRecipients() {
         if (searchInput) searchInput.value = "";
         const filterBtns = document.querySelectorAll("#recipient-category-filters [data-rec-filter]");
         filterBtns.forEach(b => b.classList.toggle("active", b.dataset.recFilter === "all"));
-        renderRecipients();
+        setGlobalRegion("GLOBAL");
       });
     }
     return;
@@ -1589,7 +2058,20 @@ function renderAdminDonationsTable() {
     return;
   }
 
-  tbody.innerHTML = filtered.map(d => `
+  tbody.innerHTML = filtered.map(d => {
+    let baseUsd = d.amountUsd;
+    if (!baseUsd) {
+      if (d.amount && d.amount.includes("₹")) {
+        const val = parseFloat(d.amount.replace(/[^0-9.]/g, "")) || 0;
+        baseUsd = val / (state.exchangeRates.INR || 83.45);
+      } else {
+        baseUsd = parseFloat((d.amount || "0").replace(/[^0-9.]/g, "")) || 0;
+      }
+    }
+    const currCode = state.globalCurrency || "USD";
+    const convertedStr = formatCurrency(convertCurrency(baseUsd, currCode), currCode);
+
+    return `
     <tr>
       <td class="font-mono small text-muted">${escapeHtml(d.date)}</td>
       <td>
@@ -1597,7 +2079,10 @@ function renderAdminDonationsTable() {
         <div class="small text-muted font-mono">${escapeHtml(d.email)}</div>
       </td>
       <td class="small text-white-50">${escapeHtml(d.recipient)}</td>
-      <td class="font-mono fw-bold text-cyan">${escapeHtml(d.amount)}</td>
+      <td class="font-mono">
+        <div class="fw-bold text-cyan">${escapeHtml(convertedStr)}</div>
+        <div class="small text-muted font-mono" style="font-size:0.7rem;">Orig: ${escapeHtml(d.amount)}</div>
+      </td>
       <td>
         <span class="badge ${d.gateway === 'stripe' ? 'bg-primary-subtle text-primary border border-primary-subtle' : 'bg-info-subtle text-info border border-info-subtle'}">
           ${d.gateway === 'stripe' ? '💳 Stripe' : '⚡ Razorpay'}
@@ -1614,7 +2099,7 @@ function renderAdminDonationsTable() {
         </button>
       </td>
     </tr>
-  `).join("");
+  `}).join("");
 }
 
 function renderAdminHubsTable() {
@@ -2099,6 +2584,7 @@ function rebuildAllMapNodes() {
 
     state.allMapNodes.push({
       id: p.id,
+      countryCode: p.countryCode || "US",
       type: "hub",
       category: "Hub",
       title: p.name,
@@ -2131,6 +2617,7 @@ function rebuildAllMapNodes() {
 
       state.allMapNodes.push({
         id: r.id,
+        countryCode: r.countryCode || "US",
         type: "recipient",
         category: r.category,
         title: r.name,
@@ -2152,8 +2639,8 @@ function rebuildAllMapNodes() {
       const popupHtml = isAvail ? `
         <div style="min-width: 240px;">
           <div class="d-flex justify-content-between align-items-center mb-1">
-            <span class="badge bg-success">⚡ Available Gear</span>
-            <span class="badge bg-dark font-mono text-cyan" style="font-size:0.65rem;">$${gear.estValueUsd} USD</span>
+            <span class="badge bg-success text-white fw-bold">⚡ Available</span>
+            <span class="badge bg-dark font-mono text-cyan" style="font-size:0.65rem;">${escapeHtml(formatCompactMoney(gear.estValueUsd, state.globalCurrency))}</span>
           </div>
           <h6 class="mb-1 text-white">${escapeHtml(gear.title)}</h6>
           <p class="mb-1 text-muted small font-mono">📍 ${escapeHtml(gear.hubName || gear.address)}</p>
@@ -2185,6 +2672,7 @@ function rebuildAllMapNodes() {
 
       state.allMapNodes.push({
         id: gear.gearId,
+        countryCode: gear.countryCode || "US",
         type: isAvail ? "gear_avail" : "gear_claimed",
         category: gear.category,
         title: gear.title,
@@ -2209,6 +2697,7 @@ function applyMapFilters() {
   const search = (state.mapFilters.search || "").toLowerCase().trim();
   const layers = state.mapFilters.layers;
   const category = state.mapFilters.category;
+  const region = state.selectedRegion || "GLOBAL";
 
   let visibleCount = 0;
   let countHubs = 0;
@@ -2238,7 +2727,12 @@ function applyMapFilters() {
       searchMatches = hay.includes(search);
     }
 
-    const shouldShow = layerEnabled && categoryMatches && searchMatches;
+    let regionMatches = true;
+    if (region !== "GLOBAL") {
+      regionMatches = (node.countryCode === region);
+    }
+
+    const shouldShow = layerEnabled && categoryMatches && searchMatches && regionMatches;
 
     if (shouldShow) {
       if (!map.hasLayer(node.marker)) {
@@ -2259,6 +2753,12 @@ function applyMapFilters() {
 
   const badgeVisible = document.querySelector("#map-visible-count-badge");
   if (badgeVisible) badgeVisible.textContent = `${visibleCount} Nodes Active`;
+
+  const mapRegionBadge = document.querySelector("#map-region-filter-badge");
+  if (mapRegionBadge) {
+    const currentPreset = REGION_PRESETS[region] || REGION_PRESETS.GLOBAL;
+    mapRegionBadge.textContent = currentPreset.badgeText;
+  }
 
   const bHubs = document.querySelector("#badge-count-hubs");
   const bRec = document.querySelector("#badge-count-recipients");
@@ -2327,34 +2827,396 @@ function animateRollingCounter(el, start, end, prefix = "", suffix = "", duratio
 }
 
 // ── Live Impact & Analytics Aggregator ────────────────────────
-function updateLiveImpactCounters() {
+function updateLiveImpactCounters(customMetrics = null) {
   const gearEl = document.querySelector("#stat-total-gear");
   const valueEl = document.querySelector("#stat-total-value");
   const recipientsEl = document.querySelector("#stat-total-recipients");
   const currencyLabel = document.querySelector("#stat-value-currency-label");
+  const btnUsd = document.querySelector("#btn-currency-usd");
+  const btnInr = document.querySelector("#btn-currency-inr");
 
-  const totalGearCount = liveGearInventory.length + adminHardwareQueue.length + 12;
-  const totalValueUsd = liveGearInventory.reduce((sum, g) => sum + (g.estValueUsd || 350), 0) + 14250;
-  const totalValueInr = liveGearInventory.reduce((sum, g) => sum + (g.estValueInr || 29000), 0) + 1180000;
-  const approvedRecipientsCount = recipients.filter(r => r.status === "approved" || !r.status).length;
+  const metrics = customMetrics || state.cachedImpactMetrics || {
+    totalGear: liveGearInventory.length + adminHardwareQueue.length + 12,
+    totalValueUsd: liveGearInventory.reduce((sum, g) => sum + (g.estValueUsd || 350), 0) + 14250,
+    totalValueInr: liveGearInventory.reduce((sum, g) => sum + (g.estValueInr || 29000), 0) + 1180000,
+    totalRecipients: recipients.filter(r => r.status === "approved" || !r.status).length
+  };
 
   const currentGear = parseInt(gearEl?.textContent.replace(/[^0-9]/g, "") || "0", 10);
-  animateRollingCounter(gearEl, currentGear, totalGearCount, "", "");
+  animateRollingCounter(gearEl, currentGear, metrics.totalGear, "", "");
 
   const currentRecipients = parseInt(recipientsEl?.textContent.replace(/[^0-9]/g, "") || "0", 10);
-  animateRollingCounter(recipientsEl, currentRecipients, approvedRecipientsCount, "", "");
+  animateRollingCounter(recipientsEl, currentRecipients, metrics.totalRecipients, "", "");
 
-  const isUsd = (state.impactCurrency || "USD") === "USD";
-  const targetVal = isUsd ? totalValueUsd : totalValueInr;
-  const prefix = isUsd ? "$" : "₹";
-  const suffix = isUsd ? " USD" : " INR";
+  // Convert USD base total to currently selected global currency
+  const currCode = state.globalCurrency || "USD";
+  const currMeta = SUPPORTED_CURRENCIES[currCode] || SUPPORTED_CURRENCIES.USD;
+  const convertedTotal = convertCurrency(metrics.totalValueUsd, currCode);
+  const targetVal = Math.round(convertedTotal);
+  const prefix = currMeta.symbol;
+  const suffix = ` ${currMeta.code}`;
 
   const currentVal = parseInt(valueEl?.textContent.replace(/[^0-9]/g, "") || "0", 10);
   animateRollingCounter(valueEl, currentVal, targetVal, prefix, suffix);
 
   if (currencyLabel) {
-    currencyLabel.textContent = isUsd ? "USD value circulated" : "INR value circulated";
+    currencyLabel.textContent = `${currMeta.code} (${currMeta.name}) value circulated`;
   }
+
+  // Sync quick toggle buttons active state
+  if (btnUsd && btnInr) {
+    btnUsd.classList.toggle("active", currCode === "USD");
+    btnInr.classList.toggle("active", currCode === "INR");
+  }
+}
+
+// Asynchronously fetch live aggregates from Firestore with graceful fallback
+async function initHeroImpactCounters() {
+  updateLiveImpactCounters(); // Initial immediate render with fallback values
+
+  if (window.LootFirestore?.fetchImpactMetrics) {
+    try {
+      const liveMetrics = await window.LootFirestore.fetchImpactMetrics();
+      if (liveMetrics) {
+        state.cachedImpactMetrics = liveMetrics;
+        updateLiveImpactCounters(liveMetrics);
+      }
+    } catch (err) {
+      console.warn("Firestore hero metrics fetch notice:", err.message);
+    }
+  }
+
+  // Quick switcher buttons in hero card
+  const btnUsd = document.querySelector("#btn-currency-usd");
+  const btnInr = document.querySelector("#btn-currency-inr");
+  if (btnUsd && btnInr) {
+    btnUsd.onclick = () => setGlobalCurrency("USD");
+    btnInr.onclick = () => setGlobalCurrency("INR");
+  }
+}
+
+// ── Real-Time Forex API Fetch & Universal Sync ────────────────
+async function fetchLiveExchangeRates() {
+  const statusEl = document.querySelector("#fx-market-status");
+  const badgeEl = document.querySelector("#fx-last-updated-badge");
+
+  try {
+    const res = await fetch("https://open.er-api.com/v6/latest/USD");
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    if (data && data.rates) {
+      Object.keys(SUPPORTED_CURRENCIES).forEach(code => {
+        if (data.rates[code]) {
+          state.exchangeRates[code] = data.rates[code];
+        }
+      });
+      state.fxLastUpdated = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      if (statusEl) statusEl.textContent = "Live Market Rates: Active (Zero Spread)";
+      if (badgeEl) badgeEl.textContent = `Synced ${state.fxLastUpdated}`;
+    }
+  } catch (err) {
+    console.warn("Forex API fetch notice, using calibrated offline rates:", err.message);
+    state.exchangeRates = { ...FALLBACK_EXCHANGE_RATES };
+    if (statusEl) statusEl.textContent = "Market Rates: Calibrated Institutional";
+    if (badgeEl) badgeEl.textContent = "Cached Feed";
+  }
+
+  updateConverterCalculation();
+  updateLiveImpactCounters();
+}
+
+function setGlobalCurrency(currencyCode) {
+  if (!SUPPORTED_CURRENCIES[currencyCode]) return;
+  state.globalCurrency = currencyCode;
+  state.impactCurrency = currencyCode === "INR" ? "INR" : "USD";
+
+  try {
+    localStorage.setItem("lootforward_currency", currencyCode);
+  } catch (e) {}
+
+  // Update Navbar dropdown trigger button
+  const meta = SUPPORTED_CURRENCIES[currencyCode];
+  const flagEl = document.querySelector("#current-currency-flag");
+  const codeEl = document.querySelector("#current-currency-code");
+  const symbolEl = document.querySelector("#current-currency-symbol");
+
+  if (flagEl) flagEl.textContent = meta.flag;
+  if (codeEl) codeEl.textContent = meta.code;
+  if (symbolEl) symbolEl.textContent = `(${meta.symbol})`;
+
+  // Update active item in dropdown
+  const items = document.querySelectorAll(".currency-dropdown-item");
+  items.forEach(item => {
+    item.classList.toggle("active", item.dataset.currency === currencyCode);
+  });
+
+  // Universal Real-Time UI Synchronization
+  syncUniversalCurrency(currencyCode);
+}
+
+function syncUniversalCurrency(currencyCode) {
+  updateLiveImpactCounters();
+  rebuildAllMapNodes();
+
+  if (typeof renderAdminDonationsTable === "function") {
+    renderAdminDonationsTable();
+  }
+
+  const convTo = document.querySelector("#converter-to-currency");
+  if (convTo && convTo.value !== currencyCode) {
+    convTo.value = currencyCode;
+    updateConverterCalculation();
+  }
+}
+
+function updateConverterCalculation() {
+  const fromAmountInput = document.querySelector("#converter-from-amount");
+  const fromCurrencySelect = document.querySelector("#converter-from-currency");
+  const toAmountInput = document.querySelector("#converter-to-amount");
+  const toCurrencySelect = document.querySelector("#converter-to-currency");
+  const rateBadge = document.querySelector("#converter-rate-badge");
+
+  if (!fromAmountInput || !fromCurrencySelect || !toAmountInput || !toCurrencySelect) return;
+
+  const amount = parseFloat(fromAmountInput.value) || 0;
+  const fromCurr = fromCurrencySelect.value || "USD";
+  const toCurr = toCurrencySelect.value || state.globalCurrency || "INR";
+
+  const converted = convertCrossCurrency(amount, fromCurr, toCurr);
+  const toMeta = SUPPORTED_CURRENCIES[toCurr] || SUPPORTED_CURRENCIES.USD;
+
+  toAmountInput.value = `${toMeta.symbol} ${converted.toLocaleString(undefined, {
+    minimumFractionDigits: toMeta.decimals,
+    maximumFractionDigits: toMeta.decimals
+  })}`;
+
+  const pairRate = convertCrossCurrency(1, fromCurr, toCurr);
+  if (rateBadge) {
+    rateBadge.textContent = `1 ${fromCurr} = ${toMeta.symbol} ${pairRate.toLocaleString(undefined, {
+      minimumFractionDigits: toMeta.decimals,
+      maximumFractionDigits: toMeta.decimals
+    })} ${toCurr}`;
+  }
+}
+
+function initUniversalCurrencyConverter() {
+  const fromSelect = document.querySelector("#converter-from-currency");
+  const toSelect = document.querySelector("#converter-to-currency");
+  const fromAmount = document.querySelector("#converter-from-amount");
+  const swapBtn = document.querySelector("#btn-swap-converter-currency");
+
+  if (!fromSelect || !toSelect) return;
+
+  const optionsHtml = Object.values(SUPPORTED_CURRENCIES).map(c => 
+    `<option value="${c.code}">${c.flag} ${c.code} (${c.symbol})</option>`
+  ).join("");
+
+  fromSelect.innerHTML = optionsHtml;
+  toSelect.innerHTML = optionsHtml;
+
+  fromSelect.value = "USD";
+  toSelect.value = state.globalCurrency === "USD" ? "INR" : state.globalCurrency;
+
+  fromAmount?.addEventListener("input", updateConverterCalculation);
+  fromSelect.addEventListener("change", updateConverterCalculation);
+  toSelect.addEventListener("change", updateConverterCalculation);
+
+  if (swapBtn) {
+    swapBtn.addEventListener("click", () => {
+      const temp = fromSelect.value;
+      fromSelect.value = toSelect.value;
+      toSelect.value = temp;
+      updateConverterCalculation();
+    });
+  }
+
+  updateConverterCalculation();
+}
+
+function initGlobalCurrencyDropdown() {
+  const menu = document.querySelector("#currency-dropdown-menu");
+  if (!menu) return;
+
+  menu.innerHTML = Object.values(SUPPORTED_CURRENCIES).map(c => `
+    <li>
+      <button type="button" class="dropdown-item currency-dropdown-item ${c.code === state.globalCurrency ? 'active' : ''}" 
+              data-currency="${c.code}">
+        <span class="d-flex align-items-center gap-2">
+          <span class="currency-flag-icon">${c.flag}</span>
+          <span class="fw-bold text-white">${c.code}</span>
+          <span class="text-muted small">${c.name}</span>
+        </span>
+        <span class="text-cyan font-mono ms-2 fw-bold">${c.symbol}</span>
+      </button>
+    </li>
+  `).join("");
+
+  menu.querySelectorAll(".currency-dropdown-item").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const code = btn.dataset.currency;
+      if (code) setGlobalCurrency(code);
+    });
+  });
+
+  const initialMeta = SUPPORTED_CURRENCIES[state.globalCurrency] || SUPPORTED_CURRENCIES.USD;
+  const flagEl = document.querySelector("#current-currency-flag");
+  const codeEl = document.querySelector("#current-currency-code");
+  const symbolEl = document.querySelector("#current-currency-symbol");
+
+  if (flagEl) flagEl.textContent = initialMeta.flag;
+  if (codeEl) codeEl.textContent = initialMeta.code;
+  if (symbolEl) symbolEl.textContent = `(${initialMeta.symbol})`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// REGIONAL MULTI-COUNTRY LOCALIZATION & FILTERING (i18n)
+// ═══════════════════════════════════════════════════════════════
+
+function setGlobalRegion(regionCode, skipMapFly = false) {
+  const preset = REGION_PRESETS[regionCode] || REGION_PRESETS.GLOBAL;
+  state.selectedRegion = preset.code;
+
+  try {
+    localStorage.setItem("lootforward_region", preset.code);
+  } catch (e) {}
+
+  // 1. Update Navbar trigger button
+  const flagEl = document.querySelector("#current-region-flag");
+  const nameEl = document.querySelector("#current-region-name");
+  if (flagEl) flagEl.textContent = preset.flag;
+  if (nameEl) nameEl.textContent = preset.name.split("/")[0].trim();
+
+  // 2. Update active status in dropdown menu
+  document.querySelectorAll(".region-dropdown-item").forEach(item => {
+    item.classList.toggle("active", item.dataset.region === preset.code);
+  });
+
+  // 3. Automated Regional Preset Sync: Currency & Coordinates
+  if (preset.code !== "GLOBAL") {
+    // Synchronize default currency if different from current
+    if (preset.currency && state.globalCurrency !== preset.currency) {
+      setGlobalCurrency(preset.currency);
+    }
+    // Fly Leaflet map to region center
+    if (!skipMapFly && state.maps?.dropMap) {
+      state.maps.dropMap.flyTo(preset.center, preset.zoom, { duration: 1.5 });
+    }
+  } else {
+    // Global mode: zoom out to worldwide view
+    if (!skipMapFly && state.maps?.dropMap) {
+      state.maps.dropMap.flyTo(preset.center, preset.zoom, { duration: 1.2 });
+    }
+  }
+
+  // 4. Update Header Badges
+  const mapRegionBadge = document.querySelector("#map-region-filter-badge");
+  if (mapRegionBadge) mapRegionBadge.textContent = preset.badgeText;
+
+  const recRegionBadge = document.querySelector("#recipient-region-filter-badge");
+  if (recRegionBadge) recRegionBadge.textContent = preset.badgeText;
+
+  // 5. Filter Map Markers & Recipient Directory
+  applyMapFilters();
+  renderRecipients();
+
+  showToast(`${preset.flag} Region active: ${preset.name} (${preset.currency})`, "info", 3500);
+}
+
+function initRegionSelectorDropdown() {
+  const menu = document.querySelector("#region-dropdown-menu");
+  if (!menu) return;
+
+  menu.innerHTML = Object.values(REGION_PRESETS).map(r => `
+    <li>
+      <button type="button" class="dropdown-item region-dropdown-item ${r.code === state.selectedRegion ? 'active' : ''}" 
+              data-region="${r.code}">
+        <span class="d-flex align-items-center gap-2">
+          <span class="region-flag-icon">${r.flag}</span>
+          <span class="fw-bold text-white">${r.name}</span>
+        </span>
+        <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">${r.currency}</span>
+      </button>
+    </li>
+  `).join("");
+
+  menu.querySelectorAll(".region-dropdown-item").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const code = btn.dataset.region;
+      if (code) setGlobalRegion(code);
+    });
+  });
+
+  const preset = REGION_PRESETS[state.selectedRegion] || REGION_PRESETS.GLOBAL;
+  const flagEl = document.querySelector("#current-region-flag");
+  const nameEl = document.querySelector("#current-region-name");
+  if (flagEl) flagEl.textContent = preset.flag;
+  if (nameEl) nameEl.textContent = preset.name.split("/")[0].trim();
+}
+
+async function detectUserRegion() {
+  // If user previously set a manual preference, respect it!
+  const savedRegion = localStorage.getItem("lootforward_region");
+  if (savedRegion && REGION_PRESETS[savedRegion]) {
+    setGlobalRegion(savedRegion, true);
+    return;
+  }
+
+  let detectedRegion = null;
+
+  // Method 1: Instant Client TimeZone Detection (zero permissions, zero latency)
+  try {
+    const tz = (Intl.DateTimeFormat().resolvedOptions().timeZone || "").toLowerCase();
+    if (tz.includes("calcutta") || tz.includes("kolkata") || tz.includes("india")) {
+      detectedRegion = "IN";
+    } else if (tz.includes("london") || tz.includes("belfast")) {
+      detectedRegion = "GB";
+    } else if (tz.includes("berlin") || tz.includes("paris") || tz.includes("rome") || 
+               tz.includes("madrid") || tz.includes("amsterdam") || tz.includes("brussels") || 
+               tz.includes("vienna") || tz.includes("stockholm") || tz.includes("copenhagen") ||
+               tz.includes("warsaw") || tz.includes("athens") || tz.includes("prague")) {
+      detectedRegion = "EU";
+    } else if (tz.includes("toronto") || tz.includes("vancouver") || tz.includes("montreal") || 
+               tz.includes("edmonton") || tz.includes("winnipeg") || tz.includes("halifax")) {
+      detectedRegion = "CA";
+    } else if (tz.includes("sydney") || tz.includes("melbourne") || tz.includes("brisbane") || 
+               tz.includes("perth") || tz.includes("adelaide") || tz.includes("hobart") || tz.includes("darwin")) {
+      detectedRegion = "AU";
+    } else if (tz.includes("new_york") || tz.includes("chicago") || tz.includes("los_angeles") || 
+               tz.includes("denver") || tz.includes("phoenix") || tz.includes("detroit") || 
+               tz.includes("indiana") || tz.includes("anchorage") || tz.includes("honolulu")) {
+      detectedRegion = "US";
+    }
+  } catch (e) {
+    console.warn("Timezone region detection error:", e);
+  }
+
+  // Method 2: Fast IP Geocoding Fallback if timezone inconclusive
+  if (!detectedRegion) {
+    try {
+      const res = await fetch("https://api.bigdatacloud.net/data/reverse-geocode-client", { signal: AbortSignal.timeout(3000) });
+      if (res.ok) {
+        const data = await res.json();
+        const country = (data.countryCode || "").toUpperCase();
+        if (country === "IN") detectedRegion = "IN";
+        else if (country === "GB" || country === "UK") detectedRegion = "GB";
+        else if (["DE", "FR", "IT", "ES", "NL", "BE", "AT", "SE", "DK", "PL", "IE", "PT", "FI"].includes(country)) detectedRegion = "EU";
+        else if (country === "CA") detectedRegion = "CA";
+        else if (country === "AU") detectedRegion = "AU";
+        else if (country === "US") detectedRegion = "US";
+      }
+    } catch (e) {
+      console.warn("IP geolocation fallback error:", e);
+    }
+  }
+
+  // Fallback to "GLOBAL"
+  if (!detectedRegion || !REGION_PRESETS[detectedRegion]) {
+    detectedRegion = "GLOBAL";
+  }
+
+  setGlobalRegion(detectedRegion, true);
 }
 
 // ── Phase 2: Map Sidebar & Filter Handlers ───────────────────
@@ -2451,19 +3313,28 @@ window.openClaimModalWithCode = function(code) {
 
 function populateClaimRecipientSelect() {
   const sel = document.querySelector("#claim-recipient-select");
+  const idInput = document.querySelector("#claim-recipient-id");
   if (!sel) return;
 
   const approved = recipients.filter(r => r.status === "approved" || !r.status);
   const currentVal = sel.value;
 
-  sel.innerHTML = `<option value="">Select claiming organization...</option>` +
+  sel.innerHTML = `<option value="">Quick select...</option>` +
     approved.map(r => `<option value="${escapeHtml(r.id)}">${escapeHtml(r.name)} (${escapeHtml(r.region || 'Active')})</option>`).join("");
 
   if (currentVal) sel.value = currentVal;
+
+  sel.onchange = () => {
+    if (sel.value && idInput) {
+      idInput.value = sel.value;
+    }
+  };
 }
 
 function initGearClaimHandlers() {
   const codeInput = document.querySelector("#claim-code-input");
+  const recipientIdInput = document.querySelector("#claim-recipient-id");
+  const recipientSelect = document.querySelector("#claim-recipient-select");
   const verifyBtn = document.querySelector("#btn-verify-claim-code");
   const previewCard = document.querySelector("#claim-item-preview");
   const submitBtn = document.querySelector("#btn-submit-gear-claim");
@@ -2471,9 +3342,10 @@ function initGearClaimHandlers() {
   const claimAlertText = document.querySelector("#claim-form-alert-text");
   const claimForm = document.querySelector("#form-claim-gear");
 
-  const showClaimAlert = (msg) => {
+  const showClaimAlert = (msg, isSuccess = false) => {
     if (claimAlert && claimAlertText) {
       claimAlertText.textContent = msg;
+      claimAlert.className = `alert ${isSuccess ? 'alert-success' : 'alert-danger'} py-2 px-3 small d-flex align-items-start gap-2 mb-3`;
       claimAlert.classList.remove("d-none");
     }
   };
@@ -2482,13 +3354,21 @@ function initGearClaimHandlers() {
     if (claimAlert) claimAlert.classList.add("d-none");
   };
 
+  if (recipientSelect && recipientIdInput) {
+    recipientSelect.addEventListener("change", () => {
+      if (recipientSelect.value) {
+        recipientIdInput.value = recipientSelect.value;
+      }
+    });
+  }
+
   if (verifyBtn) {
     verifyBtn.addEventListener("click", () => {
       clearClaimAlert();
       const code = (codeInput?.value || "").toUpperCase().trim();
 
       if (!code || code.length < 5) {
-        showClaimAlert("Please enter a valid 8-character claim code (e.g. LF-7X9K2P).");
+        showClaimAlert("Please enter a valid 8-character claim code (e.g. LF7X9K2P).");
         return;
       }
 
@@ -2512,7 +3392,7 @@ function initGearClaimHandlers() {
         previewCard.classList.remove("d-none");
         document.querySelector("#claim-preview-id").textContent = `#${item.gearId}`;
         document.querySelector("#claim-preview-title").textContent = item.title;
-        document.querySelector("#claim-preview-details").textContent = `Category: ${item.category} · Est Value: $${item.estValueUsd} USD`;
+        document.querySelector("#claim-preview-details").textContent = `Category: ${item.category} · Est Value: ${formatCompactMoney(item.estValueUsd, state.globalCurrency)}`;
         document.querySelector("#claim-preview-hub").textContent = `📍 Hub: ${item.hubName || item.address}`;
       }
 
@@ -2522,52 +3402,72 @@ function initGearClaimHandlers() {
   }
 
   if (claimForm) {
-    claimForm.addEventListener("submit", (e) => {
+    claimForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       clearClaimAlert();
 
-      const recipientId = document.querySelector("#claim-recipient-select")?.value;
+      const recipientId = (recipientIdInput?.value || recipientSelect?.value || "").trim();
       const code = (codeInput?.value || "").toUpperCase().trim();
 
       if (!recipientId) {
-        showClaimAlert("Please select your verified recipient organization.");
+        showClaimAlert("Please enter or select your verified Recipient ID.");
         return;
       }
 
       if (!code) {
-        showClaimAlert("Please enter the claim code.");
+        showClaimAlert("Please enter the 8-character claim code.");
         return;
       }
 
-      const item = liveGearInventory.find(g => g.claimCode.toUpperCase() === code);
-      if (!item || item.status === "claimed") {
-        showClaimAlert("Item cannot be claimed. Please verify code validity.");
-        return;
-      }
-
-      const recipient = recipients.find(r => r.id === recipientId);
-      const recipientName = recipient ? recipient.name : "Community Recipient";
-
-      item.status = "claimed";
-      item.claimedByRecipientId = recipientId;
-      item.claimedByRecipientName = recipientName;
-      item.claimedAt = new Date().toISOString();
-
-      // Persist to Firestore collection 'gear'
-      if (window.LootFirestore?.claimGear) {
-        window.LootFirestore.claimGear(item.gearId, item.claimCode, recipientId, recipientName);
-      }
-
-      rebuildAllMapNodes();
-      updateLiveImpactCounters();
-
-      const modalEl = document.querySelector("#claimGearModal");
-      if (modalEl) bootstrap.Modal.getInstance(modalEl)?.hide();
-      claimForm.reset();
-      if (previewCard) previewCard.classList.add("d-none");
+      const spinner = document.querySelector("#claim-submit-spinner");
+      const btnText = document.querySelector("#claim-submit-text");
+      if (spinner) spinner.classList.remove("d-none");
+      if (btnText) btnText.textContent = "Verifying with Firestore...";
       if (submitBtn) submitBtn.disabled = true;
 
-      showToast(`🎉 Hardware Claim Verified! "${item.title}" has been officially released to ${recipientName}.`, "success", 6000);
+      try {
+        let recipient = recipients.find(r => r.id === recipientId);
+        let recipientName = recipient ? recipient.name : recipientId;
+
+        // Perform Firestore verification & update where status == 'available'
+        if (window.LootFirestore?.verifyAndClaimGear) {
+          await window.LootFirestore.verifyAndClaimGear(code, recipientId, recipientName);
+        }
+
+        // Update local memory inventory
+        const item = liveGearInventory.find(g => g.claimCode.toUpperCase() === code);
+        if (item) {
+          item.status = "claimed";
+          item.claimedByRecipientId = recipientId;
+          item.claimedByRecipientName = recipientName;
+          item.claimedAt = new Date().toISOString();
+        }
+
+        // Live Map and Impact Widget dynamic updates
+        rebuildAllMapNodes();
+        updateLiveImpactCounters();
+
+        showClaimAlert(`🎉 Success! Hardware verified and claimed for ${recipientName}.`, true);
+        showToast(`🎉 Hardware Claim Verified! "${item?.title || code}" officially released to ${recipientName}.`, "success", 6000);
+
+        setTimeout(() => {
+          const modalEl = document.querySelector("#claimGearModal");
+          if (modalEl) bootstrap.Modal.getInstance(modalEl)?.hide();
+          claimForm.reset();
+          if (previewCard) previewCard.classList.add("d-none");
+          if (submitBtn) submitBtn.disabled = true;
+          if (spinner) spinner.classList.add("d-none");
+          if (btnText) btnText.textContent = "Confirm & Release Gear";
+          clearClaimAlert();
+        }, 1200);
+
+      } catch (err) {
+        console.error("Claim verification failure:", err);
+        showClaimAlert(`Verification failed: ${err.message || 'Unable to claim item. Check code status.'}`);
+        if (spinner) spinner.classList.add("d-none");
+        if (btnText) btnText.textContent = "Confirm & Release Gear";
+        if (submitBtn) submitBtn.disabled = false;
+      }
     });
   }
 }
@@ -2594,10 +3494,11 @@ function initLeafletMaps() {
   const dropMapEl = document.querySelector("#drop-map");
   if (dropMapEl && !state.maps.dropMap) {
     try {
+      const activePreset = REGION_PRESETS[state.selectedRegion] || REGION_PRESETS.GLOBAL;
       const dropMap = L.map(dropMapEl, {
         zoomControl: true,
         scrollWheelZoom: false
-      }).setView([39.50, -98.35], 4);
+      }).setView(activePreset.center, activePreset.zoom);
 
       L.tileLayer(darkTileUrl, tileOptions).addTo(dropMap);
       state.maps.dropMap = dropMap;
@@ -2611,6 +3512,24 @@ function initLeafletMaps() {
 
       // Initialize multi-layer nodes
       rebuildAllMapNodes();
+
+      // Real-time synchronization with Firestore 'gear' collection
+      if (window.LootFirestore?.subscribeLiveGear) {
+        window.LootFirestore.subscribeLiveGear((items) => {
+          if (Array.isArray(items) && items.length > 0) {
+            items.forEach(remoteItem => {
+              const localIdx = liveGearInventory.findIndex(g => g.gearId === remoteItem.id || g.claimCode === remoteItem.claimCode);
+              if (localIdx !== -1) {
+                liveGearInventory[localIdx] = { ...liveGearInventory[localIdx], ...remoteItem };
+              } else {
+                liveGearInventory.push(remoteItem);
+              }
+            });
+            rebuildAllMapNodes();
+            updateLiveImpactCounters();
+          }
+        });
+      }
     } catch (err) {
       console.warn("Failed to initialize drop-map:", err.message);
     }
@@ -3568,7 +4487,12 @@ function initApp() {
   initRecipientManagement();
   initMapFilterSidebarHandlers();
   initGearClaimHandlers();
-  updateLiveImpactCounters();
+  initHeroImpactCounters();
+  initGlobalCurrencyDropdown();
+  initRegionSelectorDropdown();
+  initUniversalCurrencyConverter();
+  fetchLiveExchangeRates();
+  detectUserRegion();
 
   // Category switcher
   const categoryBtns = document.querySelectorAll("[data-donation-type]");

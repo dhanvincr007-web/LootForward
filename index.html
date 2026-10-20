@@ -77,6 +77,31 @@
               <div id="google_translate_element"></div>
             </div>
           </li>
+          <!-- Regional Multi-Country Selector Dropdown (i18n) -->
+          <li class="nav-item dropdown ms-lg-2 my-2 my-lg-0" id="nav-region-selector-item">
+            <button type="button" class="btn btn-outline-neon btn-sm dropdown-toggle d-inline-flex align-items-center gap-1 font-mono"
+              id="globalRegionDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Filter by Country / Region">
+              <span id="current-region-flag">🌍</span>
+              <span id="current-region-name" class="fw-bold">Global</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary p-1 font-mono shadow-lg region-dropdown-list" 
+                aria-labelledby="globalRegionDropdown" id="region-dropdown-menu" style="min-width: 220px;">
+              <!-- Populated dynamically: Global, India, USA, UK, EU, Canada, Australia -->
+            </ul>
+          </li>
+          <!-- Global Multi-Currency Selector Dropdown (10 Global Currencies) -->
+          <li class="nav-item dropdown ms-lg-2 my-2 my-lg-0" id="nav-currency-selector-item">
+            <button type="button" class="btn btn-outline-neon btn-sm dropdown-toggle d-inline-flex align-items-center gap-1 font-mono"
+              id="globalCurrencyDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Switch Global Display Currency">
+              <span id="current-currency-flag">🇺🇸</span>
+              <span id="current-currency-code" class="fw-bold">USD</span>
+              <span class="text-white-50" id="current-currency-symbol">($)</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary p-1 font-mono shadow-lg currency-dropdown-list" 
+                aria-labelledby="globalCurrencyDropdown" id="currency-dropdown-menu" style="min-width: 190px;">
+              <!-- Populated dynamically: USD, EUR, GBP, INR, JPY, CAD, AUD, CHF, SGD, AED -->
+            </ul>
+          </li>
           <!-- Auth Navigation Controls -->
           <li class="nav-item ms-lg-2 my-2 my-lg-0" id="nav-auth-logged-out">
             <button type="button" class="btn btn-outline-neon btn-sm d-inline-flex align-items-center gap-2" id="btn-open-auth-modal">
@@ -210,6 +235,67 @@
           </div>
         </div>
 
+        <!-- Interactive Universal Multi-Currency FX Converter Tool -->
+        <div class="currency-converter-section mt-4 mb-2" id="global-converter-section">
+          <div class="glass-panel p-4 position-relative overflow-hidden converter-glass-card">
+            <div class="row align-items-center g-4">
+              <div class="col-lg-5">
+                <span class="eyebrow">LIVE FOREX ENGINE</span>
+                <h3 class="text-white mb-2 fw-bold">Universal Currency Converter</h3>
+                <p class="text-muted small mb-3">
+                  Live institutional market rates powering international gaming hardware and monetary relief across 10 global currencies. Real-time rates fetched directly from live financial feeds.
+                </p>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                  <span class="status-pulse-dot bg-success" style="width:7px; height:7px;"></span>
+                  <span class="small font-mono text-cyan" id="fx-market-status">Live Market Rates: Active</span>
+                  <span class="badge bg-black border border-secondary text-muted font-mono" id="fx-last-updated-badge">Synced</span>
+                </div>
+              </div>
+              <div class="col-lg-7">
+                <div class="p-3 rounded bg-black border border-secondary shadow-lg">
+                  <div class="row g-2 align-items-center">
+                    <!-- From Amount & Currency -->
+                    <div class="col-md-5">
+                      <label class="form-label small text-muted font-mono mb-1" for="converter-from-amount">YOU CONVERT</label>
+                      <div class="input-group">
+                        <input type="number" step="any" min="0" class="form-control bg-dark text-white border-secondary font-mono fw-bold" id="converter-from-amount" value="100">
+                        <select class="form-select bg-dark text-cyan border-secondary font-mono" id="converter-from-currency">
+                          <!-- Populated dynamically -->
+                        </select>
+                      </div>
+                    </div>
+
+                    <!-- Currency Swap Button -->
+                    <div class="col-md-2 text-center my-2 my-md-0">
+                      <button type="button" class="btn btn-outline-neon btn-sm rounded-circle converter-swap-btn" id="btn-swap-converter-currency" title="Swap Currencies">
+                        <span style="font-size:1.1rem; line-height:1; display:inline-block;">⇄</span>
+                      </button>
+                    </div>
+
+                    <!-- To Amount & Currency -->
+                    <div class="col-md-5">
+                      <label class="form-label small text-muted font-mono mb-1" for="converter-to-amount">ESTIMATED VALUE</label>
+                      <div class="input-group">
+                        <input type="text" class="form-control bg-dark text-neon border-secondary font-mono fw-bold" id="converter-to-amount" readonly value="...">
+                        <select class="form-select bg-dark text-cyan border-secondary font-mono" id="converter-to-currency">
+                          <!-- Populated dynamically -->
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Live Exchange Pair Rate Badge -->
+                  <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-secondary flex-wrap gap-2">
+                    <span class="badge bg-dark border border-secondary font-mono text-cyan px-2 py-1" id="converter-rate-badge">1 USD = 83.50 INR</span>
+                    <span class="small text-white-50 font-mono" style="font-size:0.75rem;">Institutional Market Feeds · Zero Conversion Fees</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="impact-card-glow glow-cyan" style="top:-50px; left:-50px;"></div>
+          </div>
+        </div>
+
         <!-- Anti-Fraud Workflow -->
         <div class="section-heading mt-5">
           <span class="eyebrow">ANTI-FRAUD WORKFLOW</span>
@@ -262,6 +348,7 @@
               <span class="status-pulse-dot"></span>
               <span class="small text-white fw-bold" id="map-network-status">Live GIS Map Engine · Multi-Layer Exploration</span>
               <span class="badge bg-dark border border-secondary text-cyan font-mono small" id="map-visible-count-badge">8 Nodes Active</span>
+              <span class="badge bg-dark border border-secondary text-white font-mono small" id="map-region-filter-badge">🌍 Region: Global</span>
             </div>
             <div class="d-flex align-items-center gap-2">
               <button type="button" class="btn btn-outline-neon btn-sm d-inline-flex align-items-center gap-1" id="btn-open-claim-modal" data-bs-toggle="modal" data-bs-target="#claimGearModal">
@@ -662,6 +749,7 @@
             <button type="button" class="btn btn-sm btn-outline-secondary" data-rec-filter="Esports Club">Esports Club</button>
             <button type="button" class="btn btn-sm btn-outline-secondary" data-rec-filter="School">School / STEM</button>
             <button type="button" class="btn btn-sm btn-outline-secondary" data-rec-filter="NGO">NGO / Non-Profit</button>
+            <span class="badge bg-black border border-secondary text-cyan font-mono ms-1 align-self-center py-2 px-2" id="recipient-region-filter-badge">🌍 Region: Global</span>
           </div>
           <div class="d-flex align-items-center gap-2" style="min-width: 260px; max-width: 360px; flex: 1;">
             <div class="input-group input-group-sm">
@@ -1932,18 +2020,26 @@
           </div>
 
           <form id="form-claim-gear" novalidate>
-            <!-- Select Approved Recipient -->
+            <!-- Recipient ID Input & Selector -->
             <div class="mb-3">
-              <label class="form-label small text-muted font-mono" for="claim-recipient-select">
-                VERIFIED RECIPIENT ORGANIZATION <span class="text-danger">*</span>
+              <label class="form-label small text-muted font-mono" for="claim-recipient-id">
+                RECIPIENT ID <span class="text-danger">*</span>
               </label>
-              <select class="form-select bg-black text-white border-secondary" id="claim-recipient-select" required>
-                <option value="">Select claiming organization...</option>
-                <option value="st-jude-gaming-hub">St. Jude Children's Hospital Gaming Hub (Memphis, TN)</option>
-                <option value="low-income-esport-lab">Low-Income Community Esport Center Lab (Chicago, IL)</option>
-                <option value="youth-recreation-network">Youth Recreation Network Game Room (New York, NY)</option>
-              </select>
-              <div class="form-text text-muted small">Only organizations with verified status can claim hardware.</div>
+              <div class="input-group mb-1">
+                <span class="input-group-text bg-black border-secondary text-cyan">🎯</span>
+                <input type="text" class="form-control bg-black text-white border-secondary font-mono" 
+                       id="claim-recipient-id" placeholder="e.g. st-jude-gaming-hub" required autocomplete="off">
+              </div>
+              <div class="d-flex align-items-center justify-content-between">
+                <small class="text-muted" style="font-size:0.75rem;">Or pick from approved organizations:</small>
+                <select class="form-select form-select-sm bg-black text-muted border-secondary w-auto py-0 px-2" id="claim-recipient-select" style="font-size: 0.75rem;">
+                  <option value="">Quick select...</option>
+                  <option value="st-jude-gaming-hub">St. Jude Children's Hospital Gaming Hub</option>
+                  <option value="low-income-esport-lab">Low-Income Community Esport Center Lab</option>
+                  <option value="youth-recreation-network">Youth Recreation Network Game Room</option>
+                </select>
+              </div>
+              <div class="form-text text-muted small mt-1">Only verified approved recipients can claim allocated gear.</div>
             </div>
 
             <!-- Enter 8-Character Cryptographic Claim Code -->

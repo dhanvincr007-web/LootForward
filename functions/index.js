@@ -1,5 +1,7 @@
 const { onRequest } = require("firebase-functions/v2/https");
+const { onDocumentUpdated } = require("firebase-functions/v2/firestore");
 const logger = require("firebase-functions/logger");
+const nodemailer = require("nodemailer");
 const Stripe = require("stripe");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
@@ -190,11 +192,9 @@ exports.verifyPaymentSignature = onRequest(async (req, res) => {
 
 // ── 4. Automated Recipient Approval Notifications (Firebase Cloud Functions v2) ──
 // Triggered automatically whenever a recipient record in the 'recipients' collection is updated.
-// Listens for status transition: before.status !== 'approved' && after.status === 'approved'
-const { onDocumentUpdated } = require("firebase-functions/v2/firestore");
-const nodemailer = require("nodemailer");
+// Listens for status transition: before.data().status === 'pending' && after.data().status === 'approved'
 
-// Nodemailer SMTP / SendGrid Transporter
+// Nodemailer SMTP Transporter
 // Secure credentials read directly from environment variables: EMAIL_USER and EMAIL_PASS
 const mailTransporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST || "smtp.sendgrid.net",
