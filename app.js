@@ -912,7 +912,9 @@ function navigate(page, updateHash = true) {
   updateDonationContext();
 
   if (page === "admin") {
-    renderAdminDashboard();
+    const isSuperAdmin = (state.currentUser?.email || "").toLowerCase().trim() === "dhanvincr007@gmail.com";
+    const isAdmin = isSuperAdmin || checkUserIsAdmin(state.currentUser);
+    updateAdminPanelAccess(state.currentUser, isAdmin);
   }
 
   // Invalidate Leaflet map size on route change to prevent gray tile clipping
@@ -1689,21 +1691,34 @@ function updateAuthUI(user) {
   }
 
   // ── Role-Based Access Control (RBAC) Evaluation ────────────
-  const isAdmin = checkUserIsAdmin(user);
+  const userEmail = (user?.email || "").toLowerCase().trim();
+  const isSuperAdmin = userEmail === "dhanvincr007@gmail.com";
+  const isAdmin = isSuperAdmin || (user?.role === "admin" && checkUserIsAdmin(user));
   state.isAdmin = isAdmin;
 
   const navAdminItem = document.querySelector("#nav-admin-item");
+  const adminDashboardBtn = document.querySelector("#adminDashboardBtn");
   const dropdownAdminItem = document.querySelector("#dropdown-admin-item");
 
-  if (isAdmin) {
+  // Unhide the Admin Control Center trigger button (#adminDashboardBtn) exclusively for dhanvincr007@gmail.com
+  // Regular users cannot access or view the button
+  if (isSuperAdmin) {
     if (navAdminItem) navAdminItem.style.display = "block";
+    if (adminDashboardBtn) {
+      adminDashboardBtn.style.display = "";
+      adminDashboardBtn.classList.remove("d-none");
+    }
     if (dropdownAdminItem) dropdownAdminItem.classList.remove("d-none");
   } else {
     if (navAdminItem) navAdminItem.style.display = "none";
+    if (adminDashboardBtn) {
+      adminDashboardBtn.style.display = "none";
+      adminDashboardBtn.classList.add("d-none");
+    }
     if (dropdownAdminItem) dropdownAdminItem.classList.add("d-none");
   }
 
-  updateAdminPanelAccess(user, isAdmin);
+  updateAdminPanelAccess(user, isSuperAdmin);
 }
 
 function showAuthAlert(message, type = "error") {
@@ -1950,9 +1965,10 @@ let activeDonationFilter = "all";
 
 function checkUserIsAdmin(user) {
   if (!user) return false;
+  const email = (user.email || "").toLowerCase().trim();
+  if (email === "dhanvincr007@gmail.com") return true;
   if (user.role === "admin") return true;
   if (localStorage.getItem("lootforward_admin_override") === "true") return true;
-  const email = (user.email || "").toLowerCase().trim();
   return ADMIN_EMAILS.some(adminEmail => adminEmail.toLowerCase() === email);
 }
 
@@ -1964,10 +1980,16 @@ function updateAdminPanelAccess(user, isAdmin) {
   const deniedEmail = document.querySelector("#admin-denied-email");
   const sessionUser = document.querySelector("#admin-session-user");
 
-  if (isAdmin) {
+  const email = (user?.email || "").toLowerCase().trim();
+  const isSuperAdmin = email === "dhanvincr007@gmail.com";
+  const hasAccess = isSuperAdmin || isAdmin;
+
+  if (hasAccess) {
     if (gate) gate.classList.add("d-none");
     if (panel) panel.classList.remove("d-none");
-    if (sessionUser) sessionUser.textContent = user?.email || "admin@lootforward.org (Verified)";
+    if (sessionUser) sessionUser.textContent = isSuperAdmin
+      ? "dhanvincr007@gmail.com (Super-Admin Clearance)"
+      : (user?.email ? `${user.email} (Administrator)` : "dhanvincr007@gmail.com (Super-Admin Clearance)");
     renderAdminDashboard();
   } else {
     if (panel) panel.classList.add("d-none");

@@ -24,6 +24,8 @@ import {
   addDoc,
   getDocs,
   doc,
+  setDoc,
+  getDoc,
   updateDoc,
   query,
   where,
@@ -52,6 +54,79 @@ let googleProvider;
 let isDemoFallback = false;
 const authSubscribers = [];
 
+export const SUPER_ADMIN_EMAIL = "dhanvincr007@gmail.com";
+
+/**
+ * Check if given user account or email matches the Super-Admin address
+ */
+export function isSuperAdminAccount(userOrEmail) {
+  if (!userOrEmail) return false;
+  const email = (typeof userOrEmail === "string" ? userOrEmail : userOrEmail.email || "").toLowerCase().trim();
+  return email === SUPER_ADMIN_EMAIL;
+}
+
+/**
+ * Firestore Role-Based Access Control (RBAC):
+ * - Upon user login, verify if account email matches dhanvincr007@gmail.com
+ * - If matched, write/merge { role: 'admin', isSuperAdmin: true } directly into users/{uid}
+ * - For regular users, enforce role: 'user' without administrative privileges
+ */
+export async function syncUserProfileAndRole(user) {
+  if (!user) return null;
+
+  const isSuperAdmin = isSuperAdminAccount(user);
+  let resolvedRole = isSuperAdmin ? "admin" : "user";
+
+  const sanitizedUser = {
+    uid: user.uid,
+    email: user.email,
+    displayName: user.displayName || user.email?.split("@")[0] || "Gamer",
+    photoURL: user.photoURL,
+    providerId: user.providerData?.[0]?.providerId || "password",
+    role: resolvedRole
+  };
+
+  // Sync to Firestore 'users/{uid}' document
+  if (db && !isDemoFallback) {
+    try {
+      const userDocRef = doc(db, "users", user.uid);
+      if (isSuperAdmin) {
+        // Explicitly write/merge role: "admin" directly into Firestore
+        await setDoc(userDocRef, {
+          email: user.email,
+          displayName: sanitizedUser.displayName,
+          photoURL: user.photoURL || null,
+          role: "admin",
+          isSuperAdmin: true,
+          updatedAt: serverTimestamp(),
+          lastLoginAt: serverTimestamp()
+        }, { merge: true });
+        sanitizedUser.role = "admin";
+        console.log(`[LootForward RBAC] Super-Admin verified. Firestore document 'users/${user.uid}' assigned role: 'admin'`);
+      } else {
+        // Read existing doc to check if user has role: 'admin'
+        const docSnap = await getDoc(userDocRef);
+        if (docSnap.exists() && docSnap.data().role === "admin") {
+          sanitizedUser.role = "admin";
+        } else {
+          await setDoc(userDocRef, {
+            email: user.email,
+            displayName: sanitizedUser.displayName,
+            photoURL: user.photoURL || null,
+            role: docSnap.exists() ? (docSnap.data().role || "user") : "user",
+            updatedAt: serverTimestamp(),
+            lastLoginAt: serverTimestamp()
+          }, { merge: true });
+        }
+      }
+    } catch (err) {
+      console.warn("Firestore user RBAC sync notice:", err.message);
+    }
+  }
+
+  return sanitizedUser;
+}
+
 try {
   app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
   auth = getAuth(app);
@@ -79,16 +154,9 @@ function notifySubscribers(user) {
 // ── Check redirect auth result on page load ─────────────────
 if (!isDemoFallback && auth) {
   getRedirectResult(auth)
-    .then((result) => {
+    .then(async (result) => {
       if (result && result.user) {
-        const user = result.user;
-        const sanitizedUser = {
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName || user.email?.split("@")[0] || "Gamer",
-          photoURL: user.photoURL,
-          providerId: user.providerData?.[0]?.providerId || "google.com"
-        };
+        const sanitizedUser = await syncUserProfileAndRole(result.user);
         localStorage.setItem("lootforward_auth_cache", JSON.stringify(sanitizedUser));
         notifySubscribers(sanitizedUser);
       }
@@ -102,15 +170,9 @@ if (!isDemoFallback && auth) {
 
 // ── Persistent Session Observer ─────────────────────────────
 if (!isDemoFallback && auth) {
-  onAuthStateChanged(auth, (user) => {
+  onAuthStateChanged(auth, async (user) => {
     if (user) {
-      const sanitizedUser = {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName || user.email?.split("@")[0] || "Gamer",
-        photoURL: user.photoURL,
-        providerId: user.providerData?.[0]?.providerId || "password"
-      };
+      const sanitizedUser = await syncUserProfileAndRole(user);
       localStorage.setItem("lootforward_auth_cache", JSON.stringify(sanitizedUser));
       notifySubscribers(sanitizedUser);
     } else {
@@ -124,7 +186,9 @@ if (!isDemoFallback && auth) {
     const cached = localStorage.getItem("lootforward_auth_cache");
     if (cached) {
       try {
-        notifySubscribers(JSON.parse(cached));
+        const parsed = JSON.parse(cached);
+        if (isSuperAdminAccount(parsed)) parsed.role = "admin";
+        notifySubscribers(parsed);
       } catch (e) {
         notifySubscribers(null);
       }
@@ -561,6 +625,9 @@ export async function fetchLiveImpactMetricsFromFirestore() {
 
 // Expose on global window object for consumption by app.js
 window.LootAuth = {
+  SUPER_ADMIN_EMAIL,
+  isSuperAdmin: isSuperAdminAccount,
+  syncUserProfileAndRole,
   signInWithGoogle,
   signInWithGoogleRedirect,
   signInWithEmail,

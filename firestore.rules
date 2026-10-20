@@ -7,12 +7,26 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function isAdmin() {
+    function isSuperAdminEmail() {
       return isAuthenticated() && (
-        request.auth.token.role == 'admin' ||
-        request.auth.token.email in ['admin@lootforward.org', 'dhanvincr007@gmail.com', 'alex.gamer@gmail.com', 'winchester007@gmail.com'] ||
-        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        request.auth.token.email != null &&
+        request.auth.token.email.lower() == 'dhanvincr007@gmail.com'
       );
+    }
+
+    function hasAdminRoleInFirestore() {
+      return isAuthenticated() && (
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
+        (request.auth.token.role == 'admin')
+      );
+    }
+
+    function isAdmin() {
+      return isSuperAdminEmail() ||
+             hasAdminRoleInFirestore() ||
+             (isAuthenticated() && request.auth.token.email in ['admin@lootforward.org', 'dhanvincr007@gmail.com', 'alex.gamer@gmail.com', 'winchester007@gmail.com']) ||
+             exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
     function isOwner(userId) {
@@ -22,45 +36,55 @@ service cloud.firestore {
     // ── Verified Admin Document Registry ────────────────────────
     match /admins/{adminId} {
       allow read: if isAuthenticated();
-      allow write: if isAdmin();
+      allow write: if isSuperAdminEmail() || hasAdminRoleInFirestore() || isAdmin();
     }
 
     // ── Monetary Donations & Transaction Ledger ─────────────────
     match /donations/{donationId} {
       // Donors can read their own donations; admins have full audit visibility
-      allow read: if isAdmin() || (isAuthenticated() && resource.data.donorUid == request.auth.uid);
+      allow read: if isSuperAdminEmail() || hasAdminRoleInFirestore() || isAdmin() || (isAuthenticated() && resource.data.donorUid == request.auth.uid);
       // Valid transactions can be created by authenticated users or payment webhook workers
       allow create: if isAuthenticated() || request.resource.data.gateway in ['stripe', 'razorpay'];
-      // Transactions are tamper-evident; only administrators can update audit status or delete
-      allow update, delete: if isAdmin();
+      // Transactions are tamper-evident; only administrators with role == 'admin' in Firestore or dhanvincr007@gmail.com can modify records
+      allow update, delete: if isSuperAdminEmail() || hasAdminRoleInFirestore() || isAdmin();
     }
 
-    // ── Gear Drop-Off Partner Locations (GIS Map Markers) ───────
-    match /dropoff_locations/{locationId} {
-      // Publicly readable so all gamers can browse and locate drop-off hubs on Leaflet map
+    // ── Pending Recipients Moderation Queue ──────────────────────
+    match /pending_recipients/{recipientId} {
+      allow read: if isSuperAdminEmail() || hasAdminRoleInFirestore() || isAdmin();
+      allow create: if (request.resource.data.status == 'pending' && request.resource.data.name != null) || isAdmin() || isSuperAdminEmail();
+      allow update, delete: if isSuperAdminEmail() || hasAdminRoleInFirestore() || isAdmin();
+    }
+
+    // ── Gear Drop-Off Locations & Partner Facilities ────────────
+    match /dropoffs/{dropoffId} {
       allow read: if true;
-      // Strictly restricted: only administrators can add, update coordinates, or delete hubs
-      allow write, update, delete: if isAdmin();
+      allow create, update, delete: if isSuperAdminEmail() || hasAdminRoleInFirestore() || isAdmin();
+    }
+
+    match /dropoff_locations/{locationId} {
+      allow read: if true;
+      allow create, update, delete: if isSuperAdminEmail() || hasAdminRoleInFirestore() || isAdmin();
     }
 
     // ── Hardware Drop Submissions & Audit Queue ─────────────────
     match /hardware_submissions/{submissionId} {
       // Donors can track their own tickets; admins view the full moderation queue
-      allow read: if isAdmin() || (isAuthenticated() && resource.data.donorUid == request.auth.uid);
+      allow read: if isSuperAdminEmail() || hasAdminRoleInFirestore() || isAdmin() || (isAuthenticated() && resource.data.donorUid == request.auth.uid);
       // Gamers can submit new hardware drops for review
       allow create: if isAuthenticated() || request.resource.data.itemName != null;
       // Only administrators can moderate, approve/reject, or issue shipping labels
-      allow update, delete: if isAdmin();
+      allow update, delete: if isSuperAdminEmail() || hasAdminRoleInFirestore() || isAdmin();
     }
 
     // ── Verified Recipients & Beneficiary Organizations ────────
     match /recipients/{recipientId} {
       // Public read access restricted strictly to approved recipients; admins view all (including pending review)
-      allow read: if isAdmin() || (resource.data.status == 'approved');
+      allow read: if isSuperAdminEmail() || hasAdminRoleInFirestore() || isAdmin() || (resource.data.status == 'approved');
       // Public applicants can submit new applications ONLY with status 'pending'; admins can create directly
-      allow create: if (request.resource.data.status == 'pending' && request.resource.data.name != null) || isAdmin();
+      allow create: if (request.resource.data.status == 'pending' && request.resource.data.name != null) || isAdmin() || isSuperAdminEmail();
       // Only verified administrators can approve, update status, edit, or delete recipient applications
-      allow update, delete: if isAdmin();
+      allow update, delete: if isSuperAdminEmail() || hasAdminRoleInFirestore() || isAdmin();
     }
 
     // ── Gear Lifecycle, QR Verification & Recipient Claims ─────
@@ -68,22 +92,27 @@ service cloud.firestore {
       // Available and claimed gear can be browsed on the public GIS map
       allow read: if true;
       // Registered donors or partners can list gear with claim codes
-      allow create: if isAuthenticated() || isAdmin() || request.resource.data.claimCode != null;
+      allow create: if isAuthenticated() || isAdmin() || isSuperAdminEmail() || request.resource.data.claimCode != null;
       // Approved recipients can update status to 'claimed'; admins have full moderation authority
-      allow update: if isAdmin() || (
+      allow update: if isSuperAdminEmail() || hasAdminRoleInFirestore() || isAdmin() || (
         resource.data.status == 'available' &&
         request.resource.data.status == 'claimed' &&
         request.resource.data.claimedByRecipientId != null
       );
-      allow delete: if isAdmin();
+      allow delete: if isSuperAdminEmail() || hasAdminRoleInFirestore() || isAdmin();
     }
 
     // ── User Profiles & RBAC Tokens ─────────────────────────────
     match /users/{userId} {
       allow read: if isAuthenticated();
-      // Users can modify their own non-role profile fields; only admins can grant the 'admin' role
-      allow create, update: if isOwner(userId) && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']) || isAdmin());
-      allow delete: if isAdmin();
+      // Users can modify their own non-role profile fields.
+      // Super-admin (dhanvincr007@gmail.com) and accounts with role == 'admin' in Firestore can write/merge role: 'admin'
+      allow create, update: if isOwner(userId) && (
+        isSuperAdminEmail() ||
+        hasAdminRoleInFirestore() ||
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role'])
+      );
+      allow delete: if isSuperAdminEmail() || hasAdminRoleInFirestore() || isAdmin();
     }
   }
 }
