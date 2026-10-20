@@ -2,6 +2,28 @@
 // LootForward — app.js (Bulletproof Routing & Error Safety)
 // ============================================================
 
+// ── Unified Global State Manager (Window Scope Safe) ─────────
+const _initRegion = (typeof window !== "undefined" && localStorage.getItem("lootforward_region")) || "GLOBAL";
+const _initCurrency = (typeof window !== "undefined" && localStorage.getItem("lootforward_currency")) || "USD";
+
+window.appState = {
+  activeRegion: _initRegion,
+  activeCurrency: _initCurrency,
+  exchangeRates: {
+    USD: 1.0,
+    EUR: 0.92,
+    GBP: 0.79,
+    INR: 83.45,
+    JPY: 154.60,
+    CAD: 1.37,
+    AUD: 1.53,
+    CHF: 0.91,
+    SGD: 1.35,
+    AED: 3.67
+  },
+  fxLastUpdated: null
+};
+
 const DEMO_ADMIN_PASS = "LOOTFORWARD2026";
 
 // ── Firebase Cloud Function endpoints (with Vercel reverse-proxy support) ───
@@ -728,19 +750,37 @@ const FALLBACK_EXCHANGE_RATES = {
   AED: 3.67
 };
 
-function convertCurrency(amountInUsd, targetCurrency = state.globalCurrency) {
-  const rate = state.exchangeRates[targetCurrency] || FALLBACK_EXCHANGE_RATES[targetCurrency] || 1.0;
+function convertCurrency(amountInUsd, targetCurrency = (window.appState ? window.appState.activeCurrency : "USD")) {
+  const rates = (window.appState && window.appState.exchangeRates) || FALLBACK_EXCHANGE_RATES;
+  const rate = rates[targetCurrency] || FALLBACK_EXCHANGE_RATES[targetCurrency] || 1.0;
   return Number(amountInUsd) * rate;
 }
 
 function convertCrossCurrency(amount, fromCurrency, toCurrency) {
-  const fromRate = state.exchangeRates[fromCurrency] || FALLBACK_EXCHANGE_RATES[fromCurrency] || 1.0;
-  const toRate = state.exchangeRates[toCurrency] || FALLBACK_EXCHANGE_RATES[toCurrency] || 1.0;
+  const rates = (window.appState && window.appState.exchangeRates) || FALLBACK_EXCHANGE_RATES;
+  const fromRate = rates[fromCurrency] || FALLBACK_EXCHANGE_RATES[fromCurrency] || 1.0;
+  const toRate = rates[toCurrency] || FALLBACK_EXCHANGE_RATES[toCurrency] || 1.0;
   const inUsd = Number(amount) / fromRate;
   return inUsd * toRate;
 }
 
-function formatCurrency(amount, currencyCode = state.globalCurrency) {
+// ── Universal Currency Formatting Engine (Decimal Precision Rules) ─
+function formatValue(amountInUSD, currencyOverride) {
+  const code = (currencyOverride || (window.appState && window.appState.activeCurrency) || (typeof state !== "undefined" && state.globalCurrency) || "USD").toUpperCase();
+  const meta = SUPPORTED_CURRENCIES[code] || SUPPORTED_CURRENCIES.USD;
+  const rates = (window.appState && window.appState.exchangeRates) || (typeof state !== "undefined" && state.exchangeRates) || FALLBACK_EXCHANGE_RATES;
+  const rate = rates[code] || FALLBACK_EXCHANGE_RATES[code] || 1.0;
+  const converted = Number(amountInUSD || 0) * rate;
+  const decimals = meta.decimals !== undefined ? meta.decimals : (code === "JPY" ? 0 : 2);
+  const formatted = converted.toLocaleString(undefined, {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  });
+  return `${meta.symbol}${formatted} ${meta.code}`;
+}
+window.formatValue = formatValue;
+
+function formatCurrency(amount, currencyCode = (window.appState ? window.appState.activeCurrency : "USD")) {
   const meta = SUPPORTED_CURRENCIES[currencyCode] || SUPPORTED_CURRENCIES.USD;
   const num = Number(amount);
   const formatted = num.toLocaleString(undefined, {
@@ -750,11 +790,8 @@ function formatCurrency(amount, currencyCode = state.globalCurrency) {
   return `${meta.symbol} ${formatted} ${meta.code}`;
 }
 
-function formatCompactMoney(amountInUsd, currencyCode = state.globalCurrency) {
-  const meta = SUPPORTED_CURRENCIES[currencyCode] || SUPPORTED_CURRENCIES.USD;
-  const converted = convertCurrency(amountInUsd, currencyCode);
-  const formatted = Math.round(converted).toLocaleString();
-  return `${meta.symbol}${formatted} ${meta.code}`;
+function formatCompactMoney(amountInUsd, currencyCode = (window.appState ? window.appState.activeCurrency : "USD")) {
+  return formatValue(amountInUsd, currencyCode);
 }
 
 // ── Regional Multi-Country Localization Presets (i18n) ───────
@@ -762,11 +799,11 @@ const REGION_PRESETS = {
   GLOBAL: {
     code: "GLOBAL",
     name: "Global / All",
-    flag: "🌍",
+    flag: "🌐",
     currency: "USD",
     center: [25.0, 10.0],
     zoom: 2,
-    badgeText: "🌍 Region: Global"
+    badgeText: "🌐 Region: Global"
   },
   IN: {
     code: "IN",
@@ -830,12 +867,16 @@ const state = {
   selectedRecipient: null,
   latestSubmission: null,
   localSubmissions: [],
-  // Regional Localization & Filtering State (i18n)
-  selectedRegion: (typeof window !== "undefined" && localStorage.getItem("lootforward_region")) || "GLOBAL",
-  // Multi-Currency State
-  globalCurrency: (typeof window !== "undefined" && localStorage.getItem("lootforward_currency")) || "USD",
-  exchangeRates: { ...FALLBACK_EXCHANGE_RATES },
-  fxLastUpdated: null,
+  // Regional Localization & Filtering State (i18n) - Synchronized with window.appState
+  get selectedRegion() { return window.appState ? window.appState.activeRegion : "GLOBAL"; },
+  set selectedRegion(val) { if (window.appState) window.appState.activeRegion = val; },
+  // Multi-Currency State - Synchronized with window.appState
+  get globalCurrency() { return window.appState ? window.appState.activeCurrency : "USD"; },
+  set globalCurrency(val) { if (window.appState) window.appState.activeCurrency = val; },
+  get exchangeRates() { return window.appState ? window.appState.exchangeRates : FALLBACK_EXCHANGE_RATES; },
+  set exchangeRates(val) { if (window.appState) window.appState.exchangeRates = val; },
+  get fxLastUpdated() { return window.appState ? window.appState.fxLastUpdated : null; },
+  set fxLastUpdated(val) { if (window.appState) window.appState.fxLastUpdated = val; },
   cachedImpactMetrics: null,
   // Stripe live references
   stripeInstance: null,
@@ -2662,7 +2703,7 @@ function rebuildAllMapNodes() {
         <div style="min-width: 240px;">
           <div class="d-flex justify-content-between align-items-center mb-1">
             <span class="badge bg-success text-white fw-bold">⚡ Available</span>
-            <span class="badge bg-dark font-mono text-cyan" style="font-size:0.65rem;">${escapeHtml(formatCompactMoney(gear.estValueUsd, state.globalCurrency))}</span>
+            <span class="badge bg-dark font-mono text-cyan dynamic-currency-val" data-usd-value="${gear.estValueUsd}" style="font-size:0.65rem;">${escapeHtml(formatValue(gear.estValueUsd))}</span>
           </div>
           <h6 class="mb-1 text-white">${escapeHtml(gear.title)}</h6>
           <p class="mb-1 text-muted small font-mono">📍 ${escapeHtml(gear.hubName || gear.address)}</p>
@@ -2849,19 +2890,20 @@ function animateRollingCounter(el, start, end, prefix = "", suffix = "", duratio
 }
 
 // ── Live Impact & Analytics Aggregator ────────────────────────
+// ── Live Impact & Analytics Aggregator ────────────────────────
 function updateLiveImpactCounters(customMetrics = null) {
   const gearEl = document.querySelector("#stat-total-gear");
-  const valueEl = document.querySelector("#stat-total-value");
+  const valueEl = document.querySelector("#statMonetaryValue") || document.querySelector("#stat-total-value");
   const recipientsEl = document.querySelector("#stat-total-recipients");
   const currencyLabel = document.querySelector("#stat-value-currency-label");
   const btnUsd = document.querySelector("#btn-currency-usd");
   const btnInr = document.querySelector("#btn-currency-inr");
 
-  const metrics = customMetrics || state.cachedImpactMetrics || {
-    totalGear: liveGearInventory.length + adminHardwareQueue.length + 12,
-    totalValueUsd: liveGearInventory.reduce((sum, g) => sum + (g.estValueUsd || 350), 0) + 14250,
-    totalValueInr: liveGearInventory.reduce((sum, g) => sum + (g.estValueInr || 29000), 0) + 1180000,
-    totalRecipients: recipients.filter(r => r.status === "approved" || !r.status).length
+  const metrics = customMetrics || (typeof state !== "undefined" && state.cachedImpactMetrics) || {
+    totalGear: (typeof liveGearInventory !== "undefined" ? liveGearInventory.length : 11) + (typeof adminHardwareQueue !== "undefined" ? adminHardwareQueue.length : 3) + 12,
+    totalValueUsd: (typeof liveGearInventory !== "undefined" ? liveGearInventory.reduce((sum, g) => sum + (g.estValueUsd || 350), 0) : 5800) + 14250,
+    totalValueInr: (typeof liveGearInventory !== "undefined" ? liveGearInventory.reduce((sum, g) => sum + (g.estValueInr || 29000), 0) : 480000) + 1180000,
+    totalRecipients: (typeof recipients !== "undefined" ? recipients.filter(r => r.status === "approved" || !r.status).length : 8)
   };
 
   const currentGear = parseInt(gearEl?.textContent.replace(/[^0-9]/g, "") || "0", 10);
@@ -2871,7 +2913,7 @@ function updateLiveImpactCounters(customMetrics = null) {
   animateRollingCounter(recipientsEl, currentRecipients, metrics.totalRecipients, "", "");
 
   // Convert USD base total to currently selected global currency
-  const currCode = state.globalCurrency || "USD";
+  const currCode = (window.appState && window.appState.activeCurrency) || (typeof state !== "undefined" && state.globalCurrency) || "USD";
   const currMeta = SUPPORTED_CURRENCIES[currCode] || SUPPORTED_CURRENCIES.USD;
   const convertedTotal = convertCurrency(metrics.totalValueUsd, currCode);
   const targetVal = Math.round(convertedTotal);
@@ -2912,12 +2954,162 @@ async function initHeroImpactCounters() {
   const btnUsd = document.querySelector("#btn-currency-usd");
   const btnInr = document.querySelector("#btn-currency-inr");
   if (btnUsd && btnInr) {
-    btnUsd.onclick = () => setGlobalCurrency("USD");
-    btnInr.onclick = () => setGlobalCurrency("INR");
+    btnUsd.onclick = () => switchCurrency("USD");
+    btnInr.onclick = () => switchCurrency("INR");
   }
 }
 
-// ── Real-Time Forex API Fetch & Universal Sync ────────────────
+// ── Universal Real-Time UI Re-rendering Engine ────────────────
+function updateAllUIElements() {
+  const activeCurr = (window.appState && window.appState.activeCurrency) || (typeof state !== "undefined" && state.globalCurrency) || "USD";
+  const currMeta = SUPPORTED_CURRENCIES[activeCurr] || SUPPORTED_CURRENCIES.USD;
+
+  // 1. Recalculate & re-render Hero section metrics (#statMonetaryValue and #stat-total-value)
+  const valEl = document.querySelector("#statMonetaryValue") || document.querySelector("#stat-total-value");
+  const currencyLabel = document.querySelector("#stat-value-currency-label");
+  const btnUsd = document.querySelector("#btn-currency-usd");
+  const btnInr = document.querySelector("#btn-currency-inr");
+
+  const metrics = (typeof state !== "undefined" && state.cachedImpactMetrics) || {
+    totalGear: (typeof liveGearInventory !== "undefined" ? liveGearInventory.length : 11) + (typeof adminHardwareQueue !== "undefined" ? adminHardwareQueue.length : 3) + 12,
+    totalValueUsd: (typeof liveGearInventory !== "undefined" ? liveGearInventory.reduce((sum, g) => sum + (g.estValueUsd || 350), 0) : 5800) + 14250,
+    totalRecipients: (typeof recipients !== "undefined" ? recipients.filter(r => r.status === "approved" || !r.status).length : 8)
+  };
+
+  if (valEl) {
+    const convertedTotal = convertCurrency(metrics.totalValueUsd, activeCurr);
+    const targetVal = Math.round(convertedTotal);
+    const prefix = currMeta.symbol;
+    const suffix = ` ${currMeta.code}`;
+    const currentVal = parseInt(valEl.textContent.replace(/[^0-9]/g, "") || "0", 10);
+    if (typeof animateRollingCounter === "function") {
+      animateRollingCounter(valEl, currentVal, targetVal, prefix, suffix);
+    } else {
+      valEl.textContent = `${prefix}${targetVal.toLocaleString()}${suffix}`;
+    }
+  }
+
+  if (currencyLabel) {
+    currencyLabel.textContent = `${currMeta.code} (${currMeta.name}) value circulated`;
+  }
+
+  if (btnUsd && btnInr) {
+    btnUsd.classList.toggle("active", activeCurr === "USD");
+    btnInr.classList.toggle("active", activeCurr === "INR");
+  }
+
+  // 2. Recalculate & re-render Leaflet Map Popups (.dynamic-currency-val)
+  document.querySelectorAll(".dynamic-currency-val").forEach(el => {
+    const usd = parseFloat(el.getAttribute("data-usd-value") || el.dataset.usdValue) || 0;
+    el.textContent = formatValue(usd, activeCurr);
+  });
+
+  // Dynamically update popup contents for all cached map markers
+  if (typeof state !== "undefined" && state.allMapNodes) {
+    state.allMapNodes.forEach(node => {
+      if (node.type === "gear_avail" && node.raw && node.raw.estValueUsd && node.marker) {
+        const updatedPopup = `
+          <div style="min-width: 240px;">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="badge bg-success text-white fw-bold">⚡ Available</span>
+              <span class="badge bg-dark font-mono text-cyan dynamic-currency-val" data-usd-value="${node.raw.estValueUsd}" style="font-size:0.65rem;">${escapeHtml(formatValue(node.raw.estValueUsd, activeCurr))}</span>
+            </div>
+            <h6 class="mb-1 text-white">${escapeHtml(node.raw.title)}</h6>
+            <p class="mb-1 text-muted small font-mono">📍 ${escapeHtml(node.raw.hubName || node.raw.address)}</p>
+            
+            <div class="p-2 my-2 rounded bg-black border border-secondary text-center">
+              <div class="small text-muted font-mono" style="font-size:0.7rem;">CLAIM CODE / QR PASS</div>
+              <div class="fw-bold text-cyan font-mono fs-6 my-1">${escapeHtml(node.raw.claimCode)}</div>
+              <img src="${escapeHtml(node.raw.qrCodeUrl)}" alt="Claim QR Code" width="85" height="85" class="rounded border border-secondary">
+            </div>
+
+            <button type="button" class="btn btn-neon btn-sm w-100" onclick="openClaimModalWithCode('${escapeHtml(node.raw.claimCode)}')">
+              🔑 Claim This Item
+            </button>
+          </div>
+        `;
+        node.marker.setPopupContent(updatedPopup);
+      }
+    });
+  }
+
+  // 3. Recalculate & re-render Universal Currency Converter Tool
+  const convTo = document.querySelector("#converter-to-currency");
+  if (convTo && convTo.value !== activeCurr) {
+    convTo.value = activeCurr;
+  }
+  if (typeof updateConverterCalculation === "function") {
+    updateConverterCalculation();
+  }
+
+  // 4. Update Admin Ledger Table if active
+  if (typeof renderAdminDonationsTable === "function") {
+    renderAdminDonationsTable();
+  }
+
+  // 5. Update Map and Recipient Region Filter Badges
+  const activeReg = (window.appState && window.appState.activeRegion) || (typeof state !== "undefined" && state.selectedRegion) || "GLOBAL";
+  const regPreset = REGION_PRESETS[activeReg] || REGION_PRESETS.GLOBAL;
+  const mapRegionBadge = document.querySelector("#map-region-filter-badge");
+  if (mapRegionBadge) mapRegionBadge.textContent = regPreset.badgeText;
+  const recRegionBadge = document.querySelector("#recipient-region-filter-badge");
+  if (recRegionBadge) recRegionBadge.textContent = regPreset.badgeText;
+}
+window.updateAllUIElements = updateAllUIElements;
+
+// ── Live Currency Rate & Universal Switching Engine ───────────
+function switchCurrency(currencyCode) {
+  if (!currencyCode) return;
+  const code = String(currencyCode).toUpperCase().trim();
+  if (!SUPPORTED_CURRENCIES[code]) {
+    console.warn(`Unsupported currency code: ${currencyCode}`);
+    return;
+  }
+
+  // 1. Centralized State Synchronization
+  if (!window.appState) {
+    window.appState = { activeRegion: 'GLOBAL', activeCurrency: 'USD' };
+  }
+  window.appState.activeCurrency = code;
+  if (typeof state !== "undefined") {
+    state.globalCurrency = code;
+    state.impactCurrency = code === "INR" ? "INR" : "USD";
+  }
+
+  // 2. Persist in local storage
+  try {
+    localStorage.setItem("lootforward_currency", code);
+  } catch (e) {}
+
+  // 3. Update Navbar currency dropdown trigger
+  const meta = SUPPORTED_CURRENCIES[code];
+  const flagEl = document.querySelector("#current-currency-flag");
+  const codeEl = document.querySelector("#current-currency-code");
+  const symbolEl = document.querySelector("#current-currency-symbol");
+
+  if (flagEl) flagEl.textContent = meta.flag;
+  if (codeEl) codeEl.textContent = meta.code;
+  if (symbolEl) symbolEl.textContent = `(${meta.symbol})`;
+
+  // 4. Update dropdown active states
+  document.querySelectorAll(".currency-dropdown-item").forEach(item => {
+    item.classList.toggle("active", item.dataset.currency === code);
+  });
+
+  // 5. Instantly execute real-time UI re-rendering
+  updateAllUIElements();
+}
+window.switchCurrency = switchCurrency;
+
+function setGlobalCurrency(currencyCode) {
+  switchCurrency(currencyCode);
+}
+
+function syncUniversalCurrency(currencyCode) {
+  updateAllUIElements();
+}
+
+// ── Real-Time Forex API Fetch Engine ──────────────────────────
 async function fetchLiveExchangeRates() {
   const statusEl = document.querySelector("#fx-market-status");
   const badgeEl = document.querySelector("#fx-last-updated-badge");
@@ -2928,70 +3120,27 @@ async function fetchLiveExchangeRates() {
     const data = await res.json();
 
     if (data && data.rates) {
+      if (!window.appState.exchangeRates) window.appState.exchangeRates = { ...FALLBACK_EXCHANGE_RATES };
       Object.keys(SUPPORTED_CURRENCIES).forEach(code => {
         if (data.rates[code]) {
-          state.exchangeRates[code] = data.rates[code];
+          window.appState.exchangeRates[code] = data.rates[code];
         }
       });
-      state.fxLastUpdated = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      window.appState.fxLastUpdated = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
       if (statusEl) statusEl.textContent = "Live Market Rates: Active (Zero Spread)";
-      if (badgeEl) badgeEl.textContent = `Synced ${state.fxLastUpdated}`;
+      if (badgeEl) badgeEl.textContent = `Synced ${window.appState.fxLastUpdated}`;
     }
   } catch (err) {
     console.warn("Forex API fetch notice, using calibrated offline rates:", err.message);
-    state.exchangeRates = { ...FALLBACK_EXCHANGE_RATES };
+    window.appState.exchangeRates = { ...FALLBACK_EXCHANGE_RATES };
     if (statusEl) statusEl.textContent = "Market Rates: Calibrated Institutional";
     if (badgeEl) badgeEl.textContent = "Cached Feed";
   }
 
-  updateConverterCalculation();
-  updateLiveImpactCounters();
+  updateAllUIElements();
 }
-
-function setGlobalCurrency(currencyCode) {
-  if (!SUPPORTED_CURRENCIES[currencyCode]) return;
-  state.globalCurrency = currencyCode;
-  state.impactCurrency = currencyCode === "INR" ? "INR" : "USD";
-
-  try {
-    localStorage.setItem("lootforward_currency", currencyCode);
-  } catch (e) {}
-
-  // Update Navbar dropdown trigger button
-  const meta = SUPPORTED_CURRENCIES[currencyCode];
-  const flagEl = document.querySelector("#current-currency-flag");
-  const codeEl = document.querySelector("#current-currency-code");
-  const symbolEl = document.querySelector("#current-currency-symbol");
-
-  if (flagEl) flagEl.textContent = meta.flag;
-  if (codeEl) codeEl.textContent = meta.code;
-  if (symbolEl) symbolEl.textContent = `(${meta.symbol})`;
-
-  // Update active item in dropdown
-  const items = document.querySelectorAll(".currency-dropdown-item");
-  items.forEach(item => {
-    item.classList.toggle("active", item.dataset.currency === currencyCode);
-  });
-
-  // Universal Real-Time UI Synchronization
-  syncUniversalCurrency(currencyCode);
-}
-
-function syncUniversalCurrency(currencyCode) {
-  updateLiveImpactCounters();
-  rebuildAllMapNodes();
-
-  if (typeof renderAdminDonationsTable === "function") {
-    renderAdminDonationsTable();
-  }
-
-  const convTo = document.querySelector("#converter-to-currency");
-  if (convTo && convTo.value !== currencyCode) {
-    convTo.value = currencyCode;
-    updateConverterCalculation();
-  }
-}
+window.fetchLiveExchangeRates = fetchLiveExchangeRates;
 
 function updateConverterCalculation() {
   const fromAmountInput = document.querySelector("#converter-from-amount");
@@ -3096,81 +3245,112 @@ function initGlobalCurrencyDropdown() {
 // REGIONAL MULTI-COUNTRY LOCALIZATION & FILTERING (i18n)
 // ═══════════════════════════════════════════════════════════════
 
-function setGlobalRegion(regionCode, skipMapFly = false) {
-  const preset = REGION_PRESETS[regionCode] || REGION_PRESETS.GLOBAL;
-  state.selectedRegion = preset.code;
+const REGION_KEY_MAP = {
+  GLOBAL: "GLOBAL", WORLD: "GLOBAL", ALL: "GLOBAL",
+  IN: "IN", INDIA: "IN",
+  US: "US", USA: "US", "UNITED STATES": "US",
+  GB: "GB", UK: "GB", "UNITED KINGDOM": "GB",
+  EU: "EU", EUROPE: "EU",
+  CA: "CA", CANADA: "CA",
+  AU: "AU", AUSTRALIA: "AU"
+};
 
+function switchRegion(regionKey) {
+  if (!regionKey) return;
+  const normalized = String(regionKey).toUpperCase().trim();
+  const canonicalCode = REGION_KEY_MAP[normalized] || (REGION_PRESETS[normalized] ? normalized : "GLOBAL");
+  const preset = REGION_PRESETS[canonicalCode] || REGION_PRESETS.GLOBAL;
+
+  // 1. Centralized Global State Synchronization
+  if (!window.appState) {
+    window.appState = { activeRegion: 'GLOBAL', activeCurrency: 'USD' };
+  }
+  window.appState.activeRegion = preset.code;
+  if (typeof state !== "undefined") {
+    state.selectedRegion = preset.code;
+  }
+
+  // 2. Persist selection
   try {
     localStorage.setItem("lootforward_region", preset.code);
   } catch (e) {}
 
-  // 1. Update Navbar trigger button
+  // 3. Dynamically re-center and zoom the Leaflet map instance (map.setView([lat, lng], zoom))
+  if (typeof state !== "undefined" && state.maps && state.maps.dropMap) {
+    try {
+      state.maps.dropMap.setView(preset.center, preset.zoom);
+    } catch (e) {
+      console.warn("Leaflet setView notice:", e.message);
+    }
+  }
+
+  // 4. Automatically update the region dropdown label
   const flagEl = document.querySelector("#current-region-flag");
   const nameEl = document.querySelector("#current-region-name");
   if (flagEl) flagEl.textContent = preset.flag;
   if (nameEl) nameEl.textContent = preset.name.split("/")[0].trim();
 
-  // 2. Update active status in dropdown menu
   document.querySelectorAll(".region-dropdown-item").forEach(item => {
     item.classList.toggle("active", item.dataset.region === preset.code);
   });
 
-  // 3. Automated Regional Preset Sync: Currency & Coordinates
-  if (preset.code !== "GLOBAL") {
-    // Synchronize default currency if different from current
-    if (preset.currency && state.globalCurrency !== preset.currency) {
-      setGlobalCurrency(preset.currency);
-    }
-    // Fly Leaflet map to region center
-    if (!skipMapFly && state.maps?.dropMap) {
-      state.maps.dropMap.flyTo(preset.center, preset.zoom, { duration: 1.5 });
-    }
-  } else {
-    // Global mode: zoom out to worldwide view
-    if (!skipMapFly && state.maps?.dropMap) {
-      state.maps.dropMap.flyTo(preset.center, preset.zoom, { duration: 1.2 });
-    }
-  }
-
-  // 4. Update Header Badges
+  // 5. Update header badges
   const mapRegionBadge = document.querySelector("#map-region-filter-badge");
   if (mapRegionBadge) mapRegionBadge.textContent = preset.badgeText;
 
   const recRegionBadge = document.querySelector("#recipient-region-filter-badge");
   if (recRegionBadge) recRegionBadge.textContent = preset.badgeText;
 
-  // 5. Filter Map Markers & Recipient Directory
-  applyMapFilters();
-  renderRecipients();
+  // 6. Filter map markers & recipient directory
+  if (typeof applyMapFilters === "function") applyMapFilters();
+  if (typeof renderRecipients === "function") renderRecipients();
 
-  showToast(`${preset.flag} Region active: ${preset.name} (${preset.currency})`, "info", 3500);
+  // 7. Automatically update default currency to match selected country/region
+  if (preset.currency) {
+    switchCurrency(preset.currency);
+  } else {
+    updateAllUIElements();
+  }
+
+  if (typeof showToast === "function") {
+    showToast(`${preset.flag} Region active: ${preset.name} (${preset.currency || 'USD'})`, "info", 3500);
+  }
+}
+window.switchRegion = switchRegion;
+
+function setGlobalRegion(regionCode, skipMapFly = false) {
+  switchRegion(regionCode);
 }
 
 function initRegionSelectorDropdown() {
   const menu = document.querySelector("#region-dropdown-menu");
   if (!menu) return;
 
-  menu.innerHTML = Object.values(REGION_PRESETS).map(r => `
-    <li>
-      <button type="button" class="dropdown-item region-dropdown-item ${r.code === state.selectedRegion ? 'active' : ''}" 
-              data-region="${r.code}">
-        <span class="d-flex align-items-center gap-2">
-          <span class="region-flag-icon">${r.flag}</span>
-          <span class="fw-bold text-white">${r.name}</span>
-        </span>
-        <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">${r.currency}</span>
-      </button>
-    </li>
-  `).join("");
+  // If menu is empty, populate dynamically; otherwise wire existing items
+  if (!menu.children.length) {
+    menu.innerHTML = Object.values(REGION_PRESETS).map(r => `
+      <li>
+        <button type="button" class="dropdown-item region-dropdown-item ${r.code === ((window.appState && window.appState.activeRegion) || 'GLOBAL') ? 'active' : ''}" 
+                data-region="${r.code}" onclick="switchRegion('${r.code}')">
+          <span class="d-flex align-items-center gap-2">
+            <span class="region-flag-icon">${r.flag}</span>
+            <span class="fw-bold text-white">${r.name}</span>
+          </span>
+          <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">${r.currency}</span>
+        </button>
+      </li>
+    `).join("");
+  }
 
   menu.querySelectorAll(".region-dropdown-item").forEach(btn => {
     btn.addEventListener("click", () => {
       const code = btn.dataset.region;
-      if (code) setGlobalRegion(code);
+      if (code) switchRegion(code);
     });
   });
 
-  const preset = REGION_PRESETS[state.selectedRegion] || REGION_PRESETS.GLOBAL;
+  const activeReg = (window.appState && window.appState.activeRegion) || (typeof state !== "undefined" && state.selectedRegion) || "GLOBAL";
+  const preset = REGION_PRESETS[activeReg] || REGION_PRESETS.GLOBAL;
   const flagEl = document.querySelector("#current-region-flag");
   const nameEl = document.querySelector("#current-region-name");
   if (flagEl) flagEl.textContent = preset.flag;

@@ -81,12 +81,74 @@
           <li class="nav-item dropdown ms-lg-2 my-2 my-lg-0" id="nav-region-selector-item">
             <button type="button" class="btn btn-outline-neon btn-sm dropdown-toggle d-inline-flex align-items-center gap-1 font-mono"
               id="globalRegionDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Filter by Country / Region">
-              <span id="current-region-flag">🌍</span>
+              <span id="current-region-flag">🌐</span>
               <span id="current-region-name" class="fw-bold">Global</span>
             </button>
             <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary p-1 font-mono shadow-lg region-dropdown-list" 
                 aria-labelledby="globalRegionDropdown" id="region-dropdown-menu" style="min-width: 220px;">
-              <!-- Populated dynamically: Global, India, USA, UK, EU, Canada, Australia -->
+              <li>
+                <button type="button" class="dropdown-item region-dropdown-item active" data-region="GLOBAL" onclick="switchRegion('GLOBAL')">
+                  <span class="d-flex align-items-center gap-2">
+                    <span class="region-flag-icon">🌐</span>
+                    <span class="fw-bold text-white">Global</span>
+                  </span>
+                  <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">USD</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item region-dropdown-item" data-region="IN" onclick="switchRegion('IN')">
+                  <span class="d-flex align-items-center gap-2">
+                    <span class="region-flag-icon">🇮🇳</span>
+                    <span class="fw-bold text-white">India</span>
+                  </span>
+                  <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">INR</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item region-dropdown-item" data-region="US" onclick="switchRegion('US')">
+                  <span class="d-flex align-items-center gap-2">
+                    <span class="region-flag-icon">🇺🇸</span>
+                    <span class="fw-bold text-white">USA</span>
+                  </span>
+                  <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">USD</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item region-dropdown-item" data-region="GB" onclick="switchRegion('GB')">
+                  <span class="d-flex align-items-center gap-2">
+                    <span class="region-flag-icon">🇬🇧</span>
+                    <span class="fw-bold text-white">UK</span>
+                  </span>
+                  <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">GBP</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item region-dropdown-item" data-region="EU" onclick="switchRegion('EU')">
+                  <span class="d-flex align-items-center gap-2">
+                    <span class="region-flag-icon">🇪🇺</span>
+                    <span class="fw-bold text-white">EU</span>
+                  </span>
+                  <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">EUR</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item region-dropdown-item" data-region="CA" onclick="switchRegion('CA')">
+                  <span class="d-flex align-items-center gap-2">
+                    <span class="region-flag-icon">🇨🇦</span>
+                    <span class="fw-bold text-white">Canada</span>
+                  </span>
+                  <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">CAD</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item region-dropdown-item" data-region="AU" onclick="switchRegion('AU')">
+                  <span class="d-flex align-items-center gap-2">
+                    <span class="region-flag-icon">🇦🇺</span>
+                    <span class="fw-bold text-white">Australia</span>
+                  </span>
+                  <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">AUD</span>
+                </button>
+              </li>
             </ul>
           </li>
           <!-- Global Multi-Currency Selector Dropdown (10 Global Currencies) -->
@@ -99,7 +161,106 @@
             </button>
             <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary p-1 font-mono shadow-lg currency-dropdown-list" 
                 aria-labelledby="globalCurrencyDropdown" id="currency-dropdown-menu" style="min-width: 190px;">
-              <!-- Populated dynamically: USD, EUR, GBP, INR, JPY, CAD, AUD, CHF, SGD, AED -->
+              <li>
+                <button type="button" class="dropdown-item currency-dropdown-item active" data-currency="USD" onclick="switchCurrency('USD')">
+                  <span class="d-flex align-items-center gap-2">
+                    <span class="currency-flag-icon">🇺🇸</span>
+                    <span class="fw-bold text-white">USD</span>
+                    <span class="text-muted small">US Dollar</span>
+                  </span>
+                  <span class="text-cyan font-mono ms-2 fw-bold">$</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="INR" onclick="switchCurrency('INR')">
+                  <span class="d-flex align-items-center gap-2">
+                    <span class="currency-flag-icon">🇮🇳</span>
+                    <span class="fw-bold text-white">INR</span>
+                    <span class="text-muted small">Indian Rupee</span>
+                  </span>
+                  <span class="text-cyan font-mono ms-2 fw-bold">₹</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="EUR" onclick="switchCurrency('EUR')">
+                  <span class="d-flex align-items-center gap-2">
+                    <span class="currency-flag-icon">🇪🇺</span>
+                    <span class="fw-bold text-white">EUR</span>
+                    <span class="text-muted small">Euro</span>
+                  </span>
+                  <span class="text-cyan font-mono ms-2 fw-bold">€</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="GBP" onclick="switchCurrency('GBP')">
+                  <span class="d-flex align-items-center gap-2">
+                    <span class="currency-flag-icon">🇬🇧</span>
+                    <span class="fw-bold text-white">GBP</span>
+                    <span class="text-muted small">British Pound</span>
+                  </span>
+                  <span class="text-cyan font-mono ms-2 fw-bold">£</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="JPY" onclick="switchCurrency('JPY')">
+                  <span class="d-flex align-items-center gap-2">
+                    <span class="currency-flag-icon">🇯🇵</span>
+                    <span class="fw-bold text-white">JPY</span>
+                    <span class="text-muted small">Japanese Yen</span>
+                  </span>
+                  <span class="text-cyan font-mono ms-2 fw-bold">¥</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="CAD" onclick="switchCurrency('CAD')">
+                  <span class="d-flex align-items-center gap-2">
+                    <span class="currency-flag-icon">🇨🇦</span>
+                    <span class="fw-bold text-white">CAD</span>
+                    <span class="text-muted small">Canadian Dollar</span>
+                  </span>
+                  <span class="text-cyan font-mono ms-2 fw-bold">CA$</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="AUD" onclick="switchCurrency('AUD')">
+                  <span class="d-flex align-items-center gap-2">
+                    <span class="currency-flag-icon">🇦🇺</span>
+                    <span class="fw-bold text-white">AUD</span>
+                    <span class="text-muted small">Australian Dollar</span>
+                  </span>
+                  <span class="text-cyan font-mono ms-2 fw-bold">A$</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="CHF" onclick="switchCurrency('CHF')">
+                  <span class="d-flex align-items-center gap-2">
+                    <span class="currency-flag-icon">🇨🇭</span>
+                    <span class="fw-bold text-white">CHF</span>
+                    <span class="text-muted small">Swiss Franc</span>
+                  </span>
+                  <span class="text-cyan font-mono ms-2 fw-bold">CHF</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="SGD" onclick="switchCurrency('SGD')">
+                  <span class="d-flex align-items-center gap-2">
+                    <span class="currency-flag-icon">🇸🇬</span>
+                    <span class="fw-bold text-white">SGD</span>
+                    <span class="text-muted small">Singapore Dollar</span>
+                  </span>
+                  <span class="text-cyan font-mono ms-2 fw-bold">S$</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="AED" onclick="switchCurrency('AED')">
+                  <span class="d-flex align-items-center gap-2">
+                    <span class="currency-flag-icon">🇦🇪</span>
+                    <span class="fw-bold text-white">AED</span>
+                    <span class="text-muted small">UAE Dirham</span>
+                  </span>
+                  <span class="text-cyan font-mono ms-2 fw-bold">AED</span>
+                </button>
+              </li>
             </ul>
           </li>
           <!-- Auth Navigation Controls -->
@@ -211,7 +372,7 @@
                 </div>
               </div>
               <div class="d-flex align-items-baseline gap-2">
-                <strong class="stat-value text-neon counter-rolling" id="stat-total-value">$0</strong>
+                <strong class="stat-value text-neon counter-rolling" id="statMonetaryValue" data-alt-id="stat-total-value">$0</strong>
                 <span class="text-white-50 small font-mono" id="stat-value-currency-label">circulated</span>
               </div>
               <span class="stat-note mt-2">Combined hardware value and donor funding kept in active play</span>
