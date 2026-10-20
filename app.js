@@ -24,6 +24,16 @@ window.appState = {
   fxLastUpdated: null
 };
 
+// Immediate early window bindings to guarantee inline event handler availability
+window.switchRegion = window.switchRegion || function(key) {
+  if (window._actualSwitchRegion) return window._actualSwitchRegion(key);
+  if (window.appState) window.appState.activeRegion = key;
+};
+window.switchCurrency = window.switchCurrency || function(code) {
+  if (window._actualSwitchCurrency) return window._actualSwitchCurrency(code);
+  if (window.appState) window.appState.activeCurrency = code;
+};
+
 const DEMO_ADMIN_PASS = "LOOTFORWARD2026";
 
 // ── Firebase Cloud Function endpoints (with Vercel reverse-proxy support) ───
@@ -794,8 +804,8 @@ function formatCompactMoney(amountInUsd, currencyCode = (window.appState ? windo
   return formatValue(amountInUsd, currencyCode);
 }
 
-// ── Regional Multi-Country Localization Presets (i18n) ───────
-const REGION_PRESETS = {
+// ── Regional Multi-Country Localization Presets & Coordinates (i18n) ─
+const REGION_COORDINATES = {
   GLOBAL: {
     code: "GLOBAL",
     name: "Global / All",
@@ -805,8 +815,9 @@ const REGION_PRESETS = {
     zoom: 2,
     badgeText: "🌐 Region: Global"
   },
-  IN: {
-    code: "IN",
+  INDIA: {
+    code: "INDIA",
+    iso: "IN",
     name: "India",
     flag: "🇮🇳",
     currency: "INR",
@@ -814,8 +825,9 @@ const REGION_PRESETS = {
     zoom: 5,
     badgeText: "🇮🇳 Region: India"
   },
-  US: {
-    code: "US",
+  USA: {
+    code: "USA",
+    iso: "US",
     name: "United States",
     flag: "🇺🇸",
     currency: "USD",
@@ -823,8 +835,9 @@ const REGION_PRESETS = {
     zoom: 4,
     badgeText: "🇺🇸 Region: USA"
   },
-  GB: {
-    code: "GB",
+  UK: {
+    code: "UK",
+    iso: "GB",
     name: "United Kingdom",
     flag: "🇬🇧",
     currency: "GBP",
@@ -834,6 +847,7 @@ const REGION_PRESETS = {
   },
   EU: {
     code: "EU",
+    iso: "EU",
     name: "European Union",
     flag: "🇪🇺",
     currency: "EUR",
@@ -841,8 +855,9 @@ const REGION_PRESETS = {
     zoom: 4,
     badgeText: "🇪🇺 Region: EU"
   },
-  CA: {
-    code: "CA",
+  CANADA: {
+    code: "CANADA",
+    iso: "CA",
     name: "Canada",
     flag: "🇨🇦",
     currency: "CAD",
@@ -850,8 +865,9 @@ const REGION_PRESETS = {
     zoom: 4,
     badgeText: "🇨🇦 Region: Canada"
   },
-  AU: {
-    code: "AU",
+  AUS: {
+    code: "AUS",
+    iso: "AU",
     name: "Australia",
     flag: "🇦🇺",
     currency: "AUD",
@@ -860,6 +876,16 @@ const REGION_PRESETS = {
     badgeText: "🇦🇺 Region: Australia"
   }
 };
+
+// Aliases for 2-letter ISO and canonical keys
+REGION_COORDINATES.IN = REGION_COORDINATES.INDIA;
+REGION_COORDINATES.US = REGION_COORDINATES.USA;
+REGION_COORDINATES.GB = REGION_COORDINATES.UK;
+REGION_COORDINATES.CA = REGION_COORDINATES.CANADA;
+REGION_COORDINATES.AU = REGION_COORDINATES.AUS;
+REGION_COORDINATES.AUSTRALIA = REGION_COORDINATES.AUS;
+
+const REGION_PRESETS = REGION_COORDINATES;
 
 const state = {
   currentPage: "about",
@@ -1026,8 +1052,10 @@ function renderRecipients() {
   let filtered = approvedList.filter((r) => {
     // Region filter
     if (currentRegion !== "GLOBAL") {
+      const preset = REGION_PRESETS[currentRegion];
+      const iso = preset?.iso || currentRegion;
       const itemCountry = r.countryCode || "US";
-      if (itemCountry !== currentRegion) return false;
+      if (itemCountry !== iso && itemCountry !== currentRegion) return false;
     }
     // Category filter
     if (categoryFilter !== "all") {
@@ -2792,7 +2820,9 @@ function applyMapFilters() {
 
     let regionMatches = true;
     if (region !== "GLOBAL") {
-      regionMatches = (node.countryCode === region);
+      const preset = REGION_PRESETS[region];
+      const iso = preset?.iso || region;
+      regionMatches = (node.countryCode === iso || node.countryCode === region);
     }
 
     const shouldShow = layerEnabled && categoryMatches && searchMatches && regionMatches;
@@ -3058,7 +3088,7 @@ function updateAllUIElements() {
 window.updateAllUIElements = updateAllUIElements;
 
 // ── Live Currency Rate & Universal Switching Engine ───────────
-function switchCurrency(currencyCode) {
+window.switchCurrency = function switchCurrency(currencyCode) {
   if (!currencyCode) return;
   const code = String(currencyCode).toUpperCase().trim();
   if (!SUPPORTED_CURRENCIES[code]) {
@@ -3097,16 +3127,24 @@ function switchCurrency(currencyCode) {
   });
 
   // 5. Instantly execute real-time UI re-rendering
-  updateAllUIElements();
+  if (typeof updateAllUIElements === "function") {
+    updateAllUIElements();
+  }
+};
+window._actualSwitchCurrency = window.switchCurrency;
+
+function switchCurrency(currencyCode) {
+  return window.switchCurrency(currencyCode);
 }
-window.switchCurrency = switchCurrency;
 
 function setGlobalCurrency(currencyCode) {
-  switchCurrency(currencyCode);
+  window.switchCurrency(currencyCode);
 }
 
 function syncUniversalCurrency(currencyCode) {
-  updateAllUIElements();
+  if (typeof updateAllUIElements === "function") {
+    updateAllUIElements();
+  }
 }
 
 // ── Real-Time Forex API Fetch Engine ──────────────────────────
@@ -3210,24 +3248,29 @@ function initGlobalCurrencyDropdown() {
   const menu = document.querySelector("#currency-dropdown-menu");
   if (!menu) return;
 
-  menu.innerHTML = Object.values(SUPPORTED_CURRENCIES).map(c => `
-    <li>
-      <button type="button" class="dropdown-item currency-dropdown-item ${c.code === state.globalCurrency ? 'active' : ''}" 
-              data-currency="${c.code}">
-        <span class="d-flex align-items-center gap-2">
-          <span class="currency-flag-icon">${c.flag}</span>
-          <span class="fw-bold text-white">${c.code}</span>
-          <span class="text-muted small">${c.name}</span>
-        </span>
-        <span class="text-cyan font-mono ms-2 fw-bold">${c.symbol}</span>
-      </button>
-    </li>
-  `).join("");
+  const currentCurrency = (window.appState && window.appState.activeCurrency) || (typeof state !== "undefined" && state.globalCurrency) || "USD";
+
+  if (!menu.children.length) {
+    menu.innerHTML = Object.values(SUPPORTED_CURRENCIES).map(c => `
+      <li>
+        <button type="button" class="dropdown-item currency-dropdown-item ${c.code === currentCurrency ? 'active' : ''}" 
+                data-currency="${c.code}" onclick="window.switchCurrency('${c.code}'); return false;">
+          <span class="d-flex align-items-center gap-2">
+            <span class="currency-flag-icon">${c.flag}</span>
+            <span class="fw-bold text-white">${c.code}</span>
+            <span class="text-muted small">${c.name}</span>
+          </span>
+          <span class="text-cyan font-mono ms-2 fw-bold">${c.symbol}</span>
+        </button>
+      </li>
+    `).join("");
+  }
 
   menu.querySelectorAll(".currency-dropdown-item").forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
       const code = btn.dataset.currency;
-      if (code) setGlobalCurrency(code);
+      if (code) window.switchCurrency(code);
     });
   });
 
@@ -3247,15 +3290,15 @@ function initGlobalCurrencyDropdown() {
 
 const REGION_KEY_MAP = {
   GLOBAL: "GLOBAL", WORLD: "GLOBAL", ALL: "GLOBAL",
-  IN: "IN", INDIA: "IN",
-  US: "US", USA: "US", "UNITED STATES": "US",
-  GB: "GB", UK: "GB", "UNITED KINGDOM": "GB",
+  INDIA: "INDIA", IN: "INDIA",
+  USA: "USA", US: "USA", "UNITED STATES": "USA",
+  UK: "UK", GB: "UK", "UNITED KINGDOM": "UK",
   EU: "EU", EUROPE: "EU",
-  CA: "CA", CANADA: "CA",
-  AU: "AU", AUSTRALIA: "AU"
+  CANADA: "CANADA", CA: "CANADA",
+  AUS: "AUS", AU: "AUS", AUSTRALIA: "AUS"
 };
 
-function switchRegion(regionKey) {
+window.switchRegion = function switchRegion(regionKey) {
   if (!regionKey) return;
   const normalized = String(regionKey).toUpperCase().trim();
   const canonicalCode = REGION_KEY_MAP[normalized] || (REGION_PRESETS[normalized] ? normalized : "GLOBAL");
@@ -3275,10 +3318,11 @@ function switchRegion(regionKey) {
     localStorage.setItem("lootforward_region", preset.code);
   } catch (e) {}
 
-  // 3. Dynamically re-center and zoom the Leaflet map instance (map.setView([lat, lng], zoom))
-  if (typeof state !== "undefined" && state.maps && state.maps.dropMap) {
+  // 3. Dynamically re-center and zoom Leaflet map instance (window.map.setView([lat, lng], zoom))
+  const mapInstance = window.map || (typeof state !== "undefined" && state.maps && state.maps.dropMap);
+  if (mapInstance && typeof mapInstance.setView === "function") {
     try {
-      state.maps.dropMap.setView(preset.center, preset.zoom);
+      mapInstance.setView(preset.center, preset.zoom);
     } catch (e) {
       console.warn("Leaflet setView notice:", e.message);
     }
@@ -3291,7 +3335,8 @@ function switchRegion(regionKey) {
   if (nameEl) nameEl.textContent = preset.name.split("/")[0].trim();
 
   document.querySelectorAll(".region-dropdown-item").forEach(item => {
-    item.classList.toggle("active", item.dataset.region === preset.code);
+    const itemReg = (item.dataset.region || "").toUpperCase();
+    item.classList.toggle("active", itemReg === preset.code || itemReg === preset.iso);
   });
 
   // 5. Update header badges
@@ -3305,21 +3350,25 @@ function switchRegion(regionKey) {
   if (typeof applyMapFilters === "function") applyMapFilters();
   if (typeof renderRecipients === "function") renderRecipients();
 
-  // 7. Automatically update default currency to match selected country/region
+  // 7. Auto-sync default region currency when a region is clicked
   if (preset.currency) {
-    switchCurrency(preset.currency);
+    window.switchCurrency(preset.currency);
   } else {
-    updateAllUIElements();
+    if (typeof updateAllUIElements === "function") updateAllUIElements();
   }
 
   if (typeof showToast === "function") {
     showToast(`${preset.flag} Region active: ${preset.name} (${preset.currency || 'USD'})`, "info", 3500);
   }
+};
+window._actualSwitchRegion = window.switchRegion;
+
+function switchRegion(regionKey) {
+  return window.switchRegion(regionKey);
 }
-window.switchRegion = switchRegion;
 
 function setGlobalRegion(regionCode, skipMapFly = false) {
-  switchRegion(regionCode);
+  window.switchRegion(regionCode);
 }
 
 function initRegionSelectorDropdown() {
@@ -3328,29 +3377,35 @@ function initRegionSelectorDropdown() {
 
   // If menu is empty, populate dynamically; otherwise wire existing items
   if (!menu.children.length) {
-    menu.innerHTML = Object.values(REGION_PRESETS).map(r => `
-      <li>
-        <button type="button" class="dropdown-item region-dropdown-item ${r.code === ((window.appState && window.appState.activeRegion) || 'GLOBAL') ? 'active' : ''}" 
-                data-region="${r.code}" onclick="switchRegion('${r.code}')">
-          <span class="d-flex align-items-center gap-2">
-            <span class="region-flag-icon">${r.flag}</span>
-            <span class="fw-bold text-white">${r.name}</span>
-          </span>
-          <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">${r.currency}</span>
-        </button>
-      </li>
-    `).join("");
+    const displayKeys = ["GLOBAL", "INDIA", "USA", "UK", "EU", "CANADA", "AUS"];
+    menu.innerHTML = displayKeys.map(k => {
+      const r = REGION_PRESETS[k];
+      return `
+        <li>
+          <button type="button" class="dropdown-item region-dropdown-item ${r.code === ((window.appState && window.appState.activeRegion) || 'GLOBAL') ? 'active' : ''}" 
+                  data-region="${r.code}" onclick="window.switchRegion('${r.code}'); return false;">
+            <span class="d-flex align-items-center gap-2">
+              <span class="region-flag-icon">${r.flag}</span>
+              <span class="fw-bold text-white">${r.name}</span>
+            </span>
+            <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">${r.currency}</span>
+          </button>
+        </li>
+      `;
+    }).join("");
   }
 
   menu.querySelectorAll(".region-dropdown-item").forEach(btn => {
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
       const code = btn.dataset.region;
-      if (code) switchRegion(code);
+      if (code) window.switchRegion(code);
     });
   });
 
   const activeReg = (window.appState && window.appState.activeRegion) || (typeof state !== "undefined" && state.selectedRegion) || "GLOBAL";
-  const preset = REGION_PRESETS[activeReg] || REGION_PRESETS.GLOBAL;
+  const canonicalActive = REGION_KEY_MAP[activeReg] || activeReg;
+  const preset = REGION_PRESETS[canonicalActive] || REGION_PRESETS.GLOBAL;
   const flagEl = document.querySelector("#current-region-flag");
   const nameEl = document.querySelector("#current-region-name");
   if (flagEl) flagEl.textContent = preset.flag;
@@ -3704,6 +3759,7 @@ function initLeafletMaps() {
 
       L.tileLayer(darkTileUrl, tileOptions).addTo(dropMap);
       state.maps.dropMap = dropMap;
+      window.map = dropMap;
 
       // Map click: drops pin & reverse geocodes
       dropMap.on("click", async (e) => {

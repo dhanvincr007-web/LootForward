@@ -31,6 +31,20 @@
 
   <!-- Custom Styles -->
   <link rel="stylesheet" href="styles.css?v=2.6">
+
+  <!-- Early Global Window Scope Binding for Region and Currency -->
+  <script>
+    window.switchRegion = window.switchRegion || function(key) {
+      if (window._actualSwitchRegion) return window._actualSwitchRegion(key);
+      if (window.appState) window.appState.activeRegion = key;
+      try { localStorage.setItem("lootforward_region", key); } catch(e){}
+    };
+    window.switchCurrency = window.switchCurrency || function(code) {
+      if (window._actualSwitchCurrency) return window._actualSwitchCurrency(code);
+      if (window.appState) window.appState.activeCurrency = code;
+      try { localStorage.setItem("lootforward_currency", code); } catch(e){}
+    };
+  </script>
 </head>
 
 <body>
@@ -87,7 +101,7 @@
             <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary p-1 font-mono shadow-lg region-dropdown-list" 
                 aria-labelledby="globalRegionDropdown" id="region-dropdown-menu" style="min-width: 220px;">
               <li>
-                <button type="button" class="dropdown-item region-dropdown-item active" data-region="GLOBAL" onclick="switchRegion('GLOBAL')">
+                <button type="button" class="dropdown-item region-dropdown-item active" data-region="GLOBAL" onclick="window.switchRegion('GLOBAL'); return false;">
                   <span class="d-flex align-items-center gap-2">
                     <span class="region-flag-icon">🌐</span>
                     <span class="fw-bold text-white">Global</span>
@@ -96,7 +110,7 @@
                 </button>
               </li>
               <li>
-                <button type="button" class="dropdown-item region-dropdown-item" data-region="IN" onclick="switchRegion('IN')">
+                <button type="button" class="dropdown-item region-dropdown-item" data-region="INDIA" onclick="window.switchRegion('INDIA'); return false;">
                   <span class="d-flex align-items-center gap-2">
                     <span class="region-flag-icon">🇮🇳</span>
                     <span class="fw-bold text-white">India</span>
@@ -105,7 +119,7 @@
                 </button>
               </li>
               <li>
-                <button type="button" class="dropdown-item region-dropdown-item" data-region="US" onclick="switchRegion('US')">
+                <button type="button" class="dropdown-item region-dropdown-item" data-region="USA" onclick="window.switchRegion('USA'); return false;">
                   <span class="d-flex align-items-center gap-2">
                     <span class="region-flag-icon">🇺🇸</span>
                     <span class="fw-bold text-white">USA</span>
@@ -114,7 +128,7 @@
                 </button>
               </li>
               <li>
-                <button type="button" class="dropdown-item region-dropdown-item" data-region="GB" onclick="switchRegion('GB')">
+                <button type="button" class="dropdown-item region-dropdown-item" data-region="UK" onclick="window.switchRegion('UK'); return false;">
                   <span class="d-flex align-items-center gap-2">
                     <span class="region-flag-icon">🇬🇧</span>
                     <span class="fw-bold text-white">UK</span>
@@ -123,7 +137,7 @@
                 </button>
               </li>
               <li>
-                <button type="button" class="dropdown-item region-dropdown-item" data-region="EU" onclick="switchRegion('EU')">
+                <button type="button" class="dropdown-item region-dropdown-item" data-region="EU" onclick="window.switchRegion('EU'); return false;">
                   <span class="d-flex align-items-center gap-2">
                     <span class="region-flag-icon">🇪🇺</span>
                     <span class="fw-bold text-white">EU</span>
@@ -132,7 +146,7 @@
                 </button>
               </li>
               <li>
-                <button type="button" class="dropdown-item region-dropdown-item" data-region="CA" onclick="switchRegion('CA')">
+                <button type="button" class="dropdown-item region-dropdown-item" data-region="CANADA" onclick="window.switchRegion('CANADA'); return false;">
                   <span class="d-flex align-items-center gap-2">
                     <span class="region-flag-icon">🇨🇦</span>
                     <span class="fw-bold text-white">Canada</span>
@@ -141,7 +155,7 @@
                 </button>
               </li>
               <li>
-                <button type="button" class="dropdown-item region-dropdown-item" data-region="AU" onclick="switchRegion('AU')">
+                <button type="button" class="dropdown-item region-dropdown-item" data-region="AUS" onclick="window.switchRegion('AUS'); return false;">
                   <span class="d-flex align-items-center gap-2">
                     <span class="region-flag-icon">🇦🇺</span>
                     <span class="fw-bold text-white">Australia</span>
@@ -162,7 +176,7 @@
             <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary p-1 font-mono shadow-lg currency-dropdown-list" 
                 aria-labelledby="globalCurrencyDropdown" id="currency-dropdown-menu" style="min-width: 190px;">
               <li>
-                <button type="button" class="dropdown-item currency-dropdown-item active" data-currency="USD" onclick="switchCurrency('USD')">
+                <button type="button" class="dropdown-item currency-dropdown-item active" data-currency="USD" onclick="window.switchCurrency('USD'); return false;">
                   <span class="d-flex align-items-center gap-2">
                     <span class="currency-flag-icon">🇺🇸</span>
                     <span class="fw-bold text-white">USD</span>
@@ -172,7 +186,7 @@
                 </button>
               </li>
               <li>
-                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="INR" onclick="switchCurrency('INR')">
+                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="INR" onclick="window.switchCurrency('INR'); return false;">
                   <span class="d-flex align-items-center gap-2">
                     <span class="currency-flag-icon">🇮🇳</span>
                     <span class="fw-bold text-white">INR</span>
@@ -182,7 +196,7 @@
                 </button>
               </li>
               <li>
-                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="EUR" onclick="switchCurrency('EUR')">
+                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="EUR" onclick="window.switchCurrency('EUR'); return false;">
                   <span class="d-flex align-items-center gap-2">
                     <span class="currency-flag-icon">🇪🇺</span>
                     <span class="fw-bold text-white">EUR</span>
@@ -192,7 +206,7 @@
                 </button>
               </li>
               <li>
-                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="GBP" onclick="switchCurrency('GBP')">
+                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="GBP" onclick="window.switchCurrency('GBP'); return false;">
                   <span class="d-flex align-items-center gap-2">
                     <span class="currency-flag-icon">🇬🇧</span>
                     <span class="fw-bold text-white">GBP</span>
@@ -202,7 +216,7 @@
                 </button>
               </li>
               <li>
-                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="JPY" onclick="switchCurrency('JPY')">
+                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="JPY" onclick="window.switchCurrency('JPY'); return false;">
                   <span class="d-flex align-items-center gap-2">
                     <span class="currency-flag-icon">🇯🇵</span>
                     <span class="fw-bold text-white">JPY</span>
@@ -212,7 +226,7 @@
                 </button>
               </li>
               <li>
-                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="CAD" onclick="switchCurrency('CAD')">
+                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="CAD" onclick="window.switchCurrency('CAD'); return false;">
                   <span class="d-flex align-items-center gap-2">
                     <span class="currency-flag-icon">🇨🇦</span>
                     <span class="fw-bold text-white">CAD</span>
@@ -222,7 +236,7 @@
                 </button>
               </li>
               <li>
-                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="AUD" onclick="switchCurrency('AUD')">
+                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="AUD" onclick="window.switchCurrency('AUD'); return false;">
                   <span class="d-flex align-items-center gap-2">
                     <span class="currency-flag-icon">🇦🇺</span>
                     <span class="fw-bold text-white">AUD</span>
@@ -232,7 +246,7 @@
                 </button>
               </li>
               <li>
-                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="CHF" onclick="switchCurrency('CHF')">
+                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="CHF" onclick="window.switchCurrency('CHF'); return false;">
                   <span class="d-flex align-items-center gap-2">
                     <span class="currency-flag-icon">🇨🇭</span>
                     <span class="fw-bold text-white">CHF</span>
@@ -242,7 +256,7 @@
                 </button>
               </li>
               <li>
-                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="SGD" onclick="switchCurrency('SGD')">
+                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="SGD" onclick="window.switchCurrency('SGD'); return false;">
                   <span class="d-flex align-items-center gap-2">
                     <span class="currency-flag-icon">🇸🇬</span>
                     <span class="fw-bold text-white">SGD</span>
@@ -252,7 +266,7 @@
                 </button>
               </li>
               <li>
-                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="AED" onclick="switchCurrency('AED')">
+                <button type="button" class="dropdown-item currency-dropdown-item" data-currency="AED" onclick="window.switchCurrency('AED'); return false;">
                   <span class="d-flex align-items-center gap-2">
                     <span class="currency-flag-icon">🇦🇪</span>
                     <span class="fw-bold text-white">AED</span>
