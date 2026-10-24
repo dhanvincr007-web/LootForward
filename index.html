@@ -32,7 +32,7 @@
   <!-- Custom Styles -->
   <link rel="stylesheet" href="styles.css?v=2.6">
 
-  <!-- Early Global Window Scope Binding for Region and Currency -->
+  <!-- Early Global Window Scope Binding for Region, Currency, and Language -->
   <script>
     window.switchRegion = window.switchRegion || function(key) {
       if (window._actualSwitchRegion) return window._actualSwitchRegion(key);
@@ -43,6 +43,10 @@
       if (window._actualSwitchCurrency) return window._actualSwitchCurrency(code);
       if (window.appState) window.appState.activeCurrency = code;
       try { localStorage.setItem("lootforward_currency", code); } catch(e){}
+    };
+    window.switchLanguage = window.switchLanguage || function(code) {
+      if (window._actualSwitchLanguage) return window._actualSwitchLanguage(code);
+      try { localStorage.setItem("preferred_language", code); } catch(e){}
     };
   </script>
 </head>
@@ -61,7 +65,7 @@
     <div class="container py-2">
       <a class="navbar-brand brand-mark" href="#about" data-route="about" aria-label="LootForward home">
         <span class="brand-icon" aria-hidden="true">LF</span>
-        <span>Loot<span>Forward</span></span>
+        <span data-i18n="navbarBrand">LootForward</span>
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
         aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,26 +73,295 @@
       </button>
       <div class="collapse navbar-collapse" id="mainNav">
         <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
-          <li class="nav-item"><a class="nav-link active" href="#about" data-route="about">About</a></li>
-          <li class="nav-item"><a class="nav-link" href="#donate" data-route="donate">The Drop</a></li>
-          <li class="nav-item"><a class="nav-link" href="#recipients" data-route="recipients">Recipients</a></li>
-          <li class="nav-item"><a class="nav-link" href="#tracking" data-route="tracking">Track</a></li>
+          <li class="nav-item"><a class="nav-link active" href="#about" data-route="about" data-i18n="navAbout">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#donate" data-route="donate" data-i18n="navDrop">The Drop</a></li>
+          <li class="nav-item"><a class="nav-link" href="#recipients" data-route="recipients" data-i18n="navRecipients">Recipients</a></li>
+          <li class="nav-item"><a class="nav-link" href="#tracking" data-route="tracking" data-i18n="navTrack">Track</a></li>
           <li class="nav-item" id="nav-admin-item" style="display:none">
             <a class="nav-link nav-admin-link" href="#admin" data-route="admin" id="adminDashboardBtn" title="Administrator Control Center">
               <span class="admin-nav-dot" aria-hidden="true"></span> Admin
             </a>
           </li>
-          <!-- Multi-Language Translator (120+ Languages) -->
-          <li class="nav-item lang-selector-nav-item ms-lg-2 my-2 my-lg-0">
-            <div class="lang-selector-shell" id="lang-selector-shell" title="Select Global Language">
-              <span class="lang-globe-icon" aria-hidden="true">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <line x1="2" y1="12" x2="22" y2="12"></line>
-                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                </svg>
-              </span>
-              <div id="google_translate_element"></div>
+          <!-- Multi-Language Selector Dropdown (Searchable 20+ Languages i18n Engine) -->
+          <li class="nav-item dropdown ms-lg-2 my-2 my-lg-0" id="nav-language-selector-item">
+            <button type="button" class="btn btn-outline-neon btn-sm dropdown-toggle d-inline-flex align-items-center gap-1 font-mono"
+              id="globalLanguageDropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" title="Switch Language">
+              <span id="current-lang-flag">🇺🇸</span>
+              <span id="current-lang-code" class="fw-bold">EN</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end bg-dark border-secondary p-2 font-mono shadow-lg lang-dropdown-menu" 
+                aria-labelledby="globalLanguageDropdown" id="language-dropdown-menu">
+              <!-- Search Filter Input -->
+              <div class="px-1 pb-2 border-bottom border-secondary mb-2 position-relative">
+                <input type="text" id="lang-search-input" 
+                       class="form-control form-control-sm bg-black text-white border-secondary font-mono" 
+                       placeholder="🔍 Search 20+ languages..." 
+                       autocomplete="off">
+              </div>
+              <!-- Scrollable Language List -->
+              <ul class="list-unstyled mb-0 lang-dropdown-list language-dropdown-list" id="language-items-list">
+                <li>
+                  <a class="dropdown-item lang-dropdown-item language-dropdown-item active" 
+                     data-lang="en" href="javascript:void(0)" onclick="window.switchLanguage('en');">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="lang-flag-icon">🇺🇸</span>
+                      <div>
+                        <div class="lang-native-name">English</div>
+                        <div class="lang-eng-name">English</div>
+                      </div>
+                    </div>
+                    <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">EN</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item lang-dropdown-item language-dropdown-item" 
+                     data-lang="hi" href="javascript:void(0)" onclick="window.switchLanguage('hi');">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="lang-flag-icon">🇮🇳</span>
+                      <div>
+                        <div class="lang-native-name">हिन्दी</div>
+                        <div class="lang-eng-name">Hindi</div>
+                      </div>
+                    </div>
+                    <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">HI</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item lang-dropdown-item language-dropdown-item" 
+                     data-lang="ta" href="javascript:void(0)" onclick="window.switchLanguage('ta');">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="lang-flag-icon">🇮🇳</span>
+                      <div>
+                        <div class="lang-native-name">தமிழ்</div>
+                        <div class="lang-eng-name">Tamil</div>
+                      </div>
+                    </div>
+                    <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">TA</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item lang-dropdown-item language-dropdown-item" 
+                     data-lang="es" href="javascript:void(0)" onclick="window.switchLanguage('es');">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="lang-flag-icon">🇪🇸</span>
+                      <div>
+                        <div class="lang-native-name">Español</div>
+                        <div class="lang-eng-name">Spanish</div>
+                      </div>
+                    </div>
+                    <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">ES</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item lang-dropdown-item language-dropdown-item" 
+                     data-lang="fr" href="javascript:void(0)" onclick="window.switchLanguage('fr');">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="lang-flag-icon">🇫🇷</span>
+                      <div>
+                        <div class="lang-native-name">Français</div>
+                        <div class="lang-eng-name">French</div>
+                      </div>
+                    </div>
+                    <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">FR</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item lang-dropdown-item language-dropdown-item" 
+                     data-lang="de" href="javascript:void(0)" onclick="window.switchLanguage('de');">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="lang-flag-icon">🇩🇪</span>
+                      <div>
+                        <div class="lang-native-name">Deutsch</div>
+                        <div class="lang-eng-name">German</div>
+                      </div>
+                    </div>
+                    <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">DE</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item lang-dropdown-item language-dropdown-item" 
+                     data-lang="zh" href="javascript:void(0)" onclick="window.switchLanguage('zh');">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="lang-flag-icon">🇨🇳</span>
+                      <div>
+                        <div class="lang-native-name">中文</div>
+                        <div class="lang-eng-name">Chinese (Mandarin)</div>
+                      </div>
+                    </div>
+                    <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">ZH</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item lang-dropdown-item language-dropdown-item" 
+                     data-lang="ja" href="javascript:void(0)" onclick="window.switchLanguage('ja');">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="lang-flag-icon">🇯🇵</span>
+                      <div>
+                        <div class="lang-native-name">日本語</div>
+                        <div class="lang-eng-name">Japanese</div>
+                      </div>
+                    </div>
+                    <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">JA</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item lang-dropdown-item language-dropdown-item" 
+                     data-lang="ar" href="javascript:void(0)" onclick="window.switchLanguage('ar');">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="lang-flag-icon">🇸🇦</span>
+                      <div>
+                        <div class="lang-native-name">العربية (RTL)</div>
+                        <div class="lang-eng-name">Arabic</div>
+                      </div>
+                    </div>
+                    <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">AR</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item lang-dropdown-item language-dropdown-item" 
+                     data-lang="ru" href="javascript:void(0)" onclick="window.switchLanguage('ru');">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="lang-flag-icon">🇷🇺</span>
+                      <div>
+                        <div class="lang-native-name">Русский</div>
+                        <div class="lang-eng-name">Russian</div>
+                      </div>
+                    </div>
+                    <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">RU</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item lang-dropdown-item language-dropdown-item" 
+                     data-lang="pt" href="javascript:void(0)" onclick="window.switchLanguage('pt');">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="lang-flag-icon">🇧🇷</span>
+                      <div>
+                        <div class="lang-native-name">Português</div>
+                        <div class="lang-eng-name">Portuguese</div>
+                      </div>
+                    </div>
+                    <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">PT</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item lang-dropdown-item language-dropdown-item" 
+                     data-lang="bn" href="javascript:void(0)" onclick="window.switchLanguage('bn');">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="lang-flag-icon">🇧🇩</span>
+                      <div>
+                        <div class="lang-native-name">বাংলা</div>
+                        <div class="lang-eng-name">Bengali</div>
+                      </div>
+                    </div>
+                    <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">BN</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item lang-dropdown-item language-dropdown-item" 
+                     data-lang="ko" href="javascript:void(0)" onclick="window.switchLanguage('ko');">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="lang-flag-icon">🇰🇷</span>
+                      <div>
+                        <div class="lang-native-name">한국어</div>
+                        <div class="lang-eng-name">Korean</div>
+                      </div>
+                    </div>
+                    <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">KO</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item lang-dropdown-item language-dropdown-item" 
+                     data-lang="it" href="javascript:void(0)" onclick="window.switchLanguage('it');">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="lang-flag-icon">🇮🇹</span>
+                      <div>
+                        <div class="lang-native-name">Italiano</div>
+                        <div class="lang-eng-name">Italian</div>
+                      </div>
+                    </div>
+                    <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">IT</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item lang-dropdown-item language-dropdown-item" 
+                     data-lang="tr" href="javascript:void(0)" onclick="window.switchLanguage('tr');">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="lang-flag-icon">🇹🇷</span>
+                      <div>
+                        <div class="lang-native-name">Türkçe</div>
+                        <div class="lang-eng-name">Turkish</div>
+                      </div>
+                    </div>
+                    <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">TR</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item lang-dropdown-item language-dropdown-item" 
+                     data-lang="nl" href="javascript:void(0)" onclick="window.switchLanguage('nl');">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="lang-flag-icon">🇳🇱</span>
+                      <div>
+                        <div class="lang-native-name">Nederlands</div>
+                        <div class="lang-eng-name">Dutch</div>
+                      </div>
+                    </div>
+                    <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">NL</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item lang-dropdown-item language-dropdown-item" 
+                     data-lang="pl" href="javascript:void(0)" onclick="window.switchLanguage('pl');">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="lang-flag-icon">🇵🇱</span>
+                      <div>
+                        <div class="lang-native-name">Polski</div>
+                        <div class="lang-eng-name">Polish</div>
+                      </div>
+                    </div>
+                    <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">PL</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item lang-dropdown-item language-dropdown-item" 
+                     data-lang="vi" href="javascript:void(0)" onclick="window.switchLanguage('vi');">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="lang-flag-icon">🇻🇳</span>
+                      <div>
+                        <div class="lang-native-name">Tiếng Việt</div>
+                        <div class="lang-eng-name">Vietnamese</div>
+                      </div>
+                    </div>
+                    <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">VI</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item lang-dropdown-item language-dropdown-item" 
+                     data-lang="id" href="javascript:void(0)" onclick="window.switchLanguage('id');">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="lang-flag-icon">🇮🇩</span>
+                      <div>
+                        <div class="lang-native-name">Bahasa Indonesia</div>
+                        <div class="lang-eng-name">Indonesian</div>
+                      </div>
+                    </div>
+                    <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">ID</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item lang-dropdown-item language-dropdown-item" 
+                     data-lang="sw" href="javascript:void(0)" onclick="window.switchLanguage('sw');">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="lang-flag-icon">🇰🇪</span>
+                      <div>
+                        <div class="lang-native-name">Kiswahili</div>
+                        <div class="lang-eng-name">Swahili</div>
+                      </div>
+                    </div>
+                    <span class="badge bg-dark border border-secondary text-cyan font-mono ms-2">SW</span>
+                  </a>
+                </li>
+              </ul>
+              <div id="lang-no-results" class="text-muted text-center py-2 small d-none font-mono">No language matched</div>
             </div>
           </li>
           <!-- Regional Multi-Country Selector Dropdown (i18n) -->
@@ -281,7 +554,7 @@
           <li class="nav-item ms-lg-2 my-2 my-lg-0" id="nav-auth-logged-out">
             <button type="button" class="btn btn-outline-neon btn-sm d-inline-flex align-items-center gap-2" id="btn-open-auth-modal">
               <span>👤</span>
-              <span>Sign In</span>
+              <span data-i18n="signIn">Sign In</span>
             </button>
           </li>
           <li class="nav-item dropdown ms-lg-2 my-2 my-lg-0 d-none" id="nav-auth-logged-in">
@@ -308,7 +581,7 @@
             </ul>
           </li>
           <li class="nav-item ms-lg-2">
-            <a class="btn btn-neon btn-sm px-4" href="#recipients" data-route="recipients">Start a Drop</a>
+            <a class="btn btn-neon btn-sm px-4" href="#recipients" data-route="recipients" data-i18n="startDrop">Start a Drop</a>
           </li>
         </ul>
       </div>
@@ -323,7 +596,7 @@
         <div class="hero-panel glass-panel">
           <div class="row align-items-center g-5">
             <div class="col-lg-7">
-              <span class="eyebrow">GAMERS HELPING GAMERS</span>
+              <span class="eyebrow" data-i18n="heroEyebrow">GAMERS HELPING GAMERS</span>
               <h1 class="display-3 fw-bold hero-title">
                 Your old gear can become someone's
                 <span class="gradient-text">next great game.</span>
@@ -334,8 +607,8 @@
                 workflow designed to reduce fraud and keep the giving loop trustworthy.
               </p>
               <div class="d-flex flex-wrap gap-3">
-                <a class="btn btn-neon btn-lg" href="#recipients" data-route="recipients">Find a Recipient</a>
-                <a class="btn btn-outline-neon btn-lg" href="#donate" data-route="donate">Donate Gear</a>
+                <a class="btn btn-neon btn-lg" href="#recipients" data-route="recipients" data-i18n="heroFindRecipient">Find a Recipient</a>
+                <a class="btn btn-outline-neon btn-lg" href="#donate" data-route="donate" data-i18n="heroDonateGear">Donate Gear</a>
               </div>
             </div>
             <div class="col-lg-5">
@@ -362,7 +635,7 @@
           <div class="col-md-4">
             <article class="stat-card glass-panel h-100 position-relative overflow-hidden impact-counter-card">
               <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="stat-label">TOTAL GEAR ITEMS RESCUED</span>
+                <span class="stat-label" data-i18n="rescueTitle">TOTAL GEAR ITEMS RESCUED</span>
                 <span class="badge bg-success-subtle text-success border border-success font-mono small d-flex align-items-center gap-1">
                   <span class="status-pulse-dot bg-success" style="width:6px; height:6px;"></span> LIVE
                 </span>
@@ -379,7 +652,7 @@
           <div class="col-md-4">
             <article class="stat-card glass-panel h-100 position-relative overflow-hidden impact-counter-card">
               <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="stat-label">ESTIMATED VALUE RESCUED</span>
+                <span class="stat-label" data-i18n="savedTitle">ESTIMATED VALUE RESCUED</span>
                 <div class="btn-group btn-group-sm" role="group" aria-label="Currency Toggle">
                   <button type="button" class="btn btn-outline-neon active py-0 px-2 font-mono small" id="btn-currency-usd">$ USD</button>
                   <button type="button" class="btn btn-outline-neon py-0 px-2 font-mono small" id="btn-currency-inr">₹ INR</button>
@@ -397,7 +670,7 @@
           <div class="col-md-4">
             <article class="stat-card glass-panel h-100 position-relative overflow-hidden impact-counter-card">
               <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="stat-label">COMMUNITIES &amp; RECIPIENTS</span>
+                <span class="stat-label" data-i18n="orgsTitle">COMMUNITIES &amp; RECIPIENTS</span>
                 <span class="badge bg-info-subtle text-info border border-info font-mono small">VERIFIED</span>
               </div>
               <div class="d-flex align-items-baseline gap-2">
@@ -416,7 +689,7 @@
             <div class="row align-items-center g-4">
               <div class="col-lg-5">
                 <span class="eyebrow">LIVE FOREX ENGINE</span>
-                <h3 class="text-white mb-2 fw-bold">Universal Currency Converter</h3>
+                <h3 class="text-white mb-2 fw-bold" data-i18n="converterTitle">Universal Currency Converter</h3>
                 <p class="text-muted small mb-3">
                   Live institutional market rates powering international gaming hardware and monetary relief across 10 global currencies. Real-time rates fetched directly from live financial feeds.
                 </p>
@@ -2265,19 +2538,22 @@
   <!-- Razorpay Checkout SDK -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-  <!-- Google Translate Integration (120+ Global Languages) -->
+  <!-- Google Translate Integration Fallback Bridge -->
+  <div id="google_translate_element" class="d-none" aria-hidden="true"></div>
   <script type="text/javascript">
     function googleTranslateElementInit() {
-      new google.translate.TranslateElement({
-        pageLanguage: 'en',
-        autoDisplay: false
-      }, 'google_translate_element');
+      if (document.getElementById('google_translate_element') && window.google && window.google.translate) {
+        new google.translate.TranslateElement({
+          pageLanguage: 'en',
+          autoDisplay: false
+        }, 'google_translate_element');
+      }
     }
   </script>
   <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
   <!-- Firebase Auth Module -->
   <script type="module" src="auth.js?v=1.0"></script>
-  <script src="app.js?v=2.7"></script>
+  <script src="app.js?v=2.8"></script>
 </body>
 
 </html>

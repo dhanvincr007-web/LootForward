@@ -34,6 +34,548 @@ window.switchCurrency = window.switchCurrency || function(code) {
   if (window.appState) window.appState.activeCurrency = code;
 };
 
+// ── Central i18n Translation Dictionary (20+ World Languages) ─
+const TRANSLATIONS = {
+  en: {
+    navbarBrand: "LootForward",
+    startDrop: "Start a Drop",
+    signIn: "Sign In",
+    rescueTitle: "TOTAL GEAR ITEMS RESCUED",
+    savedTitle: "ESTIMATED VALUE RESCUED",
+    orgsTitle: "COMMUNITIES & RECIPIENTS",
+    converterTitle: "Universal Currency Converter",
+    navAbout: "About",
+    navDrop: "The Drop",
+    navRecipients: "Recipients",
+    navTrack: "Track",
+    heroEyebrow: "GAMERS HELPING GAMERS",
+    heroFindRecipient: "Find a Recipient",
+    heroDonateGear: "Donate Gear"
+  },
+  hi: {
+    navbarBrand: "लूटफ़ॉरवर्ड",
+    startDrop: "दान शुरू करें",
+    signIn: "साइन इन करें",
+    rescueTitle: "कुल बचाए गए उपकरण",
+    savedTitle: "अनुमानित बचाया गया मूल्य",
+    orgsTitle: "समुदाय और प्राप्तकर्ता",
+    converterTitle: "सार्वभौमिक मुद्रा परिवर्तक",
+    navAbout: "हमारे बारे में",
+    navDrop: "द ड्रॉप",
+    navRecipients: "प्राप्तकर्ता",
+    navTrack: "ट्रैक करें",
+    heroEyebrow: "गेमर्स गेमर्स की मदद कर रहे हैं",
+    heroFindRecipient: "प्राप्तकर्ता खोजें",
+    heroDonateGear: "गियर दान करें"
+  },
+  ta: {
+    navbarBrand: "லூட்ஃபார்வர்ட்",
+    startDrop: "தானத்தைத் தொடங்குங்கள்",
+    signIn: "உள்நுழைக",
+    rescueTitle: "மீட்கப்பட்ட மொத்த சாதனங்கள்",
+    savedTitle: "மதிப்பிடப்பட்ட மீட்கப்பட்ட மதிப்பு",
+    orgsTitle: "சமூகங்கள் & பயனாளிகள்",
+    converterTitle: "உலகளாவிய நாணய மாற்றி",
+    navAbout: "பற்றி",
+    navDrop: "தி டிராப்",
+    navRecipients: "பயனாளிகள்",
+    navTrack: "கண்காணிக்க",
+    heroEyebrow: "கேமர்களுக்கு உதவும் கேமர்கள்",
+    heroFindRecipient: "பயனாளியைக் கண்டறியவும்",
+    heroDonateGear: "சாதனங்களை தானம் செய்யுங்கள்"
+  },
+  es: {
+    navbarBrand: "LootForward",
+    startDrop: "Iniciar Donación",
+    signIn: "Iniciar Sesión",
+    rescueTitle: "TOTAL DE EQUIPOS RESCATADOS",
+    savedTitle: "VALOR ESTIMADO RESCATADO",
+    orgsTitle: "COMUNIDADES Y BENEFICIARIOS",
+    converterTitle: "Conversor Universal de Divisas",
+    navAbout: "Acerca de",
+    navDrop: "La Entrega",
+    navRecipients: "Beneficiarios",
+    navTrack: "Rastrear",
+    heroEyebrow: "JUGADORES AYUDANDO A JUGADORES",
+    heroFindRecipient: "Buscar Beneficiario",
+    heroDonateGear: "Donar Equipo"
+  },
+  fr: {
+    navbarBrand: "LootForward",
+    startDrop: "Lancer un Don",
+    signIn: "Connexion",
+    rescueTitle: "TOTAL DES ÉQUIPEMENTS SAUVÉS",
+    savedTitle: "VALEUR ESTIMÉE SAUVÉE",
+    orgsTitle: "COMMUNAUTÉS & BÉNÉFICIAIRES",
+    converterTitle: "Convertisseur Universel de Devises",
+    navAbout: "À propos",
+    navDrop: "Le Don",
+    navRecipients: "Bénéficiaires",
+    navTrack: "Suivre",
+    heroEyebrow: "DES JOUEURS AIDENT DES JOUEURS",
+    heroFindRecipient: "Trouver un Bénéficiaire",
+    heroDonateGear: "Donner du Matériel"
+  },
+  de: {
+    navbarBrand: "LootForward",
+    startDrop: "Spende Starten",
+    signIn: "Anmelden",
+    rescueTitle: "GESAMT GERETTETE AUSRÜSTUNG",
+    savedTitle: "GESCHÄTZTER GERETTETER WERT",
+    orgsTitle: "GEMEINSCHAFTEN & EMPFÄNGER",
+    converterTitle: "Universeller Währungsrechner",
+    navAbout: "Über uns",
+    navDrop: "Der Drop",
+    navRecipients: "Empfänger",
+    navTrack: "Verfolgen",
+    heroEyebrow: "GAMER HELFEN GAMERN",
+    heroFindRecipient: "Empfänger finden",
+    heroDonateGear: "Hardware spenden"
+  },
+  zh: {
+    navbarBrand: "LootForward",
+    startDrop: "发起捐赠",
+    signIn: "登录",
+    rescueTitle: "已拯救装备总数",
+    savedTitle: "预估拯救价值",
+    orgsTitle: "社区与受助方",
+    converterTitle: "通用货币换算器",
+    navAbout: "关于我们",
+    navDrop: "空投计划",
+    navRecipients: "受助组织",
+    navTrack: "追踪动态",
+    heroEyebrow: "玩家互助 传递关怀",
+    heroFindRecipient: "寻找受助方",
+    heroDonateGear: "捐赠装备"
+  },
+  ja: {
+    navbarBrand: "LootForward",
+    startDrop: "寄付を開始",
+    signIn: "サインイン",
+    rescueTitle: "回収されたギアの総数",
+    savedTitle: "回収推定価値",
+    orgsTitle: "コミュニティと受取人",
+    converterTitle: "ユニバーサル為替コンバーター",
+    navAbout: "概要",
+    navDrop: "ザ・ドロップ",
+    navRecipients: "受取人",
+    navTrack: "追跡",
+    heroEyebrow: "ゲーマーがゲーマーを支える",
+    heroFindRecipient: "受取人を探す",
+    heroDonateGear: "ギアを寄付する"
+  },
+  ar: {
+    navbarBrand: "لوت فوروارد",
+    startDrop: "ابدأ التبرع",
+    signIn: "تسجيل الدخول",
+    rescueTitle: "إجمالي العتاد المسترد",
+    savedTitle: "القيمة التقديرية المستردة",
+    orgsTitle: "المجتمعات والمستفيدون",
+    converterTitle: "محول العملات الشامل",
+    navAbout: "حول",
+    navDrop: "الإسقاط",
+    navRecipients: "المستفيدون",
+    navTrack: "تتبع",
+    heroEyebrow: "لاعبون يساعدون لاعبين",
+    heroFindRecipient: "ابحث عن مستفيد",
+    heroDonateGear: "تبرع بالعتاد"
+  },
+  ru: {
+    navbarBrand: "LootForward",
+    startDrop: "Начать передачу",
+    signIn: "Войти",
+    rescueTitle: "ВСЕГО СПАСЕНО ОБОРУДОВАНИЯ",
+    savedTitle: "ОЦЕНОЧНАЯ СТОИМОСТЬ",
+    orgsTitle: "СООБЩЕСТВА И ПОЛУЧАТЕЛИ",
+    converterTitle: "Универсальный конвертер валют",
+    navAbout: "О нас",
+    navDrop: "Передача",
+    navRecipients: "Получатели",
+    navTrack: "Отслеживание",
+    heroEyebrow: "ГЕЙМЕРЫ ПОМОГАЮТ ГЕЙМЕРАМ",
+    heroFindRecipient: "Найти получателя",
+    heroDonateGear: "Пожертвовать технику"
+  },
+  pt: {
+    navbarBrand: "LootForward",
+    startDrop: "Iniciar Doação",
+    signIn: "Entrar",
+    rescueTitle: "TOTAL DE ITENS RESGATADOS",
+    savedTitle: "VALOR ESTIMADO RESGATADO",
+    orgsTitle: "COMUNIDADES E BENEFICIÁRIOS",
+    converterTitle: "Conversor Universal de Moedas",
+    navAbout: "Sobre",
+    navDrop: "O Drop",
+    navRecipients: "Beneficiários",
+    navTrack: "Rastrear",
+    heroEyebrow: "GAMERS AJUDANDO GAMERS",
+    heroFindRecipient: "Encontrar Beneficiário",
+    heroDonateGear: "Doar Equipamento"
+  },
+  bn: {
+    navbarBrand: "লুটফরোয়ার্ড",
+    startDrop: "দান শুরু করুন",
+    signIn: "সাইন ইন",
+    rescueTitle: "মোট উদ্ধারকৃত গিয়ার সামগ্রী",
+    savedTitle: "আনুমানিক উদ্ধারকৃত মূল্য",
+    orgsTitle: "সম্প্রদায় এবং প্রাপক",
+    converterTitle: "সর্বজনীন মুদ্রা রূপান্তরকারী",
+    navAbout: "সম্পর্কে",
+    navDrop: "ড্রপ",
+    navRecipients: "প্রাপক",
+    navTrack: "ট্র্যাক",
+    heroEyebrow: "গেমার্স হেল্পিং গেমার্স",
+    heroFindRecipient: "প্রাপক খুঁজুন",
+    heroDonateGear: "গিয়ার দান করুন"
+  },
+  ko: {
+    navbarBrand: "LootForward",
+    startDrop: "기부 시작하기",
+    signIn: "로그인",
+    rescueTitle: "구출된 총 장비 품목",
+    savedTitle: "추정 구출 가치",
+    orgsTitle: "커뮤니티 및 수혜자",
+    converterTitle: "범용 통화 변환기",
+    navAbout: "소개",
+    navDrop: "더 드롭",
+    navRecipients: "수혜자",
+    navTrack: "추적",
+    heroEyebrow: "게이머가 돕는 게이머",
+    heroFindRecipient: "수혜자 찾기",
+    heroDonateGear: "장비 기부하기"
+  },
+  it: {
+    navbarBrand: "LootForward",
+    startDrop: "Inizia Donazione",
+    signIn: "Accedi",
+    rescueTitle: "TOTALE ATTREZZATURE SALVATE",
+    savedTitle: "VALORE STIMATO SALVATO",
+    orgsTitle: "COMUNITÀ E BENEFICIARI",
+    converterTitle: "Convertitore Universale di Valute",
+    navAbout: "Chi siamo",
+    navDrop: "Il Drop",
+    navRecipients: "Destinatari",
+    navTrack: "Traccia",
+    heroEyebrow: "GAMER CHE AIUTANO GAMER",
+    heroFindRecipient: "Trova Beneficiario",
+    heroDonateGear: "Dona Hardware"
+  },
+  tr: {
+    navbarBrand: "LootForward",
+    startDrop: "Bağış Başlat",
+    signIn: "Giriş Yap",
+    rescueTitle: "KURTARILAN TOPLAM EKİPMAN",
+    savedTitle: "TAHMİNİ KURTARILAN DEĞER",
+    orgsTitle: "TOPLULUKLAR VE ALICILAR",
+    converterTitle: "Evrensel Para Birimi Dönüştürücü",
+    navAbout: "Hakkında",
+    navDrop: "Drop",
+    navRecipients: "Alıcılar",
+    navTrack: "Takip Et",
+    heroEyebrow: "OYUNCULAR OYUNCULARA YARDIM EDİYOR",
+    heroFindRecipient: "Alıcı Bul",
+    heroDonateGear: "Ekipman Bağışla"
+  },
+  nl: {
+    navbarBrand: "LootForward",
+    startDrop: "Start een Donatie",
+    signIn: "Inloggen",
+    rescueTitle: "TOTAAL GEREDDE APPARATUUR",
+    savedTitle: "GESCHATTE GEREDDE WAARDE",
+    orgsTitle: "GEMEENSCHAPPEN & ONTVANGERS",
+    converterTitle: "Universele Valutaconverter",
+    navAbout: "Over ons",
+    navDrop: "De Drop",
+    navRecipients: "Ontvangers",
+    navTrack: "Volgen",
+    heroEyebrow: "GAMERS HELPEN GAMERS",
+    heroFindRecipient: "Vind Ontvanger",
+    heroDonateGear: "Doneer Apparatuur"
+  },
+  pl: {
+    navbarBrand: "LootForward",
+    startDrop: "Rozpocznij Darowiznę",
+    signIn: "Zaloguj się",
+    rescueTitle: "ŁĄCZNIE ODZYSKANY SPRZĘT",
+    savedTitle: "SZACUNKOWA WARTOŚĆ ODZYSKANA",
+    orgsTitle: "SPOŁECZNOŚCI I BENEFICJENCI",
+    converterTitle: "Uniwersalny Przelicznik Walut",
+    navAbout: "O nas",
+    navDrop: "Zrzut",
+    navRecipients: "Beneficjenci",
+    navTrack: "Śledź",
+    heroEyebrow: "GRACZE POMAGAJĄ GRACZOM",
+    heroFindRecipient: "Znajdź Odbiorcę",
+    heroDonateGear: "Podaruj Sprzęt"
+  },
+  vi: {
+    navbarBrand: "LootForward",
+    startDrop: "Bắt đầu quyên góp",
+    signIn: "Đăng nhập",
+    rescueTitle: "TỔNG SỐ THIẾT BỊ ĐÃ CỨU HỘ",
+    savedTitle: "GIÁ TRỊ ƯỚC TÍNH ĐÃ CỨU",
+    orgsTitle: "CỘNG ĐỒNG VÀ NGƯỜI NHẬN",
+    converterTitle: "Bộ chuyển đổi tiền tệ phổ quát",
+    navAbout: "Giới thiệu",
+    navDrop: "Đợt quyên góp",
+    navRecipients: "Người nhận",
+    navTrack: "Theo dõi",
+    heroEyebrow: "GAME THỦ GIÚP GAME THỦ",
+    heroFindRecipient: "Tìm người nhận",
+    heroDonateGear: "Quyên góp thiết bị"
+  },
+  id: {
+    navbarBrand: "LootForward",
+    startDrop: "Mulai Donasi",
+    signIn: "Masuk",
+    rescueTitle: "TOTAL PERANGKAT DISELAMATKAN",
+    savedTitle: "ESTIMASI NILAI TERSELAMATKAN",
+    orgsTitle: "KOMUNITAS & PENERIMA",
+    converterTitle: "Konverter Mata Uang Universal",
+    navAbout: "Tentang",
+    navDrop: "The Drop",
+    navRecipients: "Penerima",
+    navTrack: "Lacak",
+    heroEyebrow: "GAMER MEMBANTU GAMER",
+    heroFindRecipient: "Temukan Penerima",
+    heroDonateGear: "Donasikan Perangkat"
+  },
+  sw: {
+    navbarBrand: "LootForward",
+    startDrop: "Anza Utoaji",
+    signIn: "Ingia",
+    rescueTitle: "JUMLA YA VIFAA VILIVYOOKOLEWA",
+    savedTitle: "THAMANI INAYOKADIRIWA",
+    orgsTitle: "JUMUIYA NA WAPOKEZI",
+    converterTitle: "Kigeuzi cha Sarafu cha Jumla",
+    navAbout: "Kuhusu",
+    navDrop: "Mchango",
+    navRecipients: "Wapokeaji",
+    navTrack: "Fuatilia",
+    heroEyebrow: "WACHEZAJI WAKIWASAIDIA WACHEZAJI",
+    heroFindRecipient: "Pata Mpokeaji",
+    heroDonateGear: "Changia Vifaa"
+  }
+};
+
+const LANG_METADATA = {
+  en: { code: "EN", flag: "🇺🇸", name: "English", nativeName: "English", rtl: false },
+  hi: { code: "HI", flag: "🇮🇳", name: "Hindi", nativeName: "हिन्दी", rtl: false },
+  ta: { code: "TA", flag: "🇮🇳", name: "Tamil", nativeName: "தமிழ்", rtl: false },
+  es: { code: "ES", flag: "🇪🇸", name: "Spanish", nativeName: "Español", rtl: false },
+  fr: { code: "FR", flag: "🇫🇷", name: "French", nativeName: "Français", rtl: false },
+  de: { code: "DE", flag: "🇩🇪", name: "German", nativeName: "Deutsch", rtl: false },
+  zh: { code: "ZH", flag: "🇨🇳", name: "Chinese", nativeName: "中文", rtl: false },
+  ja: { code: "JA", flag: "🇯🇵", name: "Japanese", nativeName: "日本語", rtl: false },
+  ar: { code: "AR", flag: "🇸🇦", name: "Arabic", nativeName: "العربية", rtl: true },
+  ru: { code: "RU", flag: "🇷🇺", name: "Russian", nativeName: "Русский", rtl: false },
+  pt: { code: "PT", flag: "🇧🇷", name: "Portuguese", nativeName: "Português", rtl: false },
+  bn: { code: "BN", flag: "🇧🇩", name: "Bengali", nativeName: "বাংলা", rtl: false },
+  ko: { code: "KO", flag: "🇰🇷", name: "Korean", nativeName: "한국어", rtl: false },
+  it: { code: "IT", flag: "🇮🇹", name: "Italian", nativeName: "Italiano", rtl: false },
+  tr: { code: "TR", flag: "🇹🇷", name: "Turkish", nativeName: "Türkçe", rtl: false },
+  nl: { code: "NL", flag: "🇳🇱", name: "Dutch", nativeName: "Nederlands", rtl: false },
+  pl: { code: "PL", flag: "🇵🇱", name: "Polish", nativeName: "Polski", rtl: false },
+  vi: { code: "VI", flag: "🇻🇳", name: "Vietnamese", nativeName: "Tiếng Việt", rtl: false },
+  id: { code: "ID", flag: "🇮🇩", name: "Indonesian", nativeName: "Bahasa Indonesia", rtl: false },
+  sw: { code: "SW", flag: "🇰🇪", name: "Swahili", nativeName: "Kiswahili", rtl: false }
+};
+
+// Provide case-insensitive access to translation dictionaries
+Object.keys(TRANSLATIONS).forEach((k) => {
+  TRANSLATIONS[k.toUpperCase()] = TRANSLATIONS[k];
+  TRANSLATIONS[k.toLowerCase()] = TRANSLATIONS[k];
+});
+
+// ── Google Translate Fallback Bridge (Safe Non-Destructive) ──
+function triggerGoogleTranslateFallback(langCode) {
+  try {
+    let gCode = String(langCode).toLowerCase();
+    if (gCode === "zh") gCode = "zh-CN";
+    const val = gCode === "en" ? "" : `/en/${gCode}`;
+    document.cookie = `googtrans=${val}; path=/;`;
+    if (window.location.hostname) {
+      document.cookie = `googtrans=${val}; domain=.${window.location.hostname}; path=/;`;
+    }
+    const select = document.querySelector(".goog-te-combo");
+    if (select) {
+      select.value = gCode === "en" ? "" : gCode;
+      select.dispatchEvent(new Event("change"));
+    }
+  } catch (err) {
+    // Non-blocking fallback
+  }
+}
+
+// ── Immutable Key-Based Translation Engine ────────────────────
+window.switchLanguage = function(langCode) {
+  if (!langCode) return;
+  const rawCode = String(langCode).trim();
+  const code = rawCode.toLowerCase();
+  const upperCode = rawCode.toUpperCase();
+
+  // 1. Immutable Dictionary Lookup (never relying on current innerText)
+  const dict = TRANSLATIONS[code] || TRANSLATIONS[upperCode] || TRANSLATIONS.en || {};
+
+  // 2. Query all DOM nodes with immutable data-i18n attributes
+  const elements = document.querySelectorAll("[data-i18n]");
+  elements.forEach((el) => {
+    const key = el.getAttribute("data-i18n");
+    if (!key) return;
+
+    // Direct lookup from fixed dictionary key
+    const translation = dict[key] !== undefined ? dict[key] : (TRANSLATIONS.en && TRANSLATIONS.en[key]);
+    if (translation !== undefined) {
+      el.textContent = translation;
+    }
+  });
+
+  // 3. Automatically handle Right-to-Left (RTL) text alignment
+  const isRTL = (upperCode === "AR" || upperCode === "HE" || code === "ar" || code === "he");
+  document.documentElement.dir = isRTL ? "rtl" : "ltr";
+  document.documentElement.setAttribute("lang", code);
+  if (document.body) {
+    if (isRTL) {
+      document.body.classList.add("rtl-layout");
+    } else {
+      document.body.classList.remove("rtl-layout");
+    }
+  }
+
+  // 4. Update dropdown toggle UI (flag and code badge)
+  const meta = LANG_METADATA[code] || LANG_METADATA[upperCode] || { code: upperCode, flag: "🌐" };
+  const flagEl = document.querySelector("#current-lang-flag");
+  const codeEl = document.querySelector("#current-lang-code");
+  if (flagEl) flagEl.textContent = meta.flag || "🌐";
+  if (codeEl) codeEl.textContent = meta.code || upperCode;
+
+  // 5. Update dropdown menu active states
+  document.querySelectorAll(".language-dropdown-item, .lang-dropdown-item").forEach((item) => {
+    const itemLang = (item.getAttribute("data-lang") || "").toLowerCase();
+    item.classList.toggle("active", itemLang === code);
+  });
+
+  // 6. Close bootstrap dropdown safely if open
+  const dropdownToggle = document.querySelector("#globalLanguageDropdown");
+  if (dropdownToggle && window.bootstrap && window.bootstrap.Dropdown) {
+    const instance = window.bootstrap.Dropdown.getInstance(dropdownToggle);
+    if (instance) instance.hide();
+  }
+
+  // 7. Store current language globally on window and appState
+  window.currentLanguage = code;
+  if (window.appState) {
+    window.appState.activeLanguage = code;
+  }
+
+  // 8. Persist preference to localStorage
+  try {
+    localStorage.setItem("preferred_language", langCode);
+  } catch (err) {
+    console.warn("Storage warning: Could not persist preferred_language", err);
+  }
+
+  // 9. Optional non-destructive Google Translate library trigger
+  triggerGoogleTranslateFallback(code);
+
+  // 10. Dispatch custom event for dynamic components (Leaflet maps, charts, counters)
+  window.dispatchEvent(new CustomEvent("lootforward:languageChanged", { detail: { language: code } }));
+};
+
+window._actualSwitchLanguage = window.switchLanguage;
+
+// ── Dynamic UI Synchronization Mutation Observer ─────────────
+let _isI18nSyncing = false;
+const i18nDynamicObserver = new MutationObserver((mutations) => {
+  if (_isI18nSyncing) return;
+  const currentLang = window.currentLanguage || (typeof window !== "undefined" && localStorage.getItem("preferred_language")) || "en";
+  const dict = TRANSLATIONS[currentLang.toLowerCase()] || TRANSLATIONS.en;
+  if (!dict) return;
+
+  let hasNewI18nNode = false;
+  for (const m of mutations) {
+    if (m.type === "childList" && m.addedNodes.length > 0) {
+      for (const node of m.addedNodes) {
+        if (node.nodeType === 1) { // ELEMENT_NODE
+          if (node.hasAttribute && node.hasAttribute("data-i18n")) {
+            hasNewI18nNode = true;
+            break;
+          }
+          if (node.querySelector && node.querySelector("[data-i18n]")) {
+            hasNewI18nNode = true;
+            break;
+          }
+        }
+      }
+    }
+    if (hasNewI18nNode) break;
+  }
+
+  if (hasNewI18nNode) {
+    _isI18nSyncing = true;
+    try {
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const key = el.getAttribute("data-i18n");
+        if (key && dict[key] !== undefined && el.textContent !== dict[key]) {
+          el.textContent = dict[key];
+        }
+      });
+    } finally {
+      _isI18nSyncing = false;
+    }
+  }
+});
+
+function initDynamicUiObserver() {
+  if (document.body) {
+    i18nDynamicObserver.observe(document.body, { childList: true, subtree: true });
+  }
+}
+
+// ── Searchable Language Selector Filter Setup ──────────────────
+function setupLanguageSearchFilter() {
+  const searchInput = document.querySelector("#lang-search-input");
+  if (!searchInput) return;
+
+  searchInput.addEventListener("input", (e) => {
+    const q = e.target.value.toLowerCase().trim();
+    const items = document.querySelectorAll("#language-items-list li");
+    let matchCount = 0;
+    items.forEach((li) => {
+      const text = li.textContent.toLowerCase();
+      const code = (li.querySelector("a")?.getAttribute("data-lang") || "").toLowerCase();
+      if (!q || text.includes(q) || code.includes(q)) {
+        li.style.display = "";
+        matchCount++;
+      } else {
+        li.style.display = "none";
+      }
+    });
+
+    const noResultEl = document.querySelector("#lang-no-results");
+    if (noResultEl) {
+      noResultEl.classList.toggle("d-none", matchCount > 0);
+    }
+  });
+
+  searchInput.addEventListener("click", (e) => e.stopPropagation());
+  searchInput.addEventListener("keydown", (e) => e.stopPropagation());
+}
+
+// ── Auto-restore Language on DOMContentLoaded ───────────────────
+function initLanguagePreference() {
+  const savedLang = (typeof window !== "undefined" && localStorage.getItem("preferred_language")) || "en";
+  window.switchLanguage(savedLang);
+  setupLanguageSearchFilter();
+  initDynamicUiObserver();
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initLanguagePreference);
+} else {
+  initLanguagePreference();
+}
+
 const DEMO_ADMIN_PASS = "LOOTFORWARD2026";
 
 // ── Firebase Cloud Function endpoints (with Vercel reverse-proxy support) ───
@@ -4954,6 +5496,9 @@ function initApp() {
       state.isPaymentPending = false;
     });
   }
+
+  // Re-apply language translations across dynamically loaded components
+  initLanguagePreference();
 
   window.addEventListener("popstate", () => navigate(resolveInitialPage(), false));
   window.addEventListener("hashchange", () => navigate(resolveInitialPage(), false));

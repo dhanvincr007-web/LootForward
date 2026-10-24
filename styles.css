@@ -3245,3 +3245,110 @@ body {
   font-size: 1.15rem;
   line-height: 1;
 }
+
+/* ─── LANGUAGE SELECTOR I18N DROPDOWN STYLING ────────────── */
+.lang-dropdown-menu {
+  width: 290px;
+  background: rgba(15, 12, 27, 0.96) !important;
+  border: 1px solid rgba(0, 242, 254, 0.3) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 12px;
+}
+
+#lang-search-input {
+  background: rgba(0, 0, 0, 0.6) !important;
+  color: #fff !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  font-size: 0.8rem;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+#lang-search-input:focus {
+  border-color: var(--cyan) !important;
+  box-shadow: 0 0 10px rgba(0, 242, 254, 0.35) !important;
+  outline: none;
+}
+
+.lang-dropdown-list,
+.language-dropdown-list {
+  max-height: 290px;
+  overflow-y: auto;
+  border-radius: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 242, 254, 0.3) transparent;
+}
+
+.lang-native-name {
+  color: #f1f5f9;
+  font-weight: 600;
+  font-size: 0.85rem;
+  line-height: 1.15;
+}
+
+.lang-eng-name {
+  color: var(--muted-2);
+  font-size: 0.72rem;
+  line-height: 1.1;
+}
+
+.lang-dropdown-item,
+.language-dropdown-item {
+  color: #cbd5e1;
+  font-size: 0.85rem;
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin: 1px 0;
+  transition: background 0.15s ease, color 0.15s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-decoration: none;
+}
+.lang-dropdown-item:hover,
+.lang-dropdown-item.active,
+.language-dropdown-item:hover,
+.language-dropdown-item.active {
+  background: rgba(0, 242, 254, 0.15) !important;
+  color: #00f2fe !important;
+}
+.lang-dropdown-item.active .lang-native-name,
+.language-dropdown-item.active .lang-native-name {
+  color: #00f2fe !important;
+}
+
+.lang-flag-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+/* ─── RIGHT-TO-LEFT (RTL) LAYOUT SUPPORT (AR, HE) ────────── */
+html[dir="rtl"] body,
+body.rtl-layout {
+  direction: rtl;
+  text-align: right;
+}
+html[dir="rtl"] .dropdown-menu,
+body.rtl-layout .dropdown-menu {
+  text-align: right;
+}
+html[dir="rtl"] .dropdown-menu-end,
+body.rtl-layout .dropdown-menu-end {
+  right: auto !important;
+  left: 0 !important;
+}
+html[dir="rtl"] .ms-auto,
+body.rtl-layout .ms-auto {
+  margin-right: auto !important;
+  margin-left: 0 !important;
+}
+html[dir="rtl"] .brand-mark,
+body.rtl-layout .brand-mark {
+  flex-direction: row-reverse;
+}
+html[dir="rtl"] .badge,
+body.rtl-layout .badge {
+  direction: ltr;
+}
+
